@@ -345,6 +345,28 @@ details.grp-arg .corpo{padding:12px 14px;}
 .tem-note{font-size:.74rem; color:var(--nebbia); flex:1; min-width:150px;}
 .btn-tem{padding:8px 16px; font-size:.82rem; white-space:nowrap;}
 
+/* tematiche compatte con tendina per argomento */
+.tem-det{border:1px solid var(--bordo); border-radius:11px; margin-top:9px; background:var(--foglio); overflow:hidden;}
+.tem-det summary{cursor:pointer; padding:11px 13px; font-weight:700; color:var(--inchiostro); background:#F4F1E8;
+                 font-size:.92rem; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+                 font-family:'Sora', sans-serif; list-style-position:inside;}
+.tem-det summary .tem-badge{margin-left:auto;}
+.tem-det .tem-lista{padding:4px 10px 8px;}
+.tem-riga{display:flex; align-items:center; gap:8px; padding:6px 2px; border-bottom:1px dashed var(--filo);}
+.tem-riga:last-child{border-bottom:none;}
+.tem-riga .tem-kw2{font-size:.88rem; font-weight:600; flex:1 1 120px; min-width:0; overflow-wrap:anywhere; line-height:1.25;}
+.tem-riga .tem-rank{width:22px; height:22px; font-size:.72rem; border-radius:6px;}
+.tem-mini-meter{flex:0 1 90px; height:5px; background:#EDEAE0; border-radius:3px; overflow:hidden; display:inline-block;}
+.tem-mini-meter span{display:block; height:100%; background:var(--lacca); border-radius:0 3px 3px 0;}
+.tem-nerr{font-size:.74rem; color:var(--lacca); font-weight:600; flex:none; min-width:32px; text-align:right;}
+.tem-riga .btn-tem{padding:6px 12px; font-size:.76rem; min-height:32px; flex:none;}
+@media (max-width:640px){
+  .tem-mini-meter{display:none;}
+  .tem-riga .tem-kw2{font-size:.82rem;}
+  .tem-riga .btn-tem .tem-tot{display:none;}
+  .tem-det summary{font-size:.85rem; padding:10px 11px;}
+}
+
 /* ---------- popup superamento ---------- */
 .modale-amore{text-align:center; border:3px solid #E8B0C2; background:linear-gradient(180deg, var(--foglio), #FBEFF3); max-width:460px;}
 .amore-emoji{font-size:2.6rem; animation:batticuore 1.1s ease-in-out infinite; margin-bottom:10px;}
@@ -777,6 +799,7 @@ const SOTTO = window.OCF_DATA.SOTTO || {};               // {argomento: {SA: [..
 let saStato = {};                             // {argomento: [bool, ...]} — true = sottoargomento attivo
 ARGOMENTI.forEach(a => { if(SOTTO[a]) saStato[a] = SOTTO[a].SA.map(() => true); });
 let saAperto = {};                            // {argomento: bool} — tendina aperta/chiusa
+let temAperte = {};                           // tendine della card tematiche
 const $ = id => document.getElementById(id);
 
 // ---------- utilità ----------
@@ -1189,25 +1212,32 @@ function renderTematiche(){
     cont.innerHTML = '<div class="vuoto">La classifica si popola quando una stessa parola chiave ricorre in almeno 2 domande sbagliate: continua ad allenarti.</div>';
     return;
   }
-  cont.innerHTML = cls.map(({arg, righe}) => `
-    <div class="tem-arg">${arg} <span class="mini">— ${righe.length} tematiche</span></div>
-    <div class="tem-grid">
-    ${righe.map((r, i) => {
-      const pct = Math.min(100, Math.round(100 * r.nErr / r.tot));
-      return `
-      <div class="tem-card">
-        <div class="tem-testa">
+  cont.innerHTML = cls.map(({arg, righe}, gi) => {
+    const totErr = righe.reduce((s, r) => s + r.nErr, 0);
+    return `
+    <details class="tem-det" data-arg="${gi}" ${temAperte[arg] ? 'open' : ''}>
+      <summary><span class="tem-som-nome">${arg}</span>
+        <span class="tem-badge">${righe.length} tematiche · ${totErr} errori</span></summary>
+      <div class="tem-lista">
+      ${righe.map((r, i) => {
+        const pct = Math.min(100, Math.round(100 * r.nErr / r.tot));
+        return `
+        <div class="tem-riga" title="Hai sbagliato ${r.nErr} delle ${r.tot} domande del tema (${pct}%)">
           <span class="tem-rank ${i < 3 ? 'r' + (i+1) : 'rN'}">${i+1}</span>
           <span class="tem-kw2">${r.w}</span>
-          <span class="tem-badge">${r.nErr} ${r.nErr === 1 ? 'errore' : 'errori'}</span>
-          <button class="btn-p btn-tem" data-arg="${arg}" data-kw="${r.w}">Allenati (${r.tot})</button>
-        </div>
-        <div class="tem-meter" title="Hai sbagliato il ${pct}% delle domande del tema"><div style="width:${pct}%"></div></div>
-        <div class="tem-note">sbagliate ${r.nErr} delle ${r.tot} domande del tema in banca dati (${pct}%)</div>
-      </div>`;
-    }).join('')}
-    </div>`).join('');
-  cont.querySelectorAll('.btn-tem').forEach(b => b.onclick = () => avviaTestTematica(b.dataset.arg, b.dataset.kw));
+          <span class="tem-mini-meter"><span style="width:${pct}%"></span></span>
+          <span class="tem-nerr">${r.nErr}✘</span>
+          <button class="btn-p btn-tem" data-arg="${arg}" data-kw="${r.w}">Allenati<span class="tem-tot"> (${r.tot})</span></button>
+        </div>`;
+      }).join('')}
+      </div>
+    </details>`;
+  }).join('');
+  cont.querySelectorAll('.btn-tem').forEach(b => b.onclick = e => { e.preventDefault(); avviaTestTematica(b.dataset.arg, b.dataset.kw); });
+  cont.querySelectorAll('.tem-det').forEach(det => {
+    const nome = det.querySelector('.tem-som-nome').textContent;
+    det.addEventListener('toggle', () => { temAperte[nome] = det.open; });
+  });
 }
 
 // nuove bilanciate tra gli argomenti selezionati (quote proporzionali alle nuove rimanenti),
