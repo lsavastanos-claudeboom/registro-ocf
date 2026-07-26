@@ -113,7 +113,13 @@ header.top .sub{font-family:'Inter', sans-serif; font-size:.62rem; letter-spacin
 .arg-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
 .arg-head h2{margin-bottom:0; margin-right:auto;}
 .mix-box{display:flex; align-items:center; gap:8px; background:#F4F1E8; border:1px solid var(--bordo); border-radius:9px; padding:8px 12px; flex-wrap:wrap;}
-.mix-box input[type=range]{width:130px; accent-color:var(--inchiostro); cursor:pointer; height:28px;}
+.mix-box input[type=range]{width:130px; accent-color:var(--inchiostro); cursor:pointer; height:24px;}
+.mix-tre{flex-direction:column; align-items:stretch; gap:2px; min-width:250px;}
+.mix-riga{display:flex; align-items:center; gap:8px;}
+.mix-riga .mix-nome{flex:0 0 118px; white-space:nowrap;}
+.mix-riga input[type=range]{flex:1 1 90px; width:auto;}
+.mix-val{flex:0 0 38px; text-align:right; color:var(--inchiostro);}
+.mix-val.rosso{color:var(--lacca);} .mix-val.verde{color:var(--vidimato);}
 .mix-box input[type=range]:disabled{opacity:.4; cursor:not-allowed;}
 .mix-box .mini b{color:var(--inchiostro);}
 #mix-label b:last-child, #mix-label b.rosso{color:var(--lacca);}
@@ -400,8 +406,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   #btn-avvia{order:2; flex:1 1 100%; width:100%; font-size:1rem; padding:14px;}
   #btn-sim{order:3; flex:1 1 calc(50% - 4px); font-size:.82rem; padding:10px 6px;}
   #btn-pro{order:4; flex:1 1 calc(50% - 4px); font-size:.82rem; padding:10px 6px;}
-  .mix-box{order:5; flex:1 1 100%; justify-content:space-between; padding:8px 11px;}
-  .mix-box input[type=range]{flex:1 1 120px;}
+  .mix-box{order:5; flex:1 1 100%; padding:8px 11px;}
+  .mix-riga .mix-nome{flex-basis:104px; font-size:.68rem;}
   .riga-arg{padding:10px 2px; gap:4px 8px;}
   .riga-arg label{flex:1 1 100%; font-size:.92rem; align-items:flex-start;}
   .riga-arg input{margin-top:1px;}

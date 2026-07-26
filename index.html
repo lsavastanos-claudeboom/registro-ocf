@@ -132,7 +132,13 @@ header.top .sub{font-family:'Inter', sans-serif; font-size:.62rem; letter-spacin
 .arg-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
 .arg-head h2{margin-bottom:0; margin-right:auto;}
 .mix-box{display:flex; align-items:center; gap:8px; background:#F4F1E8; border:1px solid var(--bordo); border-radius:9px; padding:8px 12px; flex-wrap:wrap;}
-.mix-box input[type=range]{width:130px; accent-color:var(--inchiostro); cursor:pointer; height:28px;}
+.mix-box input[type=range]{width:130px; accent-color:var(--inchiostro); cursor:pointer; height:24px;}
+.mix-tre{flex-direction:column; align-items:stretch; gap:2px; min-width:250px;}
+.mix-riga{display:flex; align-items:center; gap:8px;}
+.mix-riga .mix-nome{flex:0 0 118px; white-space:nowrap;}
+.mix-riga input[type=range]{flex:1 1 90px; width:auto;}
+.mix-val{flex:0 0 38px; text-align:right; color:var(--inchiostro);}
+.mix-val.rosso{color:var(--lacca);} .mix-val.verde{color:var(--vidimato);}
 .mix-box input[type=range]:disabled{opacity:.4; cursor:not-allowed;}
 .mix-box .mini b{color:var(--inchiostro);}
 #mix-label b:last-child, #mix-label b.rosso{color:var(--lacca);}
@@ -419,8 +425,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   #btn-avvia{order:2; flex:1 1 100%; width:100%; font-size:1rem; padding:14px;}
   #btn-sim{order:3; flex:1 1 calc(50% - 4px); font-size:.82rem; padding:10px 6px;}
   #btn-pro{order:4; flex:1 1 calc(50% - 4px); font-size:.82rem; padding:10px 6px;}
-  .mix-box{order:5; flex:1 1 100%; justify-content:space-between; padding:8px 11px;}
-  .mix-box input[type=range]{flex:1 1 120px;}
+  .mix-box{order:5; flex:1 1 100%; padding:8px 11px;}
+  .mix-riga .mix-nome{flex-basis:104px; font-size:.68rem;}
   .riga-arg{padding:10px 2px; gap:4px 8px;}
   .riga-arg label{flex:1 1 100%; font-size:.92rem; align-items:flex-start;}
   .riga-arg input{margin-top:1px;}
@@ -502,10 +508,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     <div class="card">
       <div class="arg-head">
         <h2>📚 Argomenti</h2>
-        <div class="mix-box">
-          <span class="mini">Mix del test:</span>
-          <input type="range" id="mix-nuove" min="0" max="100" step="10" value="70" title="Trascina per cambiare la composizione del test">
-          <span class="mini" id="mix-label"><b>70%</b> nuove · <b>30%</b> sbagliate</span>
+        <div class="mix-box mix-tre">
+          <div class="mix-riga"><span class="mini mix-nome">🆕 Nuove</span>
+            <input type="range" id="mix-nuove" min="0" max="100" step="5" value="70" title="Percentuale di domande mai viste">
+            <b class="mini mix-val" id="mix-val-n">70%</b></div>
+          <div class="mix-riga"><span class="mini mix-nome">❌ Sbagliate</span>
+            <input type="range" id="mix-ko" min="0" max="100" step="5" value="30" title="Percentuale di domande sbagliate da recuperare">
+            <b class="mini mix-val rosso" id="mix-val-k">30%</b></div>
+          <div class="mix-riga"><span class="mini mix-nome">✅ Già indovinate <span title="Domande superate, riproposte per consolidarle: tornano disponibili dopo almeno 5 test da quando le hai risposte">ⓘ</span></span>
+            <span class="mini spazio"></span>
+            <b class="mini mix-val verde" id="mix-val-v">0%</b></div>
+          <span class="nascosto" id="mix-label"></span>
         </div>
         <button class="btn-p" id="btn-avvia">▶ Avvia test (60 domande)</button>
         <button class="btn-s" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+6+6+5), 85 minuti di tempo, correzione solo alla fine, soglia 80%">🎓 Simulazione esame</button>
@@ -806,14 +819,14 @@ function proponibile(r){
 
 // ---------- home ----------
 function statiPool(pool){
-  let ok=0, ko=0, nuove=0, koEleg=0;
+  let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0;
   pool.forEach(q => {
     const r = stato.risultati[q.n];
     if(!r) nuove++;
-    else if(r.s==='ok') ok++;
+    else if(r.s==='ok'){ ok++; if(vintaProponibile(r)) okEleg++; }
     else { ko++; if(proponibile(r)) koEleg++; }
   });
-  return {ok, ko, nuove, koEleg, tot: pool.length};
+  return {ok, ko, nuove, koEleg, okEleg, tot: pool.length};
 }
 
 function renderHome(){
@@ -867,7 +880,6 @@ function renderHome(){
   renderObiettivo();
   renderTematiche();
   $('chk-autosave').checked = stato.autosave !== false;
-  $('mix-nuove').value = mixNuove();
   aggiornaMixLabel();
 
   const sg = statiPool(QUESTIONS);
@@ -998,16 +1010,25 @@ function mixNuove(){
   const m = stato.mixNuove;
   return (typeof m === 'number' && m >= 0 && m <= 100) ? m : 70;
 }
+function mixKo(){
+  let k = stato.mixKo;
+  if(typeof k !== 'number' || k < 0 || k > 100) k = 100 - mixNuove();
+  return Math.min(k, 100 - mixNuove());
+}
+function mixVinte(){ return 100 - mixNuove() - mixKo(); }
+// una domanda già indovinata torna proponibile dopo almeno 5 test da quando l'hai risposta
+function vintaProponibile(r){ return (stato.nTest || 0) - (r.u || 0) >= 5; }
 
 function composizione(s, soloErr){
-  // regola: quota configurabile (default ~70% nuove + ~30% ripasso); se una scorta non basta, l'altra riempie
-  // nei test standard contano solo le sbagliate "proponibili" (ripasso distanziato); "solo errori" le usa tutte
-  if(soloErr) return {nRip: Math.min(N_TEST, s.ko), nNew: 0};
-  const quota = mixNuove();
-  let nRip = Math.min(s.koEleg, Math.round(N_TEST * (100 - quota) / 100));
-  let nNew = Math.min(s.nuove, N_TEST - nRip);
-  nRip = Math.min(s.koEleg, N_TEST - nNew);
-  return {nRip, nNew};
+  // tre quote configurabili: nuove + sbagliate + già indovinate (dopo >=5 test); i buchi si riempiono
+  // in ordine nuove -> sbagliate -> vinte. "Solo errori" usa tutte le sbagliate.
+  if(soloErr) return {nRip: Math.min(N_TEST, s.ko), nNew: 0, nVin: 0};
+  let nVin = Math.min(s.okEleg || 0, Math.round(N_TEST * mixVinte() / 100));
+  let nRip = Math.min(s.koEleg, Math.round(N_TEST * mixKo() / 100));
+  let nNew = Math.min(s.nuove, N_TEST - nRip - nVin);
+  nRip = Math.min(s.koEleg, N_TEST - nNew - nVin);
+  nVin = Math.min(s.okEleg || 0, N_TEST - nNew - nRip);
+  return {nRip, nNew, nVin};
 }
 
 function aggiornaNota(){
@@ -1015,7 +1036,7 @@ function aggiornaNota(){
   const pool = QUESTIONS.filter(q => nelPool(q, sel));
   const s = statiPool(pool);
   const soloErr = $('chk-solo-errori').checked;
-  const disponibili = soloErr ? s.ko : s.koEleg + s.nuove;
+  const disponibili = soloErr ? s.ko : s.koEleg + s.nuove + (s.okEleg || 0);
   $('btn-avvia').disabled = disponibili === 0;
   if(pool.length === 0){ $('nota-pool').textContent = 'Seleziona almeno un argomento.'; return; }
   if(disponibili === 0){
@@ -1029,12 +1050,14 @@ function aggiornaNota(){
   }
   const c = composizione(s, soloErr);
   $('mix-nuove').disabled = soloErr;
+  $('mix-ko').disabled = soloErr;
   const inPausa = s.ko - s.koEleg;
   const notaSa = (sel.includes(MAT) && SOTTO.SA.length && saAttiviN() < SOTTO.SA.length)
     ? ` Matematica limitata a ${saAttiviN()} sottoargomenti su ${SOTTO.SA.length}.` : '';
   $('nota-pool').textContent = (soloErr
     ? `Prossimo test: ${c.nRip} domande, tutte dal ripasso (${s.ko} da recuperare in questi argomenti).`
-    : `Prossimo test: ${c.nRip + c.nNew} domande — ${c.nNew} nuove (~${mixNuove()}%, estratte a caso e bilanciate tra gli argomenti scelti) + ${c.nRip} da ripassare (~${100 - mixNuove()}%).`
+    : `Prossimo test: ${c.nRip + c.nNew + (c.nVin || 0)} domande — ${c.nNew} nuove + ${c.nRip} sbagliate` +
+      ((c.nVin || mixVinte()) ? ` + ${c.nVin || 0} già indovinate` : '') + '.'
       + (inPausa ? ` ${inPausa} sbagliate sono in pausa: torneranno dopo qualche altro test (ripasso distanziato ogni 4-5 test).` : '')) + notaSa;
 }
 
@@ -1223,6 +1246,10 @@ function avviaTest(){
   if(c.nNew){
     domande.push(...selezionaNuoveBilanciate(pool.filter(q => !stato.risultati[q.n]), c.nNew, sel));
   }
+  if(c.nVin){
+    const vinte = shuffle(pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && vintaProponibile(r); }));
+    domande.push(...vinte.slice(0, c.nVin));
+  }
   shuffle(domande);
   let tag = sel.length === ARGOMENTI.length ? 'Tutti' : sel.map(a => a.split(' ')[0] + ' ' + (a.split(' ')[1]||'')).join(', ');
   if(sel.includes(MAT) && SOTTO.SA.length && saAttiviN() < SOTTO.SA.length){
@@ -1302,8 +1329,10 @@ function renderDomanda(){
   $('q-arg').textContent = q.t;
   const rq = stato.risultati[q.n];
   const inRipasso = rq && rq.s === 'ko' && !test.sim;
-  $('q-rip').classList.toggle('nascosto', !inRipasso);
+  const vintaRip = !inRipasso && rq && rq.s === 'ok' && !test.sim;
+  $('q-rip').classList.toggle('nascosto', !inRipasso && !vintaRip);
   if(inRipasso) $('q-rip').textContent = `RIPASSO — sbagliata ${rq.e === 1 ? 'una volta' : rq.e + ' volte'} · ${2-rq.c === 1 ? 'manca 1 risposta esatta' : 'mancano 2 risposte esatte'} per superarla`;
+  else if(vintaRip) $('q-rip').textContent = 'CONSOLIDAMENTO — già indovinata in passato';
   $('q-testo').textContent = q.n + '. ' + q.q;
   $('q-feedback').classList.add('nascosto');
   $('q-spiega').classList.add('nascosto');
@@ -1392,17 +1421,18 @@ function fineTest(){
   if(risposte.length) stato.nTest = (stato.nTest || 0) + 1;
   giuste.forEach(q => {
     const r = stato.risultati[q.n];
-    if(!r){ stato.risultati[q.n] = {s:'ok', c:1, e:0}; }
+    if(!r){ stato.risultati[q.n] = {s:'ok', c:1, e:0, u: stato.nTest}; }
     else {
       r.c++;
+      r.u = stato.nTest;
       if(r.e === 0 || r.c >= 2){ r.s = 'ok'; delete r.t; delete r.d; }
       else { r.t = stato.nTest + intervalloRipasso(); }   // 1ª giusta dopo un errore: riconferma tra 4-5 test
     }
   });
   errori.forEach(q => {
     const r = stato.risultati[q.n];
-    if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, t: stato.nTest + intervalloRipasso()}; }
-    else { r.e++; r.c = 0; r.s = 'ko'; r.t = stato.nTest + intervalloRipasso(); delete r.d; }   // sbagliata: torna tra 4-5 test
+    if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, u: stato.nTest, t: stato.nTest + intervalloRipasso()}; }
+    else { r.e++; r.c = 0; r.s = 'ko'; r.u = stato.nTest; r.t = stato.nTest + intervalloRipasso(); delete r.d; }   // sbagliata: torna tra 4-5 test
   });
   if(risposte.length){
     stato.storico.push({ data: new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
@@ -1846,11 +1876,22 @@ $('chk-solo-errori').onchange = aggiornaNota;
 $('chk-autosave').onchange = () => { stato.autosave = $('chk-autosave').checked; salvaLocale(); };
 $('amore-chiudi').onclick = () => $('velo-amore').classList.add('nascosto');
 function aggiornaMixLabel(){
-  const m = mixNuove();
-  $('mix-label').innerHTML = `<b>${m}%</b> nuove · <b class="rosso">${100 - m}%</b> sbagliate`;
+  $('mix-nuove').value = mixNuove();
+  $('mix-ko').value = mixKo();
+  $('mix-val-n').textContent = mixNuove() + '%';
+  $('mix-val-k').textContent = mixKo() + '%';
+  $('mix-val-v').textContent = mixVinte() + '%';
+  $('mix-label').innerHTML = `<b>${mixNuove()}%</b> nuove · <b class="rosso">${mixKo()}%</b> sbagliate · <b>${mixVinte()}%</b> vinte`;
 }
 $('mix-nuove').oninput = () => {
   stato.mixNuove = +$('mix-nuove').value;
+  if(stato.mixKo > 100 - stato.mixNuove) stato.mixKo = 100 - stato.mixNuove;
+  aggiornaMixLabel();
+  aggiornaNota();
+  salvaLocale();
+};
+$('mix-ko').oninput = () => {
+  stato.mixKo = Math.min(+$('mix-ko').value, 100 - mixNuove());
   aggiornaMixLabel();
   aggiornaNota();
   salvaLocale();
