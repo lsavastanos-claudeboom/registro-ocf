@@ -1,0 +1,17 @@
+{
+  "name": "Registro OCF — Simulatore quiz",
+  "short_name": "Registro OCF",
+  "description": "Simulatore della prova valutativa OCF sulla banca dati ufficiale 2026",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1C2B3A",
+  "theme_color": "#1C2B3A",
+  "lang": "it",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Registro OCF — Simulatore quiz</title>
+<meta name="description" content="Simulatore della prova valutativa OCF sulla banca dati ufficiale 2026.">
+<meta name="theme-color" content="#1C2B3A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Registro OCF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============ REGISTRO OCF — identità "libro mastro" ============ */
+/* Palette: inchiostro, carta, lacca (riga del margine), vidimato (timbro), ottone, nebbia */
+:root{
+  --inchiostro:#1C2B3A; --inchiostro2:#2E4257;
+  --carta:#F3F1EA; --foglio:#FFFDF8;
+  --lacca:#B33A2B; --laccabg:#F9ECE8;
+  --vidimato:#276B4E; --vidibg:#E9F2EC;
+  --ottone:#9C7A2D; --ottonebg:#F7F0DD;
+  --nebbia:#6E7887; --bordo:#DFDBCF; --filo:#EAE7DD;
+  --blu:var(--inchiostro); --blu2:var(--inchiostro2); --azz:#E8ECEF;
+  --ok:var(--vidimato); --okbg:var(--vidibg);
+  --ko:var(--lacca); --kobg:var(--laccabg);
+  --grigio:var(--nebbia); --giallo:var(--ottone);
+  --safe-b:env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:'Source Sans 3', system-ui, -apple-system, sans-serif; background:var(--carta);
+     color:#22303E; line-height:1.5; font-size:16px; overscroll-behavior-y:none;}
+.wrap{max-width:860px; margin:0 auto; padding:10px 12px calc(84px + var(--safe-b));}
+button{font:inherit; cursor:pointer; border:none; border-radius:9px; padding:12px 18px; min-height:44px;}
+h2{font-family:'Bricolage Grotesque', 'Source Sans 3', sans-serif; font-size:1.06rem; font-weight:700;
+   color:var(--inchiostro); margin-bottom:10px; letter-spacing:.01em;}
+
+/* ---------- header: intestazione del registro ---------- */
+header.top{background:var(--inchiostro); color:var(--carta); padding:12px 16px calc(12px);
+           display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+           padding-top:max(12px, env(safe-area-inset-top));}
+header.top .marchio{display:flex; flex-direction:column; gap:1px; margin-right:auto;}
+header.top h1{font-family:'Bricolage Grotesque', sans-serif; font-size:1.12rem; font-weight:800;
+              letter-spacing:.02em; line-height:1.1;}
+header.top h1 .rosso{color:#E5A398;}
+header.top .sub{font-family:'IBM Plex Mono', monospace; font-size:.62rem; letter-spacing:.14em;
+                text-transform:uppercase; color:#9DB0C2;}
+.utente-box{display:flex; align-items:center; gap:10px; font-size:.78rem; color:#C8D3DD;}
+#sync-stato{display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono', monospace; font-size:.68rem;}
+#sync-stato.nascosto{display:none;}
+#sync-stato .sync-dot{width:8px; height:8px; border-radius:50%; background:#8fd19e; flex:none;
+                      box-shadow:0 0 0 3px rgba(143,209,158,.18);}
+#sync-stato.fuori .sync-dot{background:#e0b64f; box-shadow:0 0 0 3px rgba(224,182,79,.18);}
+#sync-stato.errore .sync-dot{background:#e57f71; box-shadow:0 0 0 3px rgba(229,127,113,.18);}
+#btn-esci{background:transparent; color:#C8D3DD; border:1px solid rgba(200,211,221,.4);
+          padding:5px 12px; min-height:0; font-size:.75rem; border-radius:7px;}
+#btn-esci:hover{background:rgba(255,255,255,.08);}
+
+/* ---------- card = foglio del registro con margine rosso ---------- */
+.card{background:var(--foglio); border:1px solid var(--bordo); border-radius:12px;
+      padding:18px 18px 18px 30px; margin-top:14px; position:relative;
+      box-shadow:0 1px 2px rgba(28,43,58,.06);}
+.card::before{content:''; position:absolute; left:17px; top:10px; bottom:10px; width:1.5px;
+              background:rgba(179,58,43,.45); border-radius:1px;}
+.card-prog{padding-left:18px;} .card-prog::before{display:none;}
+
+/* ---------- tab bar: in basso su mobile, riga su desktop ---------- */
+.tabs{position:fixed; left:0; right:0; bottom:0; z-index:40; display:flex; gap:0;
+      background:var(--foglio); border-top:1px solid var(--bordo);
+      padding:6px 6px calc(6px + var(--safe-b)); box-shadow:0 -3px 14px rgba(28,43,58,.10);}
+.tab{flex:1; background:transparent; color:var(--nebbia); font-weight:600; font-size:.66rem;
+     padding:7px 2px 5px; border-radius:9px; min-height:0; letter-spacing:.01em;
+     display:flex; flex-direction:column; align-items:center; gap:2px; line-height:1.15;}
+.tab .t-ico{font-size:1.2rem; line-height:1;}
+.tab.attiva{background:var(--inchiostro); color:var(--carta);}
+.tabs.nascosto{display:none;}
+@media (min-width:900px){
+  .wrap{padding-bottom:40px;}
+  .tabs{position:static; box-shadow:none; border:none; background:transparent; gap:8px;
+        margin-top:16px; padding:0;}
+  .tab{flex:0 0 auto; flex-direction:row; font-size:.88rem; gap:7px; padding:9px 20px;
+       background:#E9E6DC; color:#4E5866; border-radius:9px;}
+  .tab.attiva{background:var(--inchiostro); color:var(--carta);}
+}
+
+/* ---------- bottoni ---------- */
+.btn-p{background:var(--inchiostro); color:var(--carta); font-weight:700;}
+.btn-p:hover{background:var(--inchiostro2);}
+.btn-p:disabled{background:#AEB6BE; cursor:not-allowed;}
+.btn-s{background:var(--foglio); color:var(--inchiostro); border:1.5px solid var(--inchiostro);}
+.btn-s:hover{background:var(--azz);}
+.btn-danger{background:var(--foglio); color:var(--lacca); border:1.5px solid var(--lacca);}
+.btn-danger:hover{background:var(--laccabg);}
+.btn-pro{border-color:var(--ottone); color:var(--ottone);}
+.btn-pro:hover{background:var(--ottonebg);}
+
+/* ---------- righe argomenti ---------- */
+.riga-arg{display:flex; align-items:center; gap:10px; padding:11px 4px; border-bottom:1px solid var(--filo); flex-wrap:wrap;}
+.riga-arg:last-child{border-bottom:none;}
+.riga-arg label{flex:1 1 240px; display:flex; gap:10px; align-items:center; cursor:pointer; font-size:.95rem; font-weight:600; color:#2A3948;}
+.riga-arg input, .toggle input{width:19px; height:19px; accent-color:var(--inchiostro); flex:none;}
+.sa-det{flex-basis:100%; margin:2px 0 4px 26px; font-size:.88rem;}
+.sa-det summary{cursor:pointer; color:var(--lacca); font-weight:700; padding:6px 0; font-size:.82rem;
+                font-family:'IBM Plex Mono', monospace; letter-spacing:.03em; list-style-position:inside;}
+.sa-azioni{margin:4px 0 2px; font-size:.82rem;}
+.sa-azioni a{color:var(--inchiostro2); font-weight:600;}
+.sa-riga{display:flex; gap:8px; align-items:baseline; padding:6px 0 6px 4px; border-bottom:1px dashed var(--filo); cursor:pointer; flex-wrap:wrap;}
+.sa-riga:hover{background:#F6F3EB;}
+.sa-riga input{width:16px; height:16px; accent-color:var(--inchiostro); flex:none; position:relative; top:2px;}
+.sa-riga .sa-nome{flex:1 1 220px; min-width:180px; font-weight:600; font-size:.86rem;}
+.sa-riga .mini{font-size:.72rem;}
+.mini{font-size:.76rem; color:var(--nebbia); white-space:nowrap; font-family:'IBM Plex Mono', monospace; letter-spacing:-.01em;}
+.mini b.ko{color:var(--lacca);} .mini b.ok{color:var(--vidimato);}
+.barra{height:6px; background:#E9E6DC; border-radius:3px; overflow:hidden; flex:1 1 100%;}
+.barra > div{height:100%; display:flex;}
+.barra .segok{background:var(--vidimato);} .barra .segko{background:var(--lacca);}
+.opzioni-avvio{display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-top:14px;}
+.toggle{display:flex; align-items:center; gap:8px; font-size:.9rem; cursor:pointer; min-height:32px;}
+.pill{display:inline-block; padding:3px 11px; border-radius:4px; font-size:.68rem; font-weight:600;
+      letter-spacing:.06em; font-family:'IBM Plex Mono', monospace; text-transform:uppercase;}
+.pill-arg{background:var(--azz); color:var(--inchiostro);}
+.pill-rip{background:var(--ottonebg); color:var(--ottone);}
+.arg-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
+.arg-head h2{margin-bottom:0; margin-right:auto;}
+.mix-box{display:flex; align-items:center; gap:8px; background:#F4F1E8; border:1px solid var(--bordo); border-radius:9px; padding:8px 12px; flex-wrap:wrap;}
+.mix-box input[type=range]{width:130px; accent-color:var(--inchiostro); cursor:pointer; height:28px;}
+.mix-box input[type=range]:disabled{opacity:.4; cursor:not-allowed;}
+.mix-box .mini b{color:var(--inchiostro);}
+#mix-label b:last-child, #mix-label b.rosso{color:var(--lacca);}
+
+/* ---------- quiz: la scheda-domanda ---------- */
+.qbar{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:.78rem;
+      color:var(--nebbia); flex-wrap:wrap; font-family:'IBM Plex Mono', monospace;}
+.qprog{flex:1 1 100%; height:7px; background:#E9E6DC; border-radius:3px; overflow:hidden;}
+.qprog > div{height:100%; background:var(--inchiostro); transition:width .25s;}
+.domanda{font-size:1.06rem; font-weight:600; margin:16px 0 14px; color:#16222E; line-height:1.45;}
+.opt{display:flex; gap:12px; align-items:flex-start; width:100%; text-align:left; background:var(--foglio);
+     border:1.5px solid var(--bordo); border-radius:10px; padding:13px 14px; margin-bottom:9px; font-size:.95rem;
+     line-height:1.4; transition:border-color .12s, background .12s;}
+@media (hover:hover){ .opt:hover{border-color:var(--inchiostro2); background:#F6F3EB;} }
+.opt .lett{font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--lacca); min-width:20px;}
+.opt.sel{border-color:var(--inchiostro); background:var(--azz); box-shadow:inset 3px 0 0 var(--inchiostro);}
+.opt.giusta{border-color:var(--vidimato); background:var(--vidibg);}
+.opt.giusta .lett{color:var(--vidimato);}
+.opt.sbagliata{border-color:var(--lacca); background:var(--laccabg);}
+.opt:disabled{cursor:default; opacity:1; color:inherit;}
+.feedback{margin:6px 0 12px; font-weight:700; font-size:.95rem;}
+.feedback.ok{color:var(--vidimato);} .feedback.ko{color:var(--lacca);}
+.spiega{background:#EFF3F6; border:1px solid #C9D6E0; border-left:4px solid var(--inchiostro2); border-radius:9px;
+        padding:11px 14px; margin:0 0 12px; font-size:.9rem; line-height:1.55;}
+.trucco{background:var(--ottonebg); border:1px solid #E2D3A8; border-left:4px solid var(--ottone); border-radius:9px;
+        padding:11px 14px; margin:0 0 12px; font-size:.9rem; line-height:1.55;}
+.spiega .sp-tag, .trucco .sp-tag{font-family:'IBM Plex Mono', monospace; font-size:.62rem; letter-spacing:.1em;
+        text-transform:uppercase; font-weight:600; color:var(--nebbia);}
+.azioni{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+.spazio{flex:1;}
+#q-timer.rosso{color:var(--lacca); font-weight:700;}
+kbd{background:#EDEAE0; border:1px solid var(--bordo); border-radius:4px; padding:0 5px;
+    font-size:.75rem; font-family:'IBM Plex Mono', monospace;}
+@media (hover:none){ .nota-tastiera{display:none;} }
+
+/* ---------- risultati: il timbro ---------- */
+.punteggio{font-family:'IBM Plex Mono', monospace; font-size:2.5rem; font-weight:600;
+           color:var(--inchiostro); text-align:center; letter-spacing:-.03em;}
+.esito{text-align:center; margin:10px auto 16px; font-weight:700; max-width:max-content;}
+.esito.ok, .esito.ko{font-family:'IBM Plex Mono', monospace; text-transform:uppercase; letter-spacing:.09em;
+      font-size:.88rem; padding:9px 18px; border:2.5px double currentColor; border-radius:6px;
+      transform:rotate(-2.5deg); animation:timbrata .28s cubic-bezier(.2,1.6,.4,1);}
+.esito.ok{color:var(--vidimato); background:rgba(39,107,78,.05);}
+.esito.ko{color:var(--lacca); background:rgba(179,58,43,.05);}
+@keyframes timbrata{0%{transform:rotate(-2.5deg) scale(1.7); opacity:0;} 100%{transform:rotate(-2.5deg) scale(1); opacity:1;}}
+@media (prefers-reduced-motion:reduce){ .esito.ok,.esito.ko{animation:none;} .amore-emoji{animation:none;} }
+table.riep{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:8px;}
+table.riep th{background:var(--inchiostro); color:var(--carta); padding:8px 9px; text-align:left; font-weight:600;
+              font-family:'IBM Plex Mono', monospace; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase;}
+table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
+.err-item{border:1px solid var(--bordo); border-left:4px solid var(--lacca); border-radius:9px;
+          padding:12px 14px; margin-bottom:10px; font-size:.9rem; background:var(--foglio);}
+.err-item .d{font-weight:600; margin:4px 0 6px;}
+.err-item .r{color:var(--vidimato); margin-top:4px;}
+.err-item .tua{color:var(--lacca);}
+.err-item.rip-sup{border-left-color:var(--vidimato);}
+.pill-ko{background:var(--laccabg); color:var(--lacca);}
+.pill-sup{background:var(--vidibg); color:var(--vidimato);}
+.pill-nuova{background:#EDEAE0; color:#4E5866;}
+.pill-pausa{background:var(--azz); color:var(--inchiostro);}
+
+/* ---------- varie ---------- */
+.nascosto{display:none;}
+.velo.nascosto{display:none;}
+.nota{font-size:.8rem; color:var(--nebbia); margin-top:12px;}
+.filejs{display:none;}
+.velo{position:fixed; inset:0; background:rgba(22,32,44,.5); display:flex; align-items:center;
+      justify-content:center; z-index:50; padding:16px;}
+.modale{background:var(--foglio); border-radius:14px; padding:22px; max-width:430px; width:96%;
+        box-shadow:0 12px 34px rgba(16,25,35,.3);}
+.modale p{margin-bottom:16px; font-size:.97rem;}
+.statline{display:flex; gap:18px; flex-wrap:wrap; margin-top:8px; font-size:.85rem;}
+.statline span b{font-size:1.05rem;}
+.vuoto{color:var(--nebbia); font-size:.85rem; margin-top:8px;}
+
+/* ---------- card progressi (copertina scura del libretto) ---------- */
+.card-prog{background:linear-gradient(150deg, #1A2836 0%, #2C4258 100%); border:none; color:#D4DCE4;}
+.card-prog h2{color:var(--carta);}
+.prog-testa{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
+.prog-pct{display:flex; align-items:center; gap:9px;}
+.prog-pct > span:first-child{font-family:'IBM Plex Mono', monospace; font-size:2.2rem; font-weight:600; color:#fff; line-height:1; letter-spacing:-.04em;}
+.prog-pct-lab{font-size:.66rem; color:#9DB0C2; line-height:1.3;}
+.sbar{display:flex; height:20px; border-radius:5px; overflow:hidden; background:#EDEAE0; margin-top:6px;}
+.sbar > div{height:100%; border-right:2px solid var(--foglio);}
+.sbar > div:last-child{border-right:none;}
+.sbar .s-sup{background:var(--vidimato); border-radius:5px 0 0 5px;}
+.sbar .s-rip{background:var(--lacca);}
+.sbar .s-nuo{background:var(--nebbia); opacity:.3;}
+.sbar-prog{background:rgba(255,255,255,.14); height:12px; border-radius:6px; margin-top:0;}
+.sbar-prog > div{border-right:2px solid #24384C;}
+.sbar-prog .s-sup{background:#7FC79A;}
+.sbar-prog .s-rip{background:#E89A8D;}
+.prog-chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+.chip{background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.14); border-radius:7px; padding:5px 12px;
+      font-size:.78rem; display:flex; gap:7px; align-items:center; color:#C8D3DD;}
+.chip b{color:#fff; font-family:'IBM Plex Mono', monospace;}
+.chip .dot{width:9px; height:9px; border-radius:50%; flex:none;}
+.card-prog .azioni button{border:none;}
+#btn-salva{background:var(--carta); color:var(--inchiostro); font-weight:700;}
+#btn-salva:hover{background:#E5E1D5;}
+#btn-carica{background:rgba(255,255,255,.12); color:#fff; border:1.5px solid rgba(255,255,255,.5);}
+#btn-carica:hover{background:rgba(255,255,255,.22);}
+#btn-reset{background:transparent; color:#EDB8AF; border:1.5px solid rgba(237,184,175,.5);}
+#btn-reset:hover{background:rgba(179,58,43,.3); color:#fff;}
+.toggle-chiaro{color:#C8D3DD; font-size:.85rem; flex-wrap:wrap;}
+.nota-chiara{color:#9DB0C2;}
+.mini-chiaro{color:#9DB0C2; font-size:.72rem; font-family:'IBM Plex Mono', monospace;}
+.divisore{border-top:1px solid rgba(255,255,255,.15); margin:16px 0 13px;}
+.sez-tit{font-weight:700; color:#fff; font-size:.95rem; margin-bottom:10px; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap;
+         font-family:'Bricolage Grotesque', sans-serif;}
+.card-prog .kpi2{box-shadow:0 2px 8px rgba(0,0,0,.25); border:none;}
+.card-prog .mini{color:#9DB0C2;}
+.card-prog .nota{color:#9DB0C2;}
+.ultimi-test{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px;}
+.ut-lab{font-size:.74rem; color:#9DB0C2;}
+.ut-pill{background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); border-radius:8px;
+         padding:5px 11px; font-size:.84rem; color:#D4DCE4; font-weight:700; display:flex; gap:6px; align-items:baseline;
+         font-family:'IBM Plex Mono', monospace;}
+.ut-pill .ut-score{font-weight:400; font-size:.68rem; color:#9DB0C2;}
+.ut-sup{background:rgba(127,199,154,.2); border-color:#7FC79A; color:#DDF2E4;}
+.ut-sup .ut-score{color:#AEDCBD;}
+
+/* ---------- kpi oggi/obiettivo ---------- */
+#card-oggi{background:linear-gradient(135deg, var(--foglio) 0%, #F2EFE5 100%);}
+#card-oggi h2{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+.oggi-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-top:6px;}
+.kpi2{background:var(--foglio); border:1px solid var(--bordo); border-radius:12px; padding:12px 13px;
+      display:flex; gap:11px; align-items:center; box-shadow:0 1px 4px rgba(28,43,58,.07);}
+.kpi2 .ico{width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.15rem; flex:none;}
+.ico-blu{background:var(--azz);} .ico-verde{background:var(--vidibg);} .ico-rosso{background:var(--laccabg);} .ico-giallo{background:var(--ottonebg);}
+.kpi2 .kv{font-family:'IBM Plex Mono', monospace; font-size:1.4rem; font-weight:600; color:#16222E; line-height:1.15; letter-spacing:-.03em;}
+.kpi2 .kl{font-size:.7rem; color:var(--nebbia);}
+.kpi2 .kd{font-size:.72rem; margin-top:1px; font-weight:600;}
+.kd.su{color:var(--vidimato);} .kd.giu{color:var(--lacca);} .kd.pari{color:var(--nebbia); font-weight:400;}
+
+/* ---------- dashboard ---------- */
+.viz-root{--surface-1:var(--foglio); --ink:#16222E; --ink2:#4E5866; --muted:#8A93A0; --grid:#E3E0D5;
+          --sup:#276B4E; --rip:#B33A2B; --nuo:#8A93A0;}
+.kpi-riga{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-top:4px;}
+.kpi{border:1px solid var(--bordo); border-radius:10px; padding:12px 14px; background:var(--foglio);}
+.kpi .k-lab{font-size:.7rem; color:var(--ink2); font-family:'IBM Plex Mono', monospace; letter-spacing:.04em; text-transform:uppercase;}
+.kpi .k-val{font-family:'IBM Plex Mono', monospace; font-size:1.65rem; font-weight:600; color:var(--ink); margin-top:2px; letter-spacing:-.03em;}
+.kpi .k-sub{font-size:.72rem; color:var(--muted); margin-top:2px;}
+.legenda{display:flex; gap:16px; flex-wrap:wrap; font-size:.76rem; color:var(--ink2); margin-top:10px;}
+.legenda span{display:flex; align-items:center; gap:6px;}
+.swatch{width:11px; height:11px; border-radius:3px; display:inline-block;}
+.arg-riga{margin-top:14px;}
+.arg-riga .a-testa{display:flex; justify-content:space-between; gap:10px; font-size:.85rem; flex-wrap:wrap;}
+.arg-riga .a-nome{font-weight:600; color:var(--ink);}
+.arg-riga .a-num{color:var(--ink2); font-size:.76rem; font-family:'IBM Plex Mono', monospace;}
+.grafico-box{position:relative; margin-top:10px;}
+.grafico-box svg{display:block; width:100%; height:auto;}
+.tip{position:absolute; pointer-events:none; background:var(--foglio); border:1px solid var(--bordo); border-radius:8px;
+     padding:7px 10px; font-size:.76rem; box-shadow:0 4px 12px rgba(0,0,0,.14); z-index:20; white-space:nowrap;
+     display:none; color:var(--ink);}
+.tip b{font-size:.82rem;}
+details.tab-dati{margin-top:10px; font-size:.8rem;}
+details.tab-dati summary{cursor:pointer; color:var(--inchiostro); font-weight:600;}
+
+/* ---------- cerca ---------- */
+.cerca-riga{display:flex; gap:10px; flex-wrap:wrap;}
+.cerca-riga input[type=search]{flex:1 1 260px; font:inherit; font-size:16px; padding:11px 14px;
+     border:1.5px solid var(--bordo); border-radius:10px; background:var(--foglio);}
+.cerca-riga input[type=search]:focus{outline:none; border-color:var(--inchiostro);}
+.cerca-riga select{font:inherit; font-size:16px; padding:11px 12px; border:1.5px solid var(--bordo);
+     border-radius:10px; background:var(--foglio); cursor:pointer;}
+mark{background:#F2DFA0; border-radius:3px; padding:0 1px;}
+.cerca-item{border:1px solid var(--bordo); border-left:4px solid var(--inchiostro); border-radius:9px;
+     padding:12px 14px; margin-bottom:10px; font-size:.9rem; background:var(--foglio);}
+.cerca-item .d{font-weight:600; margin:5px 0 6px;}
+.cerca-item .r{color:var(--vidimato); margin-top:3px;}
+
+/* ---------- ripasso ---------- */
+details.grp-arg{border:1px solid var(--bordo); border-radius:11px; margin-top:10px; background:var(--foglio); overflow:hidden;}
+details.grp-arg summary{cursor:pointer; padding:13px 14px; font-weight:700; color:var(--inchiostro); background:#F4F1E8; font-size:.95rem;}
+details.grp-arg summary .mini{font-weight:400; margin-left:8px;}
+details.grp-arg .corpo{padding:12px 14px;}
+
+/* ---------- dispensa ---------- */
+.disp-tit{font-family:'Bricolage Grotesque', sans-serif; font-weight:700; color:var(--inchiostro); font-size:1.02rem;
+          margin:18px 0 4px; text-transform:capitalize; border-bottom:2px solid var(--azz); padding-bottom:4px;}
+.disp-sub{font-size:.76rem; color:var(--nebbia); margin-bottom:10px; font-family:'IBM Plex Mono', monospace;}
+
+/* ---------- tematiche ---------- */
+.tem-arg{display:flex; align-items:center; gap:8px; font-weight:700; color:var(--inchiostro); font-size:.95rem; margin:18px 0 8px;
+         font-family:'Bricolage Grotesque', sans-serif;}
+.tem-arg::before{content:''; width:4px; height:18px; border-radius:2px; background:var(--lacca); display:inline-block;}
+.tem-arg .mini{font-weight:400;}
+.tem-grid{display:grid; grid-template-columns:1fr; gap:10px;}
+.tem-card{border:1px solid var(--bordo); border-radius:12px; padding:13px 15px; display:flex; flex-direction:column; gap:9px;
+          background:var(--foglio); transition:box-shadow .15s;}
+@media (hover:hover){ .tem-card:hover{box-shadow:0 5px 16px rgba(28,43,58,.13);} }
+.tem-testa{display:flex; align-items:center; gap:10px;}
+.tem-testa .btn-tem{margin-left:auto;}
+.tem-rank{width:27px; height:27px; border-radius:7px; display:flex; align-items:center; justify-content:center;
+          font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:.8rem; color:#fff; flex:none;}
+.tem-rank.r1{background:var(--lacca);} .tem-rank.r2{background:#C25E2E;} .tem-rank.r3{background:var(--ottone);} .tem-rank.rN{background:#9AA3B0;}
+.tem-kw2{font-weight:700; font-size:1.02rem; text-transform:capitalize; color:#16222E; flex:1; line-height:1.2;}
+.tem-badge{background:var(--laccabg); color:var(--lacca); border-radius:5px; padding:3px 10px; font-size:.68rem;
+           font-weight:600; white-space:nowrap; font-family:'IBM Plex Mono', monospace;}
+.tem-meter{height:7px; background:#EDEAE0; border-radius:4px; overflow:hidden;}
+.tem-meter > div{height:100%; background:var(--lacca); border-radius:0 4px 4px 0;}
+.tem-fondo{display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap;}
+.tem-note{font-size:.74rem; color:var(--nebbia); flex:1; min-width:150px;}
+.btn-tem{padding:8px 16px; font-size:.82rem; white-space:nowrap;}
+
+/* ---------- popup superamento ---------- */
+.modale-amore{text-align:center; border:3px solid #E8B0C2; background:linear-gradient(180deg, var(--foglio), #FBEFF3); max-width:460px;}
+.amore-emoji{font-size:2.6rem; animation:batticuore 1.1s ease-in-out infinite; margin-bottom:10px;}
+@keyframes batticuore{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+.modale-amore p{font-size:1.02rem; line-height:1.5;}
+.modale-amore .btn-p{background:#C2517A;}
+.modale-amore .btn-p:hover{background:#A63E64;}
+
+/* ---------- login ---------- */
+#velo-login{background:var(--inchiostro); align-items:flex-start; padding-top:12vh;}
+.modale-login{max-width:380px; padding:26px 24px;}
+.login-marchio{font-family:'Bricolage Grotesque', sans-serif; font-weight:800; font-size:1.5rem; color:var(--inchiostro); line-height:1.1;}
+.login-marchio .rosso{color:var(--lacca);}
+.login-sub{font-family:'IBM Plex Mono', monospace; font-size:.64rem; letter-spacing:.14em; text-transform:uppercase;
+           color:var(--nebbia); margin:4px 0 20px;}
+.campo{margin-bottom:12px;}
+.campo label{display:block; font-size:.78rem; font-weight:600; color:#4E5866; margin-bottom:4px;
+             font-family:'IBM Plex Mono', monospace; letter-spacing:.04em; text-transform:uppercase;}
+.campo input{width:100%; font:inherit; font-size:16px; padding:12px 14px; border:1.5px solid var(--bordo);
+             border-radius:10px; background:var(--foglio);}
+.campo input:focus{outline:none; border-color:var(--inchiostro);}
+#login-errore{color:var(--lacca); font-size:.85rem; margin:4px 0 8px; min-height:1.2em;}
+#btn-login{width:100%; margin-top:6px;}
+.login-nota{font-size:.76rem; color:var(--nebbia); margin-top:14px; line-height:1.5;}
+
+/* ---------- focus visibile ---------- */
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible{
+  outline:2.5px solid var(--ottone); outline-offset:2px;}
+
+@media print {
+  header.top, .tabs, .no-print, .velo { display:none !important; }
+  .card{border:none; box-shadow:none; padding:0;}
+  .card::before{display:none;}
+  body{background:#fff;}
+  .err-item{break-inside:avoid;}
+  .wrap{padding-bottom:0;}
+}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="marchio">
+    <h1>REGISTRO<span class="rosso">·</span>OCF</h1>
+    <div class="sub">Banca dati gennaio 2026 · 4.995 domande</div>
+  </div>
+  <div class="utente-box">
+    <span id="sync-stato" class="nascosto"><span class="sync-dot"></span><span id="sync-testo">sincronizzato</span></span>
+    <span id="utente-email"></span>
+    <button id="btn-esci" class="nascosto">Esci</button>
+  </div>
+</header>
+<div class="wrap">
+
+  <div class="tabs" id="barra-tab">
+    <button class="tab attiva" id="tab-allenamento"><span class="t-ico">✏️</span><span>Allenati</span></button>
+    <button class="tab" id="tab-dashboard"><span class="t-ico">📊</span><span>Quadro</span></button>
+    <button class="tab" id="tab-ripasso"><span class="t-ico">📖</span><span>Ripasso</span></button>
+    <button class="tab" id="tab-cerca"><span class="t-ico">🔍</span><span>Cerca</span></button>
+    <button class="tab" id="tab-dispensa"><span class="t-ico">📚</span><span>Dispensa</span></button>
+  </div>
+
+  <!-- ==================== HOME ==================== -->
+  <div id="vista-home">
+    <div class="card card-prog" id="card-progressi">
+      <div class="prog-testa">
+        <h2>💾 I tuoi progressi</h2>
+        <div class="prog-pct"><span id="prog-pct">0%</span><span class="prog-pct-lab">della banca dati<br>superata</span></div>
+      </div>
+      <div class="sbar sbar-prog" id="prog-bar"></div>
+      <div class="prog-chips" id="stat-globale"></div>
+      <div class="azioni" style="margin-top:16px">
+        <button id="btn-salva">💾 Salva progressi (file)</button>
+        <button id="btn-carica">📂 Carica progressi</button>
+        <span class="spazio"></span>
+        <button id="btn-reset">🗑 Azzera</button>
+      </div>
+      <input type="file" id="file-progressi" class="filejs" accept=".json,application/json">
+      <label class="toggle toggle-chiaro" style="margin-top:14px"><input type="checkbox" id="chk-autosave" checked> Scarica anche il file .json a fine test (copia di sicurezza) <span class="mini-chiaro" id="ultimo-salvataggio"></span></label>
+      <div class="ultimi-test" id="ultimi-test"></div>
+
+      <div class="divisore"></div>
+      <div class="sez-tit">📅 Oggi <span class="mini-chiaro" id="oggi-data"></span></div>
+      <div class="oggi-grid" id="kpi-oggi"></div>
+
+      <div class="divisore"></div>
+      <div class="sez-tit">🎯 Obiettivo: banca dati esaurita entro l'esame <span class="mini-chiaro" id="ob-countdown"></span></div>
+      <div class="oggi-grid" id="testo-obiettivo"></div>
+
+      <div class="nota nota-chiara" style="margin-top:14px">I progressi si salvano da soli anche nel browser: chiudi e riapri il file e ritrovi tutto, senza caricare niente. Il file .json scaricato a fine test resta come copia di sicurezza (o per passare a un altro computer, con <b>Carica progressi</b>).</div>
+    </div>
+
+    <div class="card">
+      <div class="arg-head">
+        <h2>📚 Argomenti</h2>
+        <div class="mix-box">
+          <span class="mini">Mix del test:</span>
+          <input type="range" id="mix-nuove" min="0" max="100" step="10" value="70" title="Trascina per cambiare la composizione del test">
+          <span class="mini" id="mix-label"><b>70%</b> nuove · <b>30%</b> sbagliate</span>
+        </div>
+        <button class="btn-p" id="btn-avvia">▶ Avvia test (60 domande)</button>
+        <button class="btn-s" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+6+6+5), 85 minuti di tempo, correzione solo alla fine, soglia 80%">🎓 Simulazione esame</button>
+        <button class="btn-s btn-pro" id="btn-pro" title="30 domande mirate al ritmo d'esame: errori ripetuti + tematiche deboli + argomento con precisione peggiore. Correzione alla fine.">🔥 Allenamento PRO</button>
+      </div>
+      <div id="lista-argomenti"></div>
+      <div class="opzioni-avvio">
+        <label class="toggle"><input type="checkbox" id="chk-esame"> Modalità esame (correzione solo alla fine)</label>
+        <label class="toggle"><input type="checkbox" id="chk-solo-errori"> 🔁 Solo domande sbagliate</label>
+      </div>
+      <div class="nota" id="nota-pool"></div>
+    </div>
+
+    <div class="card" id="card-tematiche">
+      <h2>🔥 Tematiche che sbagli di più</h2>
+      <div class="nota" style="margin-top:0">Classifica delle parole chiave ricorrenti nei tuoi errori, per argomento. Con <b>Allenati</b> fai un test su <b>tutte le domande della banca dati</b> che toccano quella tematica (prima le sbagliate, poi le nuove, infine quelle già superate).</div>
+      <div id="lista-tematiche"></div>
+    </div>
+
+    <div class="card" id="card-storico">
+      <h2>Storico test</h2>
+      <table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Punteggio</th></tr></thead><tbody></tbody></table>
+      <div class="nota" id="nota-storico"></div>
+    </div>
+  </div>
+
+  <!-- ==================== QUIZ ==================== -->
+  <div id="vista-quiz" class="nascosto">
+    <div class="card">
+      <div class="qbar">
+        <span id="q-contatore"></span>
+        <span id="q-timer">⏱ 00:00</span>
+        <span id="q-parziale"></span>
+        <div class="qprog"><div id="q-prog"></div></div>
+      </div>
+      <div style="margin-top:12px">
+        <span class="pill pill-arg" id="q-arg"></span>
+        <span class="pill pill-rip nascosto" id="q-rip">RIPASSO — sbagliata in un test precedente</span>
+      </div>
+      <div class="domanda" id="q-testo"></div>
+      <div id="q-opzioni"></div>
+      <div class="feedback nascosto" id="q-feedback"></div>
+      <div class="spiega nascosto" id="q-spiega"></div>
+      <div class="trucco nascosto" id="q-trucco"></div>
+      <div class="azioni">
+        <button class="btn-s" id="btn-abbandona">Termina ora</button>
+        <span class="spazio"></span>
+        <button class="btn-p" id="btn-prossima" disabled>Prossima →</button>
+      </div>
+      <div class="nota nota-tastiera">Scorciatoie: <kbd>1</kbd>–<kbd>4</kbd> o <kbd>A</kbd>–<kbd>D</kbd> per scegliere (puoi cambiare finché non confermi), <kbd>Invio</kbd> per confermare/proseguire.</div>
+    </div>
+  </div>
+
+  <!-- ==================== RISULTATI ==================== -->
+  <div id="vista-risultati" class="nascosto">
+    <div class="card">
+      <h2>Risultato del test</h2>
+      <div class="punteggio" id="r-punteggio"></div>
+      <div class="esito" id="r-esito"></div>
+      <table class="riep"><thead><tr><th>Argomento</th><th>Corrette</th><th>Sbagliate</th></tr></thead><tbody id="r-argomenti"></tbody></table>
+      <div class="nota nascosto" id="r-autosave">💾 Progressi scaricati automaticamente nel file .json (cartella download): è il tuo salvataggio aggiornato.</div>
+      <div class="azioni" style="margin-top:16px">
+        <button class="btn-p" id="btn-nuovo">Nuovo test</button>
+        <button class="btn-s" id="btn-home">Torna alla home</button>
+        <button class="btn-s nascosto" id="btn-vai-dispensa">📚 Dispensa matematica aggiornata</button>
+      </div>
+    </div>
+    <div class="card nascosto" id="card-disp-risultati">
+      <details id="det-disp">
+        <summary style="cursor:pointer; font-weight:700; color:var(--blu); font-size:1.02rem" id="det-disp-sum">📚 Consulta la dispensa di matematica</summary>
+        <div id="disp-corpo-risultati" style="margin-top:12px"></div>
+      </details>
+    </div>
+
+    <div class="card" id="card-errori">
+      <h2>Domande sbagliate — torneranno nei prossimi test (escono dopo 2 risposte esatte)</h2>
+      <div id="r-errori"></div>
+    </div>
+  </div>
+
+  <!-- ==================== RIPASSO ==================== -->
+  <div id="vista-ripasso" class="nascosto">
+    <div class="card">
+      <h2>Domande sbagliate almeno una volta — da rileggere prima dell'esame</h2>
+      <div class="nota" style="margin-top:0">Qui restano <b>tutte</b> le domande che hai sbagliato almeno una volta, anche dopo che le hai superate: ripassale prima dell'esame. Una domanda sbagliata esce dal giro dei test solo dopo <b>2 risposte esatte</b>.</div>
+      <label class="toggle" style="margin-top:12px"><input type="checkbox" id="chk-solo-aperte"> Mostra solo quelle ancora da superare</label>
+      <div id="lista-ripasso" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- ==================== DISPENSA MATEMATICA ==================== -->
+  <div id="vista-dispensa" class="nascosto">
+    <div class="card">
+      <div class="arg-head no-print">
+        <h2>📚 Dispensa di Matematica — costruita sui tuoi errori</h2>
+        <button class="btn-s" id="btn-stampa">🖨 Stampa / salva in PDF</button>
+      </div>
+      <div class="nota no-print" style="margin-top:0" id="disp-stato"></div>
+      <div id="disp-corpo"></div>
+    </div>
+  </div>
+
+  <!-- ==================== CERCA ==================== -->
+  <div id="vista-cerca" class="nascosto">
+    <div class="card">
+      <h2>🔍 Cerca nella banca dati</h2>
+      <div class="cerca-riga">
+        <input type="search" id="campo-cerca" placeholder="Cerca una parola o una frase tra le 4.995 domande… (es. OICR, usufrutto, market abuse)">
+        <select id="cerca-arg"><option value="">Tutti gli argomenti</option></select>
+      </div>
+      <div class="nota" id="cerca-conta"></div>
+      <div id="cerca-risultati" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD ==================== -->
+  <div id="vista-dashboard" class="nascosto viz-root">
+    <div class="card">
+      <h2>Quadro complessivo</h2>
+      <div class="kpi-riga" id="d-kpi"></div>
+      <div id="d-globale"></div>
+      <div class="legenda">
+        <span><span class="swatch" style="background:var(--sup)"></span> Superate</span>
+        <span><span class="swatch" style="background:var(--rip)"></span> Da ripassare</span>
+        <span><span class="swatch" style="background:var(--nuo); opacity:.32"></span> Non ancora viste</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Avanzamento per argomento</h2>
+      <div id="d-argomenti"></div>
+    </div>
+
+    <div class="card">
+      <h2>Attività per giornata</h2>
+      <div class="grafico-box" id="d-giorni"></div>
+      <div class="legenda" id="d-giorni-leg">
+        <span><span class="swatch" style="background:var(--sup)"></span> Risposte esatte</span>
+        <span><span class="swatch" style="background:var(--rip)"></span> Risposte sbagliate</span>
+      </div>
+      <details class="tab-dati" id="d-giorni-det">
+        <summary>Vedi i dati in tabella</summary>
+        <table class="riep" id="d-giorni-tab"><thead><tr><th>Giorno</th><th>Test</th><th>Risposte</th><th>Esatte</th><th>Sbagliate</th><th>Precisione</th></tr></thead><tbody></tbody></table>
+      </details>
+    </div>
+
+    <div class="card">
+      <h2>Andamento punteggio nei test</h2>
+      <div class="grafico-box" id="d-trend"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="velo-amore" class="velo nascosto">
+  <div class="modale modale-amore">
+    <div class="amore-emoji">💖🎉</div>
+    <p><b>Brava amore hai superato il test!!</b><br>Sei intelligente, brava, bellissima e io ti amo! Stai dando il meglio di te!</p>
+    <button class="btn-p" id="amore-chiudi">Grazie ❤️</button>
+  </div>
+</div>
+
+<div id="velo-conferma" class="velo nascosto">
+  <div class="modale">
+    <p id="conferma-testo"></p>
+    <div class="azioni">
+      <span class="spazio"></span>
+      <button class="btn-s" id="conferma-no">Annulla</button>
+      <button class="btn-p" id="conferma-si">Conferma</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="velo-login" class="velo nascosto">
+  <div class="modale modale-login">
+    <div class="login-marchio">REGISTRO<span class="rosso">·</span>OCF</div>
+    <div class="login-sub">Prova valutativa · banca dati 2026</div>
+    <div class="campo">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" autocomplete="username" inputmode="email" autocapitalize="none">
+    </div>
+    <div class="campo">
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" autocomplete="current-password">
+    </div>
+    <div id="login-errore"></div>
+    <button class="btn-p" id="btn-login">Apri il registro</button>
+    <div class="login-nota">I progressi si sincronizzano sul tuo account: puoi studiare dal telefono e riprendere dal computer. Gli account si creano dal pannello Supabase (vedi guida).</div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const QUESTIONS = window.OCF_DATA.QUESTIONS;
+const SPIEG = window.OCF_DATA.SPIEG || {};   // spiegazioni (solo Matematica ed economia finanziaria)
+const TRUCCHI = window.OCF_DATA.TRUCCHI || {};   // trucchi per scegliere tra le opzioni (solo Matematica)
+const N_TEST = 60;
+
+// ---------- stato ----------
+// risultati: num -> {s:'ok'|'ko', c: giuste consecutive dopo l'ultimo errore, e: errori totali}
+// s='ok' => archiviata (mai sbagliata e azzeccata, oppure sbagliata e poi superata 2 volte)
+let stato = {
+  risultati: {},
+  storico: [],     // {data, iso, argomenti, punti, tot}
+  giorni: {},      // 'YYYY-MM-DD' -> {test, ok, ko}
+  nTest: 0         // test completati (per il ripasso distanziato)
+};
+
+// ---------- salvataggio automatico nel browser ----------
+const CHIAVE_LOCALE = 'ocf_quiz_progressi_2026';
+function salvaLocale(){
+  try{
+    stato.salvatoAlle = new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    localStorage.setItem(CHIAVE_LOCALE, JSON.stringify(stato));
+    return true;
+  }catch(e){ return false; }  // storage pieno o non disponibile: si continua con il solo file
+}
+function caricaLocale(){
+  try{
+    const raw = localStorage.getItem(CHIAVE_LOCALE);
+    if(!raw) return false;
+    const s = JSON.parse(raw);
+    if(!s || typeof s.risultati !== 'object' || !Array.isArray(s.storico)) return false;
+    stato = normalizzaStato(s);
+    return true;
+  }catch(e){ return false; }
+}
+
+// compatibilità con i salvataggi delle versioni precedenti ('ok'/'ko' semplici)
+function normalizzaRisultati(ris){
+  Object.keys(ris).forEach(n => {
+    if(typeof ris[n] === 'string')
+      ris[n] = ris[n] === 'ok' ? {s:'ok', c:1, e:0} : {s:'ko', c:0, e:1};
+    else if(ris[n] && ris[n].d !== undefined) delete ris[n].d;   // vecchio schema a giorni: torna subito proponibile
+  });
+  return ris;
+}
+function normalizzaStato(s){
+  if(!s.giorni || typeof s.giorni !== 'object') s.giorni = {};
+  if(typeof s.nTest !== 'number') s.nTest = s.storico.length;
+  normalizzaRisultati(s.risultati);
+  return s;
+}
+let test = null;   // {domande:[], idx, risposte:{num:idxScelto}, esame:bool, inizio}
+let timerInt = null;
+
+const ARGOMENTI = [...new Set(QUESTIONS.map(q => q.t))];
+const byNum = {}; QUESTIONS.forEach(q => byNum[q.n] = q);
+// sottoargomenti ufficiali OCF per la matematica
+const MAT = 'Matematica ed economia finanziaria';
+const SOTTO = window.OCF_DATA.SOTTO || {SA: [], map: {}};
+let saStato = SOTTO.SA.map(() => true);   // true = sottoargomento attivo
+let saAperto = false;
+const $ = id => document.getElementById(id);
+
+// ---------- utilità ----------
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function fmtT(s){ const m=Math.floor(s/60), ss=s%60; return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0'); }
+
+function conferma(testo, cb){
+  $('conferma-testo').textContent = testo;
+  $('velo-conferma').classList.remove('nascosto');
+  $('conferma-si').onclick = () => { $('velo-conferma').classList.add('nascosto'); cb(); };
+  $('conferma-no').onclick = () => $('velo-conferma').classList.add('nascosto');
+}
+
+function mostra(vista){
+  ['vista-home','vista-quiz','vista-risultati','vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa'].forEach(v => $(v).classList.add('nascosto'));
+  $(vista).classList.remove('nascosto');
+  $('barra-tab').classList.toggle('nascosto', vista === 'vista-quiz');
+  $('tab-allenamento').classList.toggle('attiva', !['vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa'].includes(vista));
+  $('tab-dashboard').classList.toggle('attiva', vista === 'vista-dashboard');
+  $('tab-ripasso').classList.toggle('attiva', vista === 'vista-ripasso');
+  $('tab-cerca').classList.toggle('attiva', vista === 'vista-cerca');
+  $('tab-dispensa').classList.toggle('attiva', vista === 'vista-dispensa');
+  window.scrollTo(0,0);
+}
+
+function oggiISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function oggiPiuISO(n){
+  const d = new Date(); d.setDate(d.getDate() + n);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+// ripasso distanziato: una sbagliata torna proponibile dopo 4-5 test completati (r.t = n° di test da raggiungere)
+function intervalloRipasso(){ return 4 + Math.floor(Math.random() * 2); }   // 4 o 5
+function proponibile(r){
+  return !r.t || (stato.nTest || 0) >= r.t;
+}
+
+// ---------- home ----------
+function statiPool(pool){
+  let ok=0, ko=0, nuove=0, koEleg=0;
+  pool.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r) nuove++;
+    else if(r.s==='ok') ok++;
+    else { ko++; if(proponibile(r)) koEleg++; }
+  });
+  return {ok, ko, nuove, koEleg, tot: pool.length};
+}
+
+function renderHome(){
+  const cont = $('lista-argomenti');
+  cont.innerHTML = '';
+  ARGOMENTI.forEach((arg, i) => {
+    const pool = QUESTIONS.filter(q => q.t === arg);
+    const s = statiPool(pool);
+    const div = document.createElement('div');
+    div.className = 'riga-arg';
+    div.innerHTML = `
+      <label><input type="checkbox" class="chk-arg" data-arg="${i}" checked> ${arg}</label>
+      <span class="mini">${s.tot} domande · <b class="ok">${s.ok} superate</b> · <b class="ko">${s.ko} da ripassare</b> · ${s.nuove} nuove</span>
+      <div class="barra"><div style="width:100%">
+        <div class="segok" style="width:${100*s.ok/s.tot}%"></div>
+        <div class="segko" style="width:${100*s.ko/s.tot}%"></div>
+      </div></div>`;
+    if(arg === MAT && SOTTO.SA.length){
+      const det = document.createElement('details');
+      det.className = 'sa-det';
+      det.open = saAperto;
+      det.innerHTML = `<summary>📂 Sottoargomenti (programma OCF) — scegli su cosa allenarti</summary>
+        <div class="sa-azioni"><a href="#" id="sa-tutti">seleziona tutti</a> · <a href="#" id="sa-nessuno">nessuno</a></div>` +
+        SOTTO.SA.map((nome, j) => {
+          const p = pool.filter(q => SOTTO.map[q.n] === j);
+          const ss = statiPool(p);
+          return `<label class="sa-riga"><input type="checkbox" class="chk-sa" data-sa="${j}" ${saStato[j] ? 'checked' : ''}>
+            <span class="sa-nome">${nome}</span>
+            <span class="mini">${ss.tot} dom. · <b class="ok">${ss.ok}</b> sup. · <b class="ko">${ss.ko}</b> rip. · ${ss.nuove} nuove</span></label>`;
+        }).join('');
+      div.appendChild(det);
+    }
+    cont.appendChild(div);
+  });
+  cont.querySelectorAll('.chk-arg').forEach(c => c.onchange = aggiornaNota);
+  cont.querySelectorAll('.chk-sa').forEach(c => c.onchange = () => { saStato[+c.dataset.sa] = c.checked; aggiornaNota(); });
+  const detSa = cont.querySelector('.sa-det');
+  if(detSa){
+    detSa.addEventListener('toggle', () => { saAperto = detSa.open; });
+    $('sa-tutti').onclick = e => { e.preventDefault(); saStato = saStato.map(() => true); renderHome(); };
+    $('sa-nessuno').onclick = e => { e.preventDefault(); saStato = saStato.map(() => false); renderHome(); };
+  }
+  aggiornaNota();
+  renderOggi();
+  renderObiettivo();
+  renderTematiche();
+  $('chk-autosave').checked = stato.autosave !== false;
+  $('mix-nuove').value = mixNuove();
+  aggiornaMixLabel();
+
+  const sg = statiPool(QUESTIONS);
+  $('prog-pct').textContent = Math.floor(100*sg.ok/sg.tot) + '%';
+  $('prog-bar').innerHTML =
+    (sg.ok ? `<div class="s-sup" style="width:${100*sg.ok/sg.tot}%" title="Superate: ${sg.ok}"></div>` : '') +
+    (sg.ko ? `<div class="s-rip" style="width:${100*sg.ko/sg.tot}%" title="Da ripassare: ${sg.ko}"></div>` : '');
+  $('stat-globale').innerHTML = `
+    <span class="chip"><span class="dot" style="background:#86b6ef"></span><span>Superate: <b>${sg.ok}</b></span></span>
+    <span class="chip"><span class="dot" style="background:#f0908f"></span><span>Da ripassare: <b>${sg.ko}</b></span></span>
+    <span class="chip"><span class="dot" style="background:rgba(255,255,255,.45)"></span><span>Mai viste: <b>${sg.nuove}</b></span></span>
+    <span class="chip"><span>🧾 Test svolti: <b>${stato.storico.length}</b></span></span>
+    <span class="chip"><span>📚 Totale: <b>${sg.tot}</b></span></span>`;
+  const ult = stato.storico.slice(-5);
+  $('ultimi-test').innerHTML = !ult.length ? '' :
+    '<span class="ut-lab">Ultimi 5 test:</span>' + ult.map(h => {
+      const p = Math.round(100*h.punti/h.tot);
+      const sup = h.punti / h.tot >= 0.8;
+      return `<span class="ut-pill ${sup ? 'ut-sup' : ''}" title="${h.data} — ${h.argomenti}${sup ? ' — superato!' : ''}">${sup ? '🏆 ' : ''}${p}%<span class="ut-score">${h.punti}/${h.tot}</span></span>`;
+    }).join('') + '<span class="ut-lab">← più recente</span>';
+
+  const tb = $('tab-storico').querySelector('tbody');
+  tb.innerHTML = '';
+  stato.storico.slice(-15).reverse().forEach((h, i) => {
+    const tr = document.createElement('tr');
+    const pct = Math.round(100*h.punti/h.tot);
+    tr.innerHTML = `<td>${stato.storico.length - i}</td><td>${h.data}</td><td>${h.argomenti}</td><td><b>${h.punti}/${h.tot}</b> (${pct}%)</td>`;
+    tb.appendChild(tr);
+  });
+  $('nota-storico').textContent = stato.storico.length ? '' : 'Nessun test ancora svolto.';
+}
+
+function ieriISO(){
+  const d = new Date(); d.setDate(d.getDate()-1);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function deltaVsIeri(oggi, ieri, unita){
+  const d = oggi - ieri;
+  if(d > 0)  return `<div class="kd su">▲ +${d}${unita||''} vs ieri</div>`;
+  if(d < 0)  return `<div class="kd giu">▼ ${d}${unita||''} vs ieri</div>`;
+  return `<div class="kd pari">= come ieri</div>`;
+}
+
+const tile = (ico, cls, val, lab, delta) => `
+  <div class="kpi2"><div class="ico ${cls}">${ico}</div>
+    <div><div class="kv">${val}</div><div class="kl">${lab}</div>${delta}</div>
+  </div>`;
+
+function renderOggi(){
+  const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
+  const gi = stato.giorni[ieriISO()] || {test:0, ok:0, ko:0};
+  const risp = g.ok + g.ko, rispIeri = gi.ok + gi.ko;
+  const prec = risp ? Math.round(100*g.ok/risp) : null;
+  const precIeri = rispIeri ? Math.round(100*gi.ok/rispIeri) : null;
+  $('oggi-data').textContent = '— ' + new Date().toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
+  $('kpi-oggi').innerHTML =
+    tile('📝', 'ico-blu', g.test, 'test svolti oggi', deltaVsIeri(g.test, gi.test)) +
+    tile('💬', 'ico-giallo', risp, 'risposte date oggi', deltaVsIeri(risp, rispIeri)) +
+    tile('✔', 'ico-verde', g.ok, 'esatte oggi', `<div class="kd ${g.ko ? 'giu' : 'pari'}">✘ ${g.ko} sbagliate</div>`) +
+    tile('🎯', 'ico-rosso', prec === null ? '—' : prec + '%', 'precisione oggi',
+         (prec === null || precIeri === null) ? `<div class="kd pari">ieri: ${precIeri === null ? '—' : precIeri + '%'}</div>`
+                                              : deltaVsIeri(prec, precIeri, ' p.ti'));
+}
+
+const DATA_ESAME = '2026-07-22';   // ultimo giorno di test: mercoledì 22 luglio (esame giovedì 23)
+function giorniAllEsame(){
+  const ms = new Date(DATA_ESAME) - new Date(oggiISO());
+  return Math.max(1, Math.round(ms / 86400000) + 1);   // giorni di studio, oggi compreso
+}
+
+function targetOggi(mancanti){
+  const oggi = oggiISO();
+  if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)){
+    stato.piano = {giorno: oggi, target: Math.max(1, Math.ceil(mancanti / giorniAllEsame()))};
+    salvaLocale();
+  }
+  return stato.piano.target;
+}
+
+function renderObiettivo(){
+  let nuove = 0, recuperi = 0, daRip = 0;
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r) nuove++;
+    else if(r.s === 'ko'){ daRip++; recuperi += Math.max(1, 2 - r.c); }
+  });
+  const mancanti = nuove + recuperi;
+  const g = stato.giorni[oggiISO()];
+  const oggiFatte = g ? g.ok : 0;   // contano le risposte esatte: il traguardo è espresso in esatte
+  const el = $('testo-obiettivo');
+  const gg = giorniAllEsame();
+  const scad = new Date(DATA_ESAME).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
+  $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame! 🍀' : `— test fino a ${scad} (${gg === 1 ? 'ultimo giorno!' : gg + ' giorni di studio, oggi compreso'}) · esame giovedì 23 🍀`;
+  if(!mancanti){
+    el.innerHTML = '<div class="mini-chiaro">Banca dati esaurita 🎉 — nessuna domanda nuova né da recuperare.</div>';
+    return;
+  }
+  const alGiorno = targetOggi(mancanti);   // FISSO per tutta la giornata: si ricalcola solo domani sul residuo
+  const nTestGiorno = Math.max(1, Math.ceil(alGiorno / N_TEST));
+  const fmt = n => n.toLocaleString('it-IT');
+  el.innerHTML =
+    tile('🧮', 'ico-blu', fmt(mancanti), 'risposte esatte mancanti',
+         `<div class="kd pari">${fmt(nuove)} nuove + ${fmt(recuperi)} recuperi</div>`) +
+    tile('📈', 'ico-giallo', fmt(alGiorno), `obiettivo fisso di oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni al 22, oggi compreso'})`,
+         `<div class="kd pari">≈ ${nTestGiorno} test da ${N_TEST} · domani si ricalcola sul residuo</div>`) +
+    tile('🏁', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'esatte oggi / obiettivo del giorno',
+         oggiFatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>'
+                               : `<div class="kd pari">ne mancano ${fmt(alGiorno - oggiFatte)}</div>`);
+}
+
+function argomentiSelezionati(){
+  return [...document.querySelectorAll('.chk-arg:checked')].map(c => ARGOMENTI[+c.dataset.arg]);
+}
+
+// pool filtrato: argomenti selezionati + (per la matematica) sottoargomenti attivi
+function nelPool(q, sel){
+  if(!sel.includes(q.t)) return false;
+  if(q.t === MAT && SOTTO.SA.length){
+    const j = SOTTO.map[q.n];
+    if(j !== undefined && !saStato[j]) return false;
+  }
+  return true;
+}
+function saAttiviN(){ return saStato.filter(Boolean).length; }
+
+function mixNuove(){
+  const m = stato.mixNuove;
+  return (typeof m === 'number' && m >= 0 && m <= 100) ? m : 70;
+}
+
+function composizione(s, soloErr){
+  // regola: quota configurabile (default ~70% nuove + ~30% ripasso); se una scorta non basta, l'altra riempie
+  // nei test standard contano solo le sbagliate "proponibili" (ripasso distanziato); "solo errori" le usa tutte
+  if(soloErr) return {nRip: Math.min(N_TEST, s.ko), nNew: 0};
+  const quota = mixNuove();
+  let nRip = Math.min(s.koEleg, Math.round(N_TEST * (100 - quota) / 100));
+  let nNew = Math.min(s.nuove, N_TEST - nRip);
+  nRip = Math.min(s.koEleg, N_TEST - nNew);
+  return {nRip, nNew};
+}
+
+function aggiornaNota(){
+  const sel = argomentiSelezionati();
+  const pool = QUESTIONS.filter(q => nelPool(q, sel));
+  const s = statiPool(pool);
+  const soloErr = $('chk-solo-errori').checked;
+  const disponibili = soloErr ? s.ko : s.koEleg + s.nuove;
+  $('btn-avvia').disabled = disponibili === 0;
+  if(pool.length === 0){ $('nota-pool').textContent = 'Seleziona almeno un argomento.'; return; }
+  if(disponibili === 0){
+    const pausate = s.ko - s.koEleg;
+    $('nota-pool').textContent = soloErr
+      ? 'Nessuna domanda da ripassare in questi argomenti — togli la spunta "Solo domande sbagliate" per proseguire con le nuove.'
+      : (pausate > 0
+        ? `Al momento non ci sono domande disponibili: le ${pausate} sbagliate sono in pausa di ripasso distanziato. Usa "Solo domande sbagliate" per riprenderle subito.`
+        : 'Hai superato tutte le domande di questi argomenti! Azzera i progressi per ricominciare.');
+    return;
+  }
+  const c = composizione(s, soloErr);
+  $('mix-nuove').disabled = soloErr;
+  const inPausa = s.ko - s.koEleg;
+  const notaSa = (sel.includes(MAT) && SOTTO.SA.length && saAttiviN() < SOTTO.SA.length)
+    ? ` Matematica limitata a ${saAttiviN()} sottoargomenti su ${SOTTO.SA.length}.` : '';
+  $('nota-pool').textContent = (soloErr
+    ? `Prossimo test: ${c.nRip} domande, tutte dal ripasso (${s.ko} da recuperare in questi argomenti).`
+    : `Prossimo test: ${c.nRip + c.nNew} domande — ${c.nNew} nuove (~${mixNuove()}%, estratte a caso e bilanciate tra gli argomenti scelti) + ${c.nRip} da ripassare (~${100 - mixNuove()}%).`
+      + (inPausa ? ` ${inPausa} sbagliate sono in pausa: torneranno dopo qualche altro test (ripasso distanziato ogni 4-5 test).` : '')) + notaSa;
+}
+
+// ---------- similarità per parole chiave e tematiche (1-3 parole) ----------
+let IDX = null;
+const STOPWORDS = new Set(('della dello delle degli dell nella nello nelle negli nell sulla sullo sulle sugli sull ' +
+  'alla allo alle agli all come sono essere viene vengono stata stato state stati quale quali qualora ovvero ' +
+  'tale tali ogni presso senza dopo prima entro contro tra fra anche ancora sempre inoltre quindi cui una uno ' +
+  'seguenti seguente sensi tratta possono deve devono essa esso loro tutte tutti altro altra altre altri').split(' '));
+function sequenza(txt){
+  return (txt.toLowerCase().match(/[a-zàèéìíòóùú]{4,}/g) || []).filter(w => !STOPWORDS.has(w));
+}
+function ensureIndex(){
+  if(IDX) return IDX;
+  const df = {}, toks = {}, tset = {};
+  QUESTIONS.forEach(q => {
+    const seq = sequenza(q.q + ' ' + q.a[q.e]);
+    const terms = new Set(seq);
+    for(let i = 0; i < seq.length - 1; i++){
+      terms.add(seq[i] + ' ' + seq[i+1]);                              // tematiche di 2 parole
+      if(i < seq.length - 2) terms.add(seq[i] + ' ' + seq[i+1] + ' ' + seq[i+2]);  // e di 3 parole
+    }
+    const t = [...terms];
+    toks[q.n] = t;
+    tset[q.n] = terms;
+    t.forEach(w => df[w] = (df[w]||0) + 1);
+  });
+  const N = QUESTIONS.length, idf = {};
+  Object.keys(df).forEach(w => idf[w] = Math.log(N/df[w]));
+  IDX = {toks, idf, tset, df};
+  return IDX;
+}
+// ordina le domande nuove per affinità (parole chiave pesate) con gli errori commessi
+function ordinaPerAffinita(nuove){
+  const {toks, idf} = ensureIndex();
+  const profilo = {};
+  let nErr = 0;
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(r && r.e > 0){
+      nErr++;
+      toks[q.n].forEach(w => profilo[w] = (profilo[w]||0) + r.e * idf[w]);
+    }
+  });
+  if(!nErr) return shuffle(nuove.slice());
+  const scored = nuove.map(q => {
+    let sc = 0;
+    toks[q.n].forEach(w => { if(profilo[w]) sc += profilo[w] * idf[w]; });
+    return {q, sc: sc / Math.sqrt(toks[q.n].length || 1), rnd: Math.random()};
+  });
+  scored.sort((a,b) => b.sc - a.sc || a.rnd - b.rnd);
+  return scored.map(x => x.q);
+}
+
+// ---------- classifica tematiche ----------
+const SOGLIA_IDF = 2.5;   // esclude i termini presenti in più dell'8% circa della banca dati
+function classificaTematiche(){
+  const {toks, idf, tset} = ensureIndex();
+  const per = {};
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!(r && r.e > 0)) return;
+    per[q.t] = per[q.t] || {};
+    toks[q.n].forEach(w => {
+      if(idf[w] < SOGLIA_IDF) return;
+      const o = per[q.t][w] = per[q.t][w] || {score: 0, nErr: 0};
+      // bonus alle tematiche di 2-3 parole: sono più specifiche
+      const nParole = w.split(' ').length;
+      o.score += r.e * idf[w] * (1 + 0.4 * (nParole - 1));
+      o.nErr++;
+    });
+  });
+  const out = [];
+  ARGOMENTI.forEach(arg => {
+    const m = per[arg]; if(!m) return;
+    const cand = Object.entries(m)
+      .filter(([w, o]) => o.nErr >= 2)
+      .map(([w, o]) => ({w, ...o}))
+      .sort((a, b) => b.score - a.score || b.nErr - a.nErr);
+    // dedup: scarta le tematiche che condividono parole con una già scelta più in alto
+    const scelte = [];
+    for(const c of cand){
+      if(scelte.length >= 5) break;
+      const parole = new Set(c.w.split(' '));
+      if(scelte.some(s => s.w.split(' ').some(p => parole.has(p)))) continue;
+      scelte.push(c);
+    }
+    scelte.forEach(s => s.tot = QUESTIONS.filter(q => q.t === arg && tset[q.n].has(s.w)).length);
+    if(scelte.length) out.push({arg, righe: scelte});
+  });
+  return out;
+}
+
+function renderTematiche(){
+  const cont = $('lista-tematiche');
+  const cls = classificaTematiche();
+  if(!cls.length){
+    cont.innerHTML = '<div class="vuoto">La classifica si popola quando una stessa parola chiave ricorre in almeno 2 domande sbagliate: continua ad allenarti.</div>';
+    return;
+  }
+  cont.innerHTML = cls.map(({arg, righe}) => `
+    <div class="tem-arg">${arg} <span class="mini">— ${righe.length} tematiche</span></div>
+    <div class="tem-grid">
+    ${righe.map((r, i) => {
+      const pct = Math.min(100, Math.round(100 * r.nErr / r.tot));
+      return `
+      <div class="tem-card">
+        <div class="tem-testa">
+          <span class="tem-rank ${i < 3 ? 'r' + (i+1) : 'rN'}">${i+1}</span>
+          <span class="tem-kw2">${r.w}</span>
+          <span class="tem-badge">${r.nErr} ${r.nErr === 1 ? 'errore' : 'errori'}</span>
+          <button class="btn-p btn-tem" data-arg="${arg}" data-kw="${r.w}">Allenati (${r.tot})</button>
+        </div>
+        <div class="tem-meter" title="Hai sbagliato il ${pct}% delle domande del tema"><div style="width:${pct}%"></div></div>
+        <div class="tem-note">sbagliate ${r.nErr} delle ${r.tot} domande del tema in banca dati (${pct}%)</div>
+      </div>`;
+    }).join('')}
+    </div>`).join('');
+  cont.querySelectorAll('.btn-tem').forEach(b => b.onclick = () => avviaTestTematica(b.dataset.arg, b.dataset.kw));
+}
+
+// nuove bilanciate tra gli argomenti selezionati (quote proporzionali alle nuove rimanenti),
+// estratte CASUALMENTE dentro ciascun argomento (come le estrazioni d'esame)
+function selezionaNuoveBilanciate(nuove, n, argsSel){
+  const tot = nuove.length;
+  if(!tot) return [];
+  n = Math.min(n, tot);
+  // gruppi: un argomento = un gruppo; la matematica si spacchetta nei sottoargomenti OCF attivi
+  const chiave = q => (q.t === MAT && SOTTO.SA.length && SOTTO.map[q.n] !== undefined) ? MAT + '·' + SOTTO.map[q.n] : q.t;
+  const gruppi = {};
+  nuove.forEach(q => { const k = chiave(q); (gruppi[k] = gruppi[k] || []).push(q); });
+  const perArg = Object.keys(gruppi).map(k => ({a: k, dom: gruppi[k]}));
+  // metodo dei resti maggiori
+  perArg.forEach(x => { x.exact = n * x.dom.length / tot; x.quota = Math.floor(x.exact); });
+  let assegnate = perArg.reduce((s, x) => s + x.quota, 0);
+  perArg.sort((x, y) => (y.exact - y.quota) - (x.exact - x.quota));
+  let giri = 0;
+  for(let i = 0; assegnate < n && giri < 1000; i = (i + 1) % perArg.length, giri++){
+    if(perArg[i].quota < perArg[i].dom.length){ perArg[i].quota++; assegnate++; }
+  }
+  const out = [];
+  perArg.forEach(x => out.push(...shuffle(x.dom.slice()).slice(0, x.quota)));
+  return out;
+}
+
+// ---------- costruzione test ----------
+function lanciaTest(domande, tag, opts){
+  if(!domande.length) return;
+  opts = opts || {};
+  test = { domande, idx: 0, risposte: {}, esame: opts.esame !== undefined ? opts.esame : $('chk-esame').checked,
+           inizio: Date.now(), argomenti: tag, sim: !!opts.sim, scadenza: opts.scadenza || 0, conf: {} };
+  clearInterval(timerInt);
+  const aggTimer = () => {
+    const trascorsi = Math.floor((Date.now() - test.inizio) / 1000);
+    if(test.scadenza){
+      const resto = test.scadenza - trascorsi;
+      if(resto <= 0){ $('q-timer').textContent = '⏱ 00:00'; clearInterval(timerInt); fineTest(); return; }
+      $('q-timer').textContent = '⏳ ' + fmtT(resto);
+      $('q-timer').classList.toggle('rosso', resto < 300);
+    } else {
+      $('q-timer').textContent = '⏱ ' + fmtT(trascorsi);
+    }
+  };
+  timerInt = setInterval(aggTimer, 1000);
+  $('q-timer').classList.remove('rosso');
+  $('q-timer').textContent = test.scadenza ? '⏳ ' + fmtT(test.scadenza) : '⏱ 00:00';
+  mostra('vista-quiz');
+  renderDomanda();
+}
+
+function avviaTest(){
+  const sel = argomentiSelezionati();
+  const pool = QUESTIONS.filter(q => nelPool(q, sel));
+  const soloErr = $('chk-solo-errori').checked;
+  let ripasso;
+  if(soloErr){
+    // con "solo errori" ignora il distanziamento, ma metti prima le proponibili
+    ripasso = shuffle(pool.filter(q => stato.risultati[q.n] && stato.risultati[q.n].s === 'ko'));
+    ripasso.sort((a, b) => (proponibile(stato.risultati[a.n]) ? 0 : 1) - (proponibile(stato.risultati[b.n]) ? 0 : 1));
+  } else {
+    ripasso = shuffle(pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko' && proponibile(r); }));
+  }
+  const s = statiPool(pool);
+  const c = composizione(s, soloErr);
+  const domande = ripasso.slice(0, c.nRip);
+  if(c.nNew){
+    domande.push(...selezionaNuoveBilanciate(pool.filter(q => !stato.risultati[q.n]), c.nNew, sel));
+  }
+  shuffle(domande);
+  let tag = sel.length === ARGOMENTI.length ? 'Tutti' : sel.map(a => a.split(' ')[0] + ' ' + (a.split(' ')[1]||'')).join(', ');
+  if(sel.includes(MAT) && SOTTO.SA.length && saAttiviN() < SOTTO.SA.length){
+    const attivi = SOTTO.SA.filter((_, j) => saStato[j]);
+    tag += ' [mat: ' + (attivi.length <= 2 ? attivi.join(', ') : attivi.length + ' sottoarg.') + ']';
+  }
+  lanciaTest(domande, tag + (soloErr ? ' (solo errori)' : ''));
+}
+
+// ---------- simulazione esame (struttura reale prova OCF) ----------
+const STRUTTURA_ESAME = [
+  ['Diritto mercato finanziario', 24],
+  ['Matematica ed economia finanziaria', 19],
+  ['Diritto privato e commerciale', 6],
+  ['Diritto tributario', 6],
+  ['Diritto previdenziale e assicurativo', 5],
+];
+const MINUTI_ESAME = 85;
+
+function avviaSimulazione(){
+  const domande = [];
+  STRUTTURA_ESAME.forEach(([arg, n]) => {
+    domande.push(...shuffle(QUESTIONS.filter(q => q.t === arg)).slice(0, n));
+  });
+  shuffle(domande);
+  lanciaTest(domande, 'Simulazione esame', {esame: true, sim: true, scadenza: MINUTI_ESAME * 60});
+}
+
+// ---------- allenamento PRO ----------
+function avviaPro(){
+  ensureIndex();
+  const usate = new Set();
+  const prendi = (arr, n) => {
+    const sel = [];
+    for(const q of arr){ if(sel.length >= n) break; if(!usate.has(q.n)){ usate.add(q.n); sel.push(q); } }
+    return sel;
+  };
+  // 1) recidive: sbagliate 2+ volte (ignora la pausa di distanziamento)
+  const recidive = prendi(shuffle(QUESTIONS.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko' && r.e >= 2; })), 12);
+  // 2) nuove più affini alle tematiche che sbagli
+  const affini = prendi(ordinaPerAffinita(QUESTIONS.filter(q => !stato.risultati[q.n])), 12);
+  // 3) argomento più debole (precisione peggiore tra quelli con almeno 10 domande affrontate)
+  let peggiore = null, minPrec = 2;
+  ARGOMENTI.forEach(arg => {
+    const s = statiPool(QUESTIONS.filter(q => q.t === arg));
+    const viste = s.ok + s.ko;
+    if(viste >= 10 && s.ok/viste < minPrec){ minPrec = s.ok/viste; peggiore = arg; }
+  });
+  const pool3 = peggiore ? QUESTIONS.filter(q => q.t === peggiore && (!stato.risultati[q.n] || stato.risultati[q.n].s === 'ko'))
+                         : QUESTIONS.filter(q => !stato.risultati[q.n]);
+  const deboli = prendi(shuffle(pool3), 30 - recidive.length - affini.length);
+  const domande = [...recidive, ...affini, ...deboli];
+  // se ancora corte, riempi con qualsiasi domanda non superata
+  if(domande.length < 30) domande.push(...prendi(shuffle(QUESTIONS.filter(q => !stato.risultati[q.n] || stato.risultati[q.n].s === 'ko')), 30 - domande.length));
+  shuffle(domande);
+  if(!domande.length){ $('nota-pool').textContent = 'Allenamento PRO: non c\'è nulla da allenare — banca dati esaurita! 🎉'; return; }
+  // ritmo d'esame: 85 secondi a domanda, correzione solo alla fine
+  lanciaTest(domande, 'Allenamento PRO' + (peggiore ? ` (focus ${peggiore})` : ''), {esame: true, scadenza: domande.length * 85});
+}
+
+function avviaTestTematica(arg, kw){
+  const {tset} = ensureIndex();
+  const match = shuffle(QUESTIONS.filter(q => q.t === arg && tset[q.n].has(kw)));
+  // prima le sbagliate, poi le nuove, infine le già superate (sort stabile: entro il gruppo restano mescolate)
+  const rango = q => { const r = stato.risultati[q.n]; return !r ? 1 : (r.s === 'ko' ? 0 : 2); };
+  match.sort((a, b) => rango(a) - rango(b));
+  lanciaTest(match, `${arg} — tematica “${kw}”`);
+}
+
+function renderDomanda(){
+  const q = test.domande[test.idx];
+  $('q-contatore').textContent = `Domanda ${test.idx+1} di ${test.domande.length}`;
+  const risposteDate = Object.keys(test.risposte).length;
+  const giuste = Object.entries(test.risposte).filter(([n,i]) => byNum[n].e === i).length;
+  $('q-parziale').textContent = test.esame ? '' : `Parziale: ${giuste}/${risposteDate}`;
+  $('q-prog').style.width = (100*test.idx/test.domande.length) + '%';
+  $('q-arg').textContent = q.t;
+  const rq = stato.risultati[q.n];
+  const inRipasso = rq && rq.s === 'ko' && !test.sim;
+  $('q-rip').classList.toggle('nascosto', !inRipasso);
+  if(inRipasso) $('q-rip').textContent = `RIPASSO — sbagliata ${rq.e === 1 ? 'una volta' : rq.e + ' volte'} · ${2-rq.c === 1 ? 'manca 1 risposta esatta' : 'mancano 2 risposte esatte'} per superarla`;
+  $('q-testo').textContent = q.n + '. ' + q.q;
+  $('q-feedback').classList.add('nascosto');
+  $('q-spiega').classList.add('nascosto');
+  $('q-trucco').classList.add('nascosto');
+  $('btn-prossima').disabled = true;
+  $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
+  const cont = $('q-opzioni');
+  cont.innerHTML = '';
+  'ABCD'.split('').forEach((lett, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = `<span class="lett">${lett}</span><span>${q.a[i].replace(/</g,'&lt;')}</span>`;
+    b.onclick = () => rispondi(i);
+    cont.appendChild(b);
+  });
+}
+
+function labelAvanti(){
+  return test.idx === test.domande.length - 1 ? 'Chiudi il test ✓' : 'Prossima →';
+}
+
+// la risposta resta modificabile: si può ricliccare un'altra opzione finché non si conferma/avanza
+function rispondi(i){
+  const q = test.domande[test.idx];
+  if(test.conf[q.n]) return;   // già confermata (modalità con correzione): non più modificabile
+  test.risposte[q.n] = i;
+  const opts = [...$('q-opzioni').children];
+  opts.forEach((o, j) => o.classList.toggle('sel', j === i));
+  $('btn-prossima').disabled = false;
+  $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
+}
+
+function truccoHTML(n){
+  const t = TRUCCHI[n];
+  if(!t) return '';
+  return `🎯 <b>Il trucco:</b> ${t.replace(/</g,'&lt;')} <span class="sp-tag">· generato con AI, verifica sempre</span>`;
+}
+
+function spiegaHTML(n){
+  const t = SPIEG[n];
+  if(!t) return '';
+  return `💡 <b>Spiegazione:</b> ${t.replace(/</g,'&lt;')} <span class="sp-tag">· generata con AI, verifica sempre</span>`;
+}
+
+function confermaRisposta(){
+  const q = test.domande[test.idx];
+  const i = test.risposte[q.n];
+  test.conf[q.n] = true;
+  const opts = [...$('q-opzioni').children];
+  opts.forEach(o => { o.disabled = true; o.classList.remove('sel'); });
+  opts[q.e].classList.add('giusta');
+  const fb = $('q-feedback');
+  fb.classList.remove('nascosto','ok','ko');
+  if(i === q.e){ fb.classList.add('ok'); fb.textContent = '✔ Esatto!'; }
+  else {
+    opts[i].classList.add('sbagliata'); fb.classList.add('ko');
+    fb.textContent = '✘ Sbagliato — la risposta esatta è la ' + 'ABCD'[q.e] + '.';
+    if(SPIEG[q.n]){ $('q-spiega').innerHTML = spiegaHTML(q.n); $('q-spiega').classList.remove('nascosto'); }
+    if(TRUCCHI[q.n]){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
+  }
+  const giuste = Object.entries(test.risposte).filter(([n,x]) => byNum[n].e === x).length;
+  $('q-parziale').textContent = `Parziale: ${giuste}/${Object.keys(test.risposte).length}`;
+  $('btn-prossima').textContent = labelAvanti();
+  $('btn-prossima').focus();
+}
+
+function prossima(){
+  const q = test.domande[test.idx];
+  if(test.risposte[q.n] === undefined) return;
+  if(!test.esame && !test.conf[q.n]){ confermaRisposta(); return; }
+  if(test.idx < test.domande.length - 1){ test.idx++; renderDomanda(); }
+  else fineTest();
+}
+
+function fineTest(){
+  if(!test) return;   // già chiuso (es. countdown scaduto mentre era aperto un modale)
+  clearInterval(timerInt);
+  $('velo-conferma').classList.add('nascosto');
+  const risposte = test.domande.filter(q => test.risposte[q.n] !== undefined);
+  const errori = [], giuste = [];
+  risposte.forEach(q => (test.risposte[q.n] === q.e ? giuste : errori).push(q));
+  // aggiorna stato persistente:
+  // - domanda mai sbagliata + risposta giusta -> archiviata subito
+  // - domanda già sbagliata -> serve arrivare a 2 giuste dopo l'ultimo errore
+  // - risposta sbagliata -> azzera il conteggio giuste e torna/resta nel giro
+  if(risposte.length) stato.nTest = (stato.nTest || 0) + 1;
+  giuste.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r){ stato.risultati[q.n] = {s:'ok', c:1, e:0}; }
+    else {
+      r.c++;
+      if(r.e === 0 || r.c >= 2){ r.s = 'ok'; delete r.t; delete r.d; }
+      else { r.t = stato.nTest + intervalloRipasso(); }   // 1ª giusta dopo un errore: riconferma tra 4-5 test
+    }
+  });
+  errori.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, t: stato.nTest + intervalloRipasso()}; }
+    else { r.e++; r.c = 0; r.s = 'ko'; r.t = stato.nTest + intervalloRipasso(); delete r.d; }   // sbagliata: torna tra 4-5 test
+  });
+  if(risposte.length){
+    stato.storico.push({ data: new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
+                         iso: oggiISO(), argomenti: test.argomenti, punti: giuste.length, tot: test.sim ? test.domande.length : risposte.length });
+    const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
+    g.test++; g.ok += giuste.length; g.ko += errori.length;
+    stato.giorni[oggiISO()] = g;
+  }
+  if(risposte.length > 0) salvaLocale();
+  const autosalva = risposte.length > 0 && stato.autosave !== false;
+  if(autosalva) salvaProgressi();
+  $('r-autosave').classList.toggle('nascosto', !autosalva);
+  $('btn-vai-dispensa').classList.toggle('nascosto', !errori.some(q => q.t === ARG_MAT));
+  const nDisp = errateMatematica().length;
+  $('card-disp-risultati').classList.toggle('nascosto', nDisp === 0);
+  if(nDisp){
+    $('det-disp-sum').textContent = `📚 Consulta la dispensa di matematica — ${nDisp} domande, aggiornata a questo test`;
+    $('det-disp').open = false;
+    $('disp-corpo-risultati').innerHTML = '';
+  }
+  // render risultati
+  $('r-punteggio').textContent = test.sim ? `${giuste.length} / ${test.domande.length}` : `${giuste.length} / ${risposte.length}`;
+  const pct = risposte.length ? giuste.length/risposte.length : 0;
+  const el = $('r-esito');
+  el.className = 'esito ' + (pct >= 0.8 ? 'ok' : 'ko');
+  el.textContent = risposte.length === 0 ? 'Nessuna risposta data.' :
+    (pct >= 0.8 ? `Ottimo: ${Math.round(pct*100)}% di risposte esatte` : `${Math.round(pct*100)}% di risposte esatte — le ${errori.length} sbagliate torneranno nei prossimi test finché non le superi 2 volte`);
+  let superato = risposte.length > 0 && pct >= 0.8;
+  if(test.sim){
+    const sup = giuste.length >= 48;   // soglia reale: 80/100 ≈ 48 domande su 60
+    superato = sup;
+    el.className = 'esito ' + (sup ? 'ok' : 'ko');
+    el.textContent = `Simulazione esame: ${giuste.length}/60 — ${sup ? 'SUPERATA ✅ (soglia 80%)' : 'non superata (soglia: 48 esatte su 60)'}`
+      + (risposte.length < 60 ? ` · ${60 - risposte.length} domande senza risposta` : '');
+  }
+  if(superato) $('velo-amore').classList.remove('nascosto');
+  const perArg = {};
+  risposte.forEach(q => {
+    perArg[q.t] = perArg[q.t] || {ok:0, ko:0};
+    perArg[q.t][test.risposte[q.n] === q.e ? 'ok' : 'ko']++;
+  });
+  $('r-argomenti').innerHTML = Object.entries(perArg).map(([t,v]) =>
+    `<tr><td>${t}</td><td style="color:var(--ok)"><b>${v.ok}</b></td><td style="color:var(--ko)"><b>${v.ko}</b></td></tr>`).join('');
+  const ce = $('card-errori');
+  ce.classList.toggle('nascosto', errori.length === 0);
+  $('r-errori').innerHTML = errori.map(q => `
+    <div class="err-item">
+      <span class="pill pill-arg">${q.t}</span>
+      <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
+      <div class="tua">✘ La tua risposta: ${'ABCD'[test.risposte[q.n]]}) ${q.a[test.risposte[q.n]].replace(/</g,'&lt;')}</div>
+      <div class="r">✔ Risposta esatta: ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
+      ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
+      ${TRUCCHI[q.n] ? `<div class="trucco" style="margin-top:8px">${truccoHTML(q.n)}</div>` : ''}
+    </div>`).join('');
+  test = null;
+  renderHome();
+  mostra('vista-risultati');
+}
+
+// ---------- progressi: salva / carica / reset ----------
+function salvaProgressi(){
+  const blob = new Blob([JSON.stringify(stato)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  a.download = `progressi_quiz_OCF_${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  $('ultimo-salvataggio').textContent = `· ultimo salvataggio: ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function caricaProgressi(ev){
+  const f = ev.target.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const s = JSON.parse(rd.result);
+      if(!s || typeof s.risultati !== 'object' || !Array.isArray(s.storico)) throw 0;
+      stato = normalizzaStato(s);
+      salvaLocale();
+      renderHome();
+      $('nota-pool').textContent = 'Progressi caricati ✔  — ' + Object.keys(s.risultati).length + ' domande già affrontate.';
+    }catch(e){ $('nota-pool').textContent = 'File progressi non valido.'; }
+    ev.target.value = '';
+  };
+  rd.readAsText(f);
+}
+
+// ---------- dashboard ----------
+function fmtGiorno(iso, corto){
+  const [y,m,d] = iso.split('-');
+  return corto ? `${d}/${m}` : `${d}/${m}/${y.slice(2)}`;
+}
+function pctTxt(ok, tot){ return tot ? Math.round(100*ok/tot) + '%' : '—'; }
+
+function barraStack(s){
+  const tot = s.tot || 1;
+  const seg = (cls, n, tit) => n ? `<div class="${cls}" style="width:${100*n/tot}%" title="${tit}: ${n}"></div>` : '';
+  return `<div class="sbar">${seg('s-sup', s.ok, 'Superate')}${seg('s-rip', s.ko, 'Da ripassare')}${seg('s-nuo', s.nuove, 'Non viste')}</div>`;
+}
+
+// precisione al primo tentativo: una domanda azzeccata alla prima proposta è archiviata con zero errori (e=0)
+function primoTentativo(pool){
+  let ok = 0, tot = 0;
+  pool.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r) return;
+    tot++;
+    if(r.e === 0 && r.s === 'ok') ok++;
+  });
+  return {ok, tot};
+}
+
+function renderDashboard(){
+  const sg = statiPool(QUESTIONS);
+  const totOk = Object.values(stato.giorni).reduce((a,g) => a + g.ok, 0);
+  const totKo = Object.values(stato.giorni).reduce((a,g) => a + g.ko, 0);
+  const nGiorni = Object.keys(stato.giorni).length;
+  const pt = primoTentativo(QUESTIONS);
+  // KPI
+  $('d-kpi').innerHTML = `
+    <div class="kpi"><div class="k-lab">Domande superate</div><div class="k-val">${sg.ok}</div><div class="k-sub">${pctTxt(sg.ok, sg.tot)} della banca dati (${sg.tot})</div></div>
+    <div class="kpi"><div class="k-lab">Da ripassare</div><div class="k-val">${sg.ko}</div><div class="k-sub">escono dopo 2 risposte esatte</div></div>
+    <div class="kpi"><div class="k-lab">Precisione complessiva</div><div class="k-val">${pctTxt(totOk, totOk+totKo)}</div><div class="k-sub">${totOk+totKo} risposte date in ${stato.storico.length} test</div></div>
+    <div class="kpi" style="border-color:#2a78d6"><div class="k-lab">🎯 Precisione al 1° tentativo</div><div class="k-val">${pctTxt(pt.ok, pt.tot)}</div><div class="k-sub">${pt.ok} su ${pt.tot} nuove azzeccate subito — è la stima più vicina al risultato d'esame</div></div>
+    <div class="kpi"><div class="k-lab">Giorni di studio</div><div class="k-val">${nGiorni}</div><div class="k-sub">${nGiorni ? 'media ' + Math.round((totOk+totKo)/nGiorni) + ' domande/giorno' : 'inizia il primo test!'}</div></div>`;
+  // barra globale
+  $('d-globale').innerHTML = barraStack(sg) +
+    `<div class="a-num" style="margin-top:6px; font-size:.78rem; color:var(--ink2)">${sg.ok} superate · ${sg.ko} da ripassare · ${sg.nuove} non ancora viste</div>`;
+  // per argomento
+  $('d-argomenti').innerHTML = ARGOMENTI.map(arg => {
+    const s = statiPool(QUESTIONS.filter(q => q.t === arg));
+    return `<div class="arg-riga">
+      <div class="a-testa"><span class="a-nome">${arg}</span>
+      <span class="a-num">${pctTxt(s.ok, s.tot)} superato — ${s.ok}/${s.tot} · <b style="color:var(--rip)">${s.ko}</b> da ripassare · ${s.nuove} nuove · 1° tentativo: <b>${(pta => pctTxt(pta.ok, pta.tot))(primoTentativo(QUESTIONS.filter(q => q.t === arg)))}</b></span></div>
+      ${barraStack(s)}</div>`;
+  }).join('');
+  renderGiorni();
+  renderTrend();
+}
+
+function assiY(max){
+  // clean ticks: 0..max arrotondato
+  const passo = max <= 10 ? 2 : max <= 30 ? 5 : max <= 60 ? 10 : max <= 150 ? 25 : max <= 300 ? 50 : 100;
+  const top = Math.ceil(max/passo)*passo || passo;
+  const ticks = []; for(let v=0; v<=top; v+=passo) ticks.push(v);
+  return {top, ticks};
+}
+
+function renderGiorni(){
+  const box = $('d-giorni');
+  const giorni = Object.keys(stato.giorni).sort();
+  const det = $('d-giorni-det'), leg = $('d-giorni-leg');
+  if(!giorni.length){
+    box.innerHTML = '<div class="vuoto">Nessuna attività registrata: i grafici si riempiono man mano che svolgi i test.</div>';
+    det.classList.add('nascosto'); leg.classList.add('nascosto');
+    return;
+  }
+  det.classList.remove('nascosto'); leg.classList.remove('nascosto');
+  // finestra: dal primo giorno di attività (max 30 giorni fa) a oggi
+  const oggi = oggiISO();
+  const inizio = new Date(Math.max(new Date(giorni[0]), new Date(oggi) - 29*86400000));
+  const serie = [];
+  for(let d = new Date(inizio); ; d.setDate(d.getDate()+1)){
+    const iso = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    serie.push({iso, ...(stato.giorni[iso] || {test:0, ok:0, ko:0})});
+    if(iso >= oggi) break;
+  }
+  const W=840, H=230, L=38, R=10, T=14, B=30;
+  const pw = W-L-R, ph = H-T-B;
+  const max = Math.max(...serie.map(s => s.ok + s.ko));
+  const {top, ticks} = assiY(max);
+  const n = serie.length;
+  const band = pw/n, bw = Math.min(24, band*0.62);
+  const y = v => T + ph*(1 - v/top);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Domande risposte per giornata">`;
+  ticks.forEach(v => {
+    svg += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e1e0d9" stroke-width="1"/>`;
+    svg += `<text x="${L-6}" y="${y(v)+3}" text-anchor="end" font-size="10" fill="#898781" font-variant-numeric="tabular-nums">${v}</text>`;
+  });
+  const passoX = Math.max(1, Math.ceil(n/9));
+  serie.forEach((s, i) => {
+    const cx = L + band*(i+0.5);
+    if(i % passoX === 0 || n <= 10)
+      svg += `<text x="${cx}" y="${H-10}" text-anchor="middle" font-size="10" fill="#898781">${fmtGiorno(s.iso, true)}</text>`;
+    const tot = s.ok + s.ko;
+    if(tot){
+      const x = cx - bw/2;
+      const hOk = ph * s.ok/top, hKo = ph * s.ko/top;
+      const yKo = y(tot), yOk = y(s.ok);
+      // segmento sbagliate (sopra), estremità arrotondata 4px in alto
+      if(s.ko){
+        const hh = Math.max(2, hKo - (s.ok ? 2 : 0));
+        svg += `<path d="M${x},${yKo+hh} L${x},${yKo+4} Q${x},${yKo} ${x+4},${yKo} L${x+bw-4},${yKo} Q${x+bw},${yKo} ${x+bw},${yKo+4} L${x+bw},${yKo+hh} Z" fill="#e34948"/>`;
+      }
+      if(s.ok){
+        const y0 = yOk, hh = Math.max(2, hOk);
+        if(s.ko)
+          svg += `<rect x="${x}" y="${y0}" width="${bw}" height="${hh}" fill="#2a78d6"/>`;
+        else
+          svg += `<path d="M${x},${y0+hh} L${x},${y0+4} Q${x},${y0} ${x+4},${y0} L${x+bw-4},${y0} Q${x+bw},${y0} ${x+bw},${y0+4} L${x+bw},${y0+hh} Z" fill="#2a78d6"/>`;
+      }
+      svg += `<rect class="hit" data-i="${i}" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" fill="transparent"/>`;
+    }
+  });
+  svg += `<line x1="${L}" x2="${W-R}" y1="${y(0)}" y2="${y(0)}" stroke="#c3c2b7" stroke-width="1"/></svg><div class="tip" id="tip-giorni"></div>`;
+  box.innerHTML = svg;
+  const tip = $('tip-giorni');
+  box.querySelectorAll('.hit').forEach(r => {
+    r.addEventListener('mousemove', ev => {
+      const s = serie[+r.dataset.i];
+      tip.innerHTML = `<b>${fmtGiorno(s.iso)}</b><br>${s.test} test · ${s.ok+s.ko} risposte<br>` +
+        `<span style="color:#2a78d6">●</span> ${s.ok} esatte &nbsp; <span style="color:#e34948">●</span> ${s.ko} sbagliate<br>Precisione: <b>${pctTxt(s.ok, s.ok+s.ko)}</b>`;
+      tip.style.display = 'block';
+      const bb = box.getBoundingClientRect();
+      let tx = ev.clientX - bb.left + 14, ty = ev.clientY - bb.top - 10;
+      if(tx + 180 > bb.width) tx -= 200;
+      tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+    });
+    r.addEventListener('mouseleave', () => tip.style.display = 'none');
+  });
+  // tabella
+  const tb = $('d-giorni-tab').querySelector('tbody');
+  tb.innerHTML = giorni.slice().reverse().map(iso => {
+    const g = stato.giorni[iso];
+    return `<tr><td>${fmtGiorno(iso)}</td><td>${g.test}</td><td>${g.ok+g.ko}</td><td style="color:var(--sup)"><b>${g.ok}</b></td><td style="color:var(--rip)"><b>${g.ko}</b></td><td>${pctTxt(g.ok, g.ok+g.ko)}</td></tr>`;
+  }).join('');
+}
+
+function renderTrend(){
+  const box = $('d-trend');
+  const st = stato.storico;
+  if(st.length < 2){
+    box.innerHTML = `<div class="vuoto">${st.length === 0 ? 'Ancora nessun test completato.' : 'Completa almeno due test per vedere l’andamento.'}</div>`;
+    return;
+  }
+  const dati = st.slice(-40);
+  const W=840, H=210, L=38, R=46, T=14, B=26;
+  const pw = W-L-R, ph = H-T-B;
+  const n = dati.length;
+  const x = i => L + (n === 1 ? pw/2 : pw*i/(n-1));
+  const y = p => T + ph*(1 - p/100);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Percentuale di risposte esatte per test">`;
+  [0,25,50,75,100].forEach(v => {
+    svg += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e1e0d9" stroke-width="1"/>`;
+    svg += `<text x="${L-6}" y="${y(v)+3}" text-anchor="end" font-size="10" fill="#898781" font-variant-numeric="tabular-nums">${v}%</text>`;
+  });
+  const pts = dati.map((h, i) => [x(i), y(100*h.punti/h.tot)]);
+  svg += `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  pts.forEach((p, i) => {
+    svg += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>`;
+    svg += `<circle class="hitp" data-i="${i}" cx="${p[0]}" cy="${p[1]}" r="13" fill="transparent"/>`;
+  });
+  const ult = dati[n-1];
+  svg += `<text x="${pts[n-1][0]+10}" y="${pts[n-1][1]+4}" font-size="12" font-weight="600" fill="#0b0b0b">${Math.round(100*ult.punti/ult.tot)}%</text>`;
+  const passoX = Math.max(1, Math.ceil(n/10));
+  dati.forEach((h, i) => {
+    if(i % passoX === 0 || i === n-1)
+      svg += `<text x="${pts[i][0]}" y="${H-8}" text-anchor="middle" font-size="10" fill="#898781">${st.length - n + i + 1}</text>`;
+  });
+  svg += `</svg><div class="tip" id="tip-trend"></div>`;
+  box.innerHTML = svg;
+  const tip = $('tip-trend');
+  box.querySelectorAll('.hitp').forEach(c => {
+    c.addEventListener('mousemove', ev => {
+      const h = dati[+c.dataset.i];
+      tip.innerHTML = `<b>Test del ${h.data}</b><br>${h.argomenti}<br>Punteggio: <b>${h.punti}/${h.tot}</b> (${Math.round(100*h.punti/h.tot)}%)`;
+      tip.style.display = 'block';
+      const bb = box.getBoundingClientRect();
+      let tx = ev.clientX - bb.left + 14, ty = ev.clientY - bb.top - 10;
+      if(tx + 200 > bb.width) tx -= 220;
+      tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+    });
+    c.addEventListener('mouseleave', () => tip.style.display = 'none');
+  });
+}
+
+// ---------- ripasso ----------
+function renderRipasso(){
+  const soloAperte = $('chk-solo-aperte').checked;
+  const cont = $('lista-ripasso');
+  let totale = 0;
+  const blocchi = ARGOMENTI.map(arg => {
+    const errate = QUESTIONS.filter(q => {
+      const r = stato.risultati[q.n];
+      return q.t === arg && r && r.e > 0 && (!soloAperte || r.s === 'ko');
+    });
+    totale += errate.length;
+    if(!errate.length) return '';
+    const aperte = errate.filter(q => stato.risultati[q.n].s === 'ko').length;
+    const items = errate.map(q => {
+      const r = stato.risultati[q.n];
+      const sup = r.s === 'ok';
+      return `<div class="err-item ${sup ? 'rip-sup' : ''}">
+        <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da superare'}</span>
+        <span class="pill pill-rip">sbagliata ${r.e === 1 ? '1 volta' : r.e + ' volte'}</span>
+        ${!sup && !proponibile(r) ? `<span class="pill pill-pausa">⏸ torna tra ${r.t - (stato.nTest || 0)} test</span>` : ''}
+        <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
+        <div class="r">✔ Risposta esatta: ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
+        ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
+      </div>`;
+    }).join('');
+    return `<details class="grp-arg" open>
+      <summary>${arg} <span class="mini">— ${errate.length} ${errate.length === 1 ? 'domanda' : 'domande'}${soloAperte ? '' : ` (${aperte} ancora da superare)`}</span></summary>
+      <div class="corpo">${items}</div>
+    </details>`;
+  }).join('');
+  cont.innerHTML = totale ? blocchi :
+    `<div class="vuoto">${soloAperte ? 'Nessuna domanda ancora da superare — tutte le sbagliate sono state recuperate! Togli il filtro per rileggerle.' : 'Ancora nessuna domanda sbagliata: quando ne sbagli una, la ritrovi qui per il ripasso pre-esame.'}</div>`;
+}
+
+// ---------- dispensa matematica ----------
+const ARG_MAT = 'Matematica ed economia finanziaria';
+function errateMatematica(){
+  return QUESTIONS.filter(q => q.t === ARG_MAT && stato.risultati[q.n] && stato.risultati[q.n].e > 0);
+}
+
+function renderDispensa(){
+  const errate = errateMatematica();
+  $('disp-stato').textContent = errate.length
+    ? `${errate.length} domande di matematica sbagliate almeno una volta · aggiornata all'ultimo test (n. ${stato.nTest || 0}) — si rigenera da sola a fine di ogni test.`
+    : '';
+  $('disp-corpo').innerHTML = errate.length ? dispensaCorpoHTML(errate)
+    : '<div class="vuoto">Ancora nessun errore in matematica: la dispensa si costruisce da sola man mano che sbagli (magari resta vuota! 🍀)</div>';
+}
+
+function dispensaCorpoHTML(errate){
+  const {toks, idf, tset} = ensureIndex();
+  // tematiche ricavate dagli errori di matematica (stessa logica della classifica, senza tetto a 5)
+  const stats = {};
+  errate.forEach(q => {
+    const r = stato.risultati[q.n];
+    toks[q.n].forEach(w => {
+      if(idf[w] < SOGLIA_IDF) return;
+      const o = stats[w] = stats[w] || {score: 0, nErr: 0};
+      o.score += r.e * idf[w] * (1 + 0.4 * (w.split(' ').length - 1));
+      o.nErr++;
+    });
+  });
+  const cand = Object.entries(stats).filter(([w, o]) => o.nErr >= 2)
+    .map(([w, o]) => ({w, ...o}))
+    .sort((a, b) => b.score - a.score);
+  const temi = [];
+  for(const c of cand){
+    if(temi.length >= 14) break;
+    const parole = new Set(c.w.split(' '));
+    if(temi.some(t => t.w.split(' ').some(p => parole.has(p)))) continue;
+    temi.push(c);
+  }
+  // assegna ogni errata al tema più forte che la contiene; le rimanenti in coda
+  const gruppi = temi.map(t => ({tema: t.w, domande: []}));
+  const altre = [];
+  errate.forEach(q => {
+    const g = gruppi.find(g => tset[q.n].has(g.tema));
+    (g ? g.domande : altre).push(q);
+  });
+  if(altre.length) gruppi.push({tema: 'altri argomenti', domande: altre});
+  const item = q => {
+    const r = stato.risultati[q.n];
+    const sup = r.s === 'ok';
+    return `<div class="err-item ${sup ? 'rip-sup' : ''}">
+      <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da superare'}</span>
+      <span class="pill pill-rip">sbagliata ${r.e === 1 ? '1 volta' : r.e + ' volte'}</span>
+      <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
+      <div class="r">✔ ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
+      ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
+    </div>`;
+  };
+  return gruppi.filter(g => g.domande.length).map(g => `
+    <div class="disp-tit">${g.tema}</div>
+    <div class="disp-sub">${g.domande.length} ${g.domande.length === 1 ? 'domanda' : 'domande'} — ${g.domande.filter(q => stato.risultati[q.n].s === 'ko').length} ancora da superare</div>
+    ${g.domande.map(item).join('')}`).join('');
+}
+
+// ---------- ricerca banca dati ----------
+function normalizza(s){
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+let cercaTimer = null;
+function renderCerca(){
+  const raw = $('campo-cerca').value.trim();
+  const qtxt = normalizza(raw);
+  const argf = $('cerca-arg').value;
+  const cont = $('cerca-risultati');
+  if(qtxt.length < 3){
+    $('cerca-conta').textContent = 'Scrivi almeno 3 caratteri (la ricerca ignora maiuscole e accenti).';
+    cont.innerHTML = '';
+    return;
+  }
+  const trovate = [];
+  for(const q of QUESTIONS){
+    if(argf && q.t !== argf) continue;
+    if(normalizza(q.n + ' ' + q.q + ' ' + q.a.join(' ')).includes(qtxt)){
+      trovate.push(q);
+      if(trovate.length >= 500) break;
+    }
+  }
+  const MAX = 50;
+  $('cerca-conta').textContent = trovate.length === 0 ? 'Nessuna domanda trovata.' :
+    `${trovate.length >= 500 ? 'Oltre 500' : trovate.length} domande trovate${trovate.length > MAX ? ` — mostro le prime ${MAX}, restringi la ricerca` : ''}.`;
+  const rx = new RegExp('(' + raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  const ev = s => s.replace(/</g, '&lt;').replace(rx, '<mark>$1</mark>');
+  cont.innerHTML = trovate.slice(0, MAX).map(q => {
+    const r = stato.risultati[q.n];
+    const badge = !r ? '<span class="pill pill-nuova">mai vista</span>'
+      : r.s === 'ok' ? `<span class="pill pill-sup">✔ superata${r.e ? ' (dopo ' + r.e + (r.e === 1 ? ' errore' : ' errori') + ')' : ''}</span>`
+      : `<span class="pill pill-ko">✘ da ripassare</span>`;
+    return `<div class="cerca-item">
+      <span class="pill pill-arg">${q.t}</span> ${badge}
+      <div class="d">${q.n}. ${ev(q.q)}</div>
+      <div class="r">✔ ${'ABCD'[q.e]}) ${ev(q.a[q.e])}</div>
+    </div>`;
+  }).join('');
+}
+
+// ---------- eventi ----------
+$('tab-allenamento').onclick = () => { renderHome(); mostra('vista-home'); };
+$('tab-dashboard').onclick = () => { renderDashboard(); mostra('vista-dashboard'); };
+$('tab-ripasso').onclick = () => { renderRipasso(); mostra('vista-ripasso'); };
+$('tab-cerca').onclick = () => { mostra('vista-cerca'); renderCerca(); $('campo-cerca').focus(); };
+$('tab-dispensa').onclick = () => { renderDispensa(); mostra('vista-dispensa'); };
+$('btn-stampa').onclick = () => window.print();
+$('btn-vai-dispensa').onclick = () => { renderDispensa(); mostra('vista-dispensa'); };
+$('det-disp').addEventListener('toggle', () => {
+  if($('det-disp').open && !$('disp-corpo-risultati').innerHTML){
+    $('disp-corpo-risultati').innerHTML = dispensaCorpoHTML(errateMatematica());
+  }
+});
+$('campo-cerca').oninput = () => { clearTimeout(cercaTimer); cercaTimer = setTimeout(renderCerca, 220); };
+$('cerca-arg').onchange = renderCerca;
+ARGOMENTI.forEach(a => {
+  const o = document.createElement('option');
+  o.value = a; o.textContent = a;
+  $('cerca-arg').appendChild(o);
+});
+$('btn-sim').onclick = () => conferma(`Avviare la simulazione d'esame? Come la prova vera: 60 domande (24 mercato + 19 matematica + 6 privato + 6 tributario + 5 previdenziale) estratte da tutta la banca dati, ${MINUTI_ESAME} minuti di tempo, correzione solo alla fine, soglia 80%.`, avviaSimulazione);
+$('btn-pro').onclick = avviaPro;
+$('chk-solo-aperte').onchange = renderRipasso;
+$('chk-solo-errori').onchange = aggiornaNota;
+$('chk-autosave').onchange = () => { stato.autosave = $('chk-autosave').checked; salvaLocale(); };
+$('amore-chiudi').onclick = () => $('velo-amore').classList.add('nascosto');
+function aggiornaMixLabel(){
+  const m = mixNuove();
+  $('mix-label').innerHTML = `<b>${m}%</b> nuove · <b class="rosso">${100 - m}%</b> sbagliate`;
+}
+$('mix-nuove').oninput = () => {
+  stato.mixNuove = +$('mix-nuove').value;
+  aggiornaMixLabel();
+  aggiornaNota();
+  salvaLocale();
+};
+$('btn-avvia').onclick = avviaTest;
+$('btn-prossima').onclick = prossima;
+$('btn-abbandona').onclick = () => conferma('Terminare il test adesso? Le domande già risposte vengono registrate, le altre no.', fineTest);
+$('btn-nuovo').onclick = () => { mostra('vista-home'); avviaTest(); };
+$('btn-home').onclick = () => { renderHome(); mostra('vista-home'); };
+$('btn-salva').onclick = salvaProgressi;
+$('btn-carica').onclick = () => $('file-progressi').click();
+$('file-progressi').onchange = caricaProgressi;
+$('btn-reset').onclick = () => conferma('Azzerare tutti i progressi (risultati, storico e giornate)? Verrà cancellato anche il salvataggio automatico nel browser.', () => {
+  stato = {risultati:{}, storico:[], giorni:{}, nTest:0};
+  try{ localStorage.removeItem(CHIAVE_LOCALE); }catch(e){}
+  renderHome();
+});
+
+document.addEventListener('keydown', e => {
+  if($('vista-quiz').classList.contains('nascosto') || !test) return;
+  if(!$('velo-conferma').classList.contains('nascosto') || !$('velo-amore').classList.contains('nascosto')) return;
+  const k = e.key.toLowerCase();
+  const q = test.domande[test.idx];
+  if(k === 'enter'){ e.preventDefault(); prossima(); return; }
+  if(!test.conf[q.n]){
+    let i = -1;
+    if(['1','2','3','4'].includes(k)) i = +k - 1;
+    if(['a','b','c','d'].includes(k)) i = 'abcd'.indexOf(k);
+    if(i >= 0){ e.preventDefault(); rispondi(i); }
+  }
+});
+
+window.addEventListener('beforeunload', salvaLocale);
+
+// ================== AVVIO / ACCOUNT / SINCRONIZZAZIONE ==================
+const CFG = window.OCF_CFG || {};
+const cloudAttivo = CFG.SUPABASE_URL && !CFG.SUPABASE_URL.includes('INCOLLA') && window.supabase;
+let sb = null, utente = null, pushTimer = null, pushInCorso = false, pushDaRifare = false;
+
+function setSync(statoSync, testo){
+  const el = $('sync-stato');
+  el.classList.remove('nascosto', 'fuori', 'errore');
+  if(statoSync !== 'ok') el.classList.add(statoSync);
+  $('sync-testo').textContent = testo;
+}
+
+function statoDaCaricare(remoto, locale){
+  // vince chi ha più storia; a parità il remoto (più recente tra i dispositivi)
+  if(!remoto) return locale;
+  if(!locale) return remoto;
+  return (locale.storico || []).length > (remoto.storico || []).length ? locale : remoto;
+}
+
+async function caricaCloud(){
+  const { data, error } = await sb.from('progressi').select('stato').eq('user_id', utente.id).maybeSingle();
+  if(error) throw error;
+  return data ? data.stato : null;
+}
+
+async function pushCloud(){
+  if(!cloudAttivo || !utente) return;
+  if(pushInCorso){ pushDaRifare = true; return; }
+  pushInCorso = true;
+  setSync('fuori', 'salvataggio…');
+  try{
+    const { error } = await sb.from('progressi')
+      .upsert({ user_id: utente.id, stato: stato, updated_at: new Date().toISOString() });
+    if(error) throw error;
+    setSync('ok', 'sincronizzato');
+  }catch(e){
+    setSync('errore', navigator.onLine ? 'errore di sync' : 'offline — riprovo');
+  }
+  pushInCorso = false;
+  if(pushDaRifare){ pushDaRifare = false; pushCloud(); }
+}
+function pushCloudDebounce(){
+  if(!cloudAttivo || !utente) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushCloud, 1500);
+}
+
+// ogni salvataggio locale spinge anche sul cloud
+const _salvaLocaleBase = salvaLocale;
+salvaLocale = function(){
+  const esito = _salvaLocaleBase();
+  pushCloudDebounce();
+  return esito;
+};
+
+window.addEventListener('online', () => { if(utente) pushCloud(); });
+window.addEventListener('offline', () => { if(utente) setSync('fuori', 'offline'); });
+
+function avviaApp(messaggio){
+  renderHome();
+  if(messaggio) $('nota-pool').textContent = messaggio;
+}
+
+async function dopoLogin(sessione){
+  utente = sessione.user;
+  $('velo-login').classList.add('nascosto');
+  $('utente-email').textContent = (utente.email || '').split('@')[0];
+  $('btn-esci').classList.remove('nascosto');
+  setSync('fuori', 'carico…');
+  const locale = caricaLocale() ? stato : null;
+  let remoto = null;
+  try{ remoto = await caricaCloud(); }catch(e){}
+  const scelto = statoDaCaricare(remoto, locale);
+  if(scelto) stato = normalizzaStato(JSON.parse(JSON.stringify(scelto)));
+  if(stato.autosave === undefined) stato.autosave = false;   // online: il file .json è solo una copia extra
+  _salvaLocaleBase();
+  setSync('ok', 'sincronizzato');
+  pushCloud();
+  avviaApp('Bentornata! Progressi sincronizzati sul tuo account.');
+}
+
+async function avvio(){
+  if(!cloudAttivo){
+    // modalità locale (senza configurazione Supabase): come la versione offline
+    const ripristinato = caricaLocale();
+    avviaApp(ripristinato ? `Bentornata! Progressi ripristinati dal browser (ultimo salvataggio: ${stato.salvatoAlle || '—'}).` : '');
+    return;
+  }
+  sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){ await dopoLogin(session); }
+  else {
+    $('velo-login').classList.remove('nascosto');
+    renderHome();
+  }
+  sb.auth.onAuthStateChange((evento, sessione) => {
+    if(evento === 'SIGNED_OUT'){ location.reload(); }
+  });
+}
+
+$('btn-login').onclick = async () => {
+  const email = $('login-email').value.trim();
+  const pass = $('login-password').value;
+  $('login-errore').textContent = '';
+  if(!email || !pass){ $('login-errore').textContent = 'Inserisci email e password.'; return; }
+  $('btn-login').disabled = true; $('btn-login').textContent = 'Accesso…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  $('btn-login').disabled = false; $('btn-login').textContent = 'Apri il registro';
+  if(error){
+    $('login-errore').textContent = 'Accesso non riuscito: controlla email e password.';
+    return;
+  }
+  await dopoLogin(data.session);
+};
+$('login-password').addEventListener('keydown', e => { if(e.key === 'Enter') $('btn-login').click(); });
+$('btn-esci').onclick = () => conferma('Vuoi uscire dall\'account? I progressi restano salvati sul cloud.', async () => {
+  clearTimeout(pushTimer);
+  await pushCloud();
+  await sb.auth.signOut();
+});
+
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+avvio();
+</script>
+</body>
+</html>
