@@ -111,6 +111,7 @@ header.top .sub{font-family:'Inter', sans-serif; font-size:.62rem; letter-spacin
 .sa-det summary{cursor:pointer; color:var(--lacca); font-weight:700; padding:6px 0; font-size:.82rem;
                 font-family:'Inter', sans-serif; letter-spacing:.03em; list-style-position:inside;}
 .sa-azioni{margin:4px 0 2px; font-size:.82rem;}
+.arg-azioni{margin:0 0 6px; padding-bottom:6px; border-bottom:1px solid var(--filo);}
 .sa-azioni a{color:var(--inchiostro2); font-weight:600;}
 .sa-riga{display:flex; gap:8px; align-items:baseline; padding:6px 0 6px 4px; border-bottom:1px dashed var(--filo); cursor:pointer; flex-wrap:wrap;}
 .sa-riga:hover{background:#F6F3EB;}
@@ -818,6 +819,10 @@ function statiPool(pool){
 function renderHome(){
   const cont = $('lista-argomenti');
   cont.innerHTML = '';
+  const azArg = document.createElement('div');
+  azArg.className = 'sa-azioni arg-azioni';
+  azArg.innerHTML = '<a href="#" id="arg-tutti">seleziona tutti</a> · <a href="#" id="arg-nessuno">deseleziona tutti</a>';
+  cont.appendChild(azArg);
   ARGOMENTI.forEach((arg, i) => {
     const pool = QUESTIONS.filter(q => q.t === arg);
     const s = statiPool(pool);
@@ -848,6 +853,8 @@ function renderHome(){
     cont.appendChild(div);
   });
   cont.querySelectorAll('.chk-arg').forEach(c => c.onchange = aggiornaNota);
+  $('arg-tutti').onclick = e => { e.preventDefault(); document.querySelectorAll('.chk-arg').forEach(c => c.checked = true); aggiornaNota(); };
+  $('arg-nessuno').onclick = e => { e.preventDefault(); document.querySelectorAll('.chk-arg').forEach(c => c.checked = false); aggiornaNota(); };
   cont.querySelectorAll('.chk-sa').forEach(c => c.onchange = () => { saStato[+c.dataset.sa] = c.checked; aggiornaNota(); });
   const detSa = cont.querySelector('.sa-det');
   if(detSa){

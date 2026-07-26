@@ -92,6 +92,7 @@ header.top .sub{font-family:'Inter', sans-serif; font-size:.62rem; letter-spacin
 .sa-det summary{cursor:pointer; color:var(--lacca); font-weight:700; padding:6px 0; font-size:.82rem;
                 font-family:'Inter', sans-serif; letter-spacing:.03em; list-style-position:inside;}
 .sa-azioni{margin:4px 0 2px; font-size:.82rem;}
+.arg-azioni{margin:0 0 6px; padding-bottom:6px; border-bottom:1px solid var(--filo);}
 .sa-azioni a{color:var(--inchiostro2); font-weight:600;}
 .sa-riga{display:flex; gap:8px; align-items:baseline; padding:6px 0 6px 4px; border-bottom:1px dashed var(--filo); cursor:pointer; flex-wrap:wrap;}
 .sa-riga:hover{background:#F6F3EB;}
