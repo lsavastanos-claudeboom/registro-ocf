@@ -1,6 +1,6 @@
 {
-  "name": "Registro OCF — Simulatore quiz",
-  "short_name": "Registro OCF",
+  "name": "QuizzOcf — Simulatore prova valutativa",
+  "short_name": "QuizzOcf",
   "description": "Simulatore della prova valutativa OCF sulla banca dati ufficiale 2026",
   "start_url": ".",
   "scope": ".",

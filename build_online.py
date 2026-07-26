@@ -11,7 +11,7 @@ head_nuovo = '''<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Registro OCF — Simulatore quiz</title>
+<title>QuizzOcf — Simulatore prova valutativa</title>
 <meta name="description" content="Simulatore della prova valutativa OCF sulla banca dati ufficiale 2026.">
 <meta name="theme-color" content="#1C2B3A">
 <link rel="manifest" href="manifest.webmanifest">
@@ -20,10 +20,10 @@ head_nuovo = '''<!DOCTYPE html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Registro OCF">
+<meta name="apple-mobile-web-app-title" content="QuizzOcf">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 __CSS__
 </style>
@@ -32,8 +32,9 @@ tpl = re.sub(r'<!DOCTYPE html>.*?</head>', head_nuovo.replace('__CSS__', css), t
 
 # ---------- 2) header ----------
 header_nuovo = '''<header class="top">
+  <img src="icons/logo-64.png" alt="" class="logo-img">
   <div class="marchio">
-    <h1>REGISTRO<span class="rosso">·</span>OCF</h1>
+    <h1>Quizz<span class="rosso">Ocf</span></h1>
     <div class="sub">Banca dati gennaio 2026 · 4.995 domande</div>
   </div>
   <div class="utente-box">
@@ -208,7 +209,8 @@ tpl = tpl.replace(vecchio_avvio, nuovo_avvio)
 login_html = '''
 <div id="velo-login" class="velo nascosto">
   <div class="modale modale-login">
-    <div class="login-marchio">REGISTRO<span class="rosso">·</span>OCF</div>
+    <img src="icons/logo-64.png" alt="QuizzOcf" class="login-logo">
+    <div class="login-marchio">Quizz<span class="rosso">Ocf</span></div>
     <div class="login-sub">Prova valutativa · banca dati 2026</div>
     <div class="campo">
       <label for="login-email">Email</label>
