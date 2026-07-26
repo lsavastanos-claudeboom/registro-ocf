@@ -771,11 +771,12 @@ let timerInt = null;
 
 const ARGOMENTI = [...new Set(QUESTIONS.map(q => q.t))];
 const byNum = {}; QUESTIONS.forEach(q => byNum[q.n] = q);
-// sottoargomenti ufficiali OCF per la matematica
+// sottoargomenti ufficiali OCF (dal bando) per ogni argomento
 const MAT = 'Matematica ed economia finanziaria';
-const SOTTO = window.OCF_DATA.SOTTO || {SA: [], map: {}};
-let saStato = SOTTO.SA.map(() => true);   // true = sottoargomento attivo
-let saAperto = false;
+const SOTTO = window.OCF_DATA.SOTTO || {};               // {argomento: {SA: [...], map: {num: idx}}}
+let saStato = {};                             // {argomento: [bool, ...]} — true = sottoargomento attivo
+ARGOMENTI.forEach(a => { if(SOTTO[a]) saStato[a] = SOTTO[a].SA.map(() => true); });
+let saAperto = {};                            // {argomento: bool} — tendina aperta/chiusa
 const $ = id => document.getElementById(id);
 
 // ---------- utilità ----------
@@ -854,16 +855,18 @@ function renderHome(){
         <div class="segok" style="width:${100*s.ok/s.tot}%"></div>
         <div class="segko" style="width:${100*s.ko/s.tot}%"></div>
       </div></div>`;
-    if(arg === MAT && SOTTO.SA.length){
+    const cfg = SOTTO[arg];
+    if(cfg && cfg.SA.length){
       const det = document.createElement('details');
       det.className = 'sa-det';
-      det.open = saAperto;
+      det.dataset.arg = i;
+      det.open = !!saAperto[arg];
       det.innerHTML = `<summary>📂 Sottoargomenti (programma OCF) — scegli su cosa allenarti</summary>
-        <div class="sa-azioni"><a href="#" id="sa-tutti">seleziona tutti</a> · <a href="#" id="sa-nessuno">nessuno</a></div>` +
-        SOTTO.SA.map((nome, j) => {
-          const p = pool.filter(q => SOTTO.map[q.n] === j);
+        <div class="sa-azioni"><a href="#" class="sa-tutti" data-arg="${i}">seleziona tutti</a> · <a href="#" class="sa-nessuno" data-arg="${i}">nessuno</a></div>` +
+        cfg.SA.map((nome, j) => {
+          const p = pool.filter(q => cfg.map[q.n] === j);
           const ss = statiPool(p);
-          return `<label class="sa-riga"><input type="checkbox" class="chk-sa" data-sa="${j}" ${saStato[j] ? 'checked' : ''}>
+          return `<label class="sa-riga"><input type="checkbox" class="chk-sa" data-argx="${i}" data-sa="${j}" ${saStato[arg][j] ? 'checked' : ''}>
             <span class="sa-nome">${nome}</span>
             <span class="mini">${ss.tot} dom. · <b class="ok">${ss.ok}</b> sup. · <b class="ko">${ss.ko}</b> rip. · ${ss.nuove} nuove</span></label>`;
         }).join('');
@@ -874,13 +877,20 @@ function renderHome(){
   cont.querySelectorAll('.chk-arg').forEach(c => c.onchange = aggiornaNota);
   $('arg-tutti').onclick = e => { e.preventDefault(); document.querySelectorAll('.chk-arg').forEach(c => c.checked = true); aggiornaNota(); };
   $('arg-nessuno').onclick = e => { e.preventDefault(); document.querySelectorAll('.chk-arg').forEach(c => c.checked = false); aggiornaNota(); };
-  cont.querySelectorAll('.chk-sa').forEach(c => c.onchange = () => { saStato[+c.dataset.sa] = c.checked; aggiornaNota(); });
-  const detSa = cont.querySelector('.sa-det');
-  if(detSa){
-    detSa.addEventListener('toggle', () => { saAperto = detSa.open; });
-    $('sa-tutti').onclick = e => { e.preventDefault(); saStato = saStato.map(() => true); renderHome(); };
-    $('sa-nessuno').onclick = e => { e.preventDefault(); saStato = saStato.map(() => false); renderHome(); };
-  }
+  cont.querySelectorAll('.chk-sa').forEach(c => c.onchange = () => {
+    saStato[ARGOMENTI[+c.dataset.argx]][+c.dataset.sa] = c.checked; aggiornaNota();
+  });
+  cont.querySelectorAll('.sa-det').forEach(det => {
+    det.addEventListener('toggle', () => { saAperto[ARGOMENTI[+det.dataset.arg]] = det.open; });
+  });
+  cont.querySelectorAll('.sa-tutti').forEach(a => a.onclick = e => {
+    e.preventDefault(); const arg = ARGOMENTI[+a.dataset.arg];
+    saStato[arg] = saStato[arg].map(() => true); renderHome();
+  });
+  cont.querySelectorAll('.sa-nessuno').forEach(a => a.onclick = e => {
+    e.preventDefault(); const arg = ARGOMENTI[+a.dataset.arg];
+    saStato[arg] = saStato[arg].map(() => false); renderHome();
+  });
   aggiornaNota();
   renderOggi();
   renderObiettivo();
@@ -1009,13 +1019,18 @@ function argomentiSelezionati(){
 // pool filtrato: argomenti selezionati + (per la matematica) sottoargomenti attivi
 function nelPool(q, sel){
   if(!sel.includes(q.t)) return false;
-  if(q.t === MAT && SOTTO.SA.length){
-    const j = SOTTO.map[q.n];
-    if(j !== undefined && !saStato[j]) return false;
+  const cfg = SOTTO[q.t];
+  if(cfg && cfg.SA.length && saStato[q.t]){
+    const j = cfg.map[q.n];
+    if(j !== undefined && !saStato[q.t][j]) return false;
   }
   return true;
 }
-function saAttiviN(){ return saStato.filter(Boolean).length; }
+// argomenti selezionati che hanno un filtro sottoargomenti attivo (non tutti spuntati)
+function argFiltrati(sel){
+  return sel.filter(a => SOTTO[a] && saStato[a] && saStato[a].some(v => !v))
+            .map(a => ({a, on: saStato[a].filter(Boolean).length, tot: saStato[a].length}));
+}
 
 function mixNuove(){
   const m = stato.mixNuove;
@@ -1066,8 +1081,10 @@ function aggiornaNota(){
   $('mix-nuove').disabled = soloErr;
   $('mix-ko').disabled = soloErr;
   const inPausa = s.ko - s.koEleg;
-  const notaSa = (sel.includes(MAT) && SOTTO.SA.length && saAttiviN() < SOTTO.SA.length)
-    ? ` Matematica limitata a ${saAttiviN()} sottoargomenti su ${SOTTO.SA.length}.` : '';
+  const filtri = argFiltrati(sel);
+  const notaSa = filtri.length
+    ? ' Filtro sottoargomenti attivo: ' + filtri.map(f => `${f.a.split(' ')[0]} ${f.on}/${f.tot}`).join(', ') + '.'
+    : '';
   $('nota-pool').textContent = (soloErr
     ? `Prossimo test: ${c.nRip} domande, tutte dal ripasso (${s.ko} da recuperare in questi argomenti).`
     : `Prossimo test: ${c.nRip + c.nNew + (c.nVin || 0)} domande — ${c.nNew} nuove + ${c.nRip} sbagliate` +
@@ -1200,7 +1217,7 @@ function selezionaNuoveBilanciate(nuove, n, argsSel){
   if(!tot) return [];
   n = Math.min(n, tot);
   // gruppi: un argomento = un gruppo; la matematica si spacchetta nei sottoargomenti OCF attivi
-  const chiave = q => (q.t === MAT && SOTTO.SA.length && SOTTO.map[q.n] !== undefined) ? MAT + '·' + SOTTO.map[q.n] : q.t;
+  const chiave = q => (SOTTO[q.t] && SOTTO[q.t].map[q.n] !== undefined) ? q.t + '·' + SOTTO[q.t].map[q.n] : q.t;
   const gruppi = {};
   nuove.forEach(q => { const k = chiave(q); (gruppi[k] = gruppi[k] || []).push(q); });
   const perArg = Object.keys(gruppi).map(k => ({a: k, dom: gruppi[k]}));
@@ -1278,9 +1295,15 @@ function avviaTest(){
   }
   shuffle(domande);
   let tag = sel.length === ARGOMENTI.length ? 'Tutti' : sel.map(a => a.split(' ')[0] + ' ' + (a.split(' ')[1]||'')).join(', ');
-  if(sel.includes(MAT) && SOTTO.SA.length && saAttiviN() < SOTTO.SA.length){
-    const attivi = SOTTO.SA.filter((_, j) => saStato[j]);
-    tag += ' [mat: ' + (attivi.length <= 2 ? attivi.join(', ') : attivi.length + ' sottoarg.') + ']';
+  const filtriTag = argFiltrati(sel);
+  if(filtriTag.length){
+    tag += ' [' + filtriTag.map(f => {
+      if(f.on <= 2){
+        const nomi = SOTTO[f.a].SA.filter((_, j) => saStato[f.a][j]);
+        return nomi.join(', ');
+      }
+      return `${f.a.split(' ')[0]}: ${f.on} sottoarg.`;
+    }).join(' · ') + ']';
   }
   lanciaTest(domande, tag + (soloErr ? ' (solo errori)' : ''));
 }

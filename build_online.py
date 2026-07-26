@@ -59,7 +59,7 @@ tpl = re.sub(r'<div class="tabs" id="barra-tab">.*?</div>', tabs_nuovi, tpl, cou
 tpl = tpl.replace('const QUESTIONS = /*__DATA__*/;', 'const QUESTIONS = window.OCF_DATA.QUESTIONS;')
 tpl = tpl.replace('const SPIEG = /*__SPIEG__*/{};', 'const SPIEG = window.OCF_DATA.SPIEG || {};')
 tpl = tpl.replace('const TRUCCHI = /*__TRUCCHI__*/{};', 'const TRUCCHI = window.OCF_DATA.TRUCCHI || {};')
-tpl = tpl.replace('const SOTTO = /*__SOTTO__*/{SA: [], map: {}};', 'const SOTTO = window.OCF_DATA.SOTTO || {SA: [], map: {}};')
+tpl = tpl.replace('const SOTTO = /*__SOTTO__*/{};', 'const SOTTO = window.OCF_DATA.SOTTO || {};')
 
 # ---------- 5) nota tastiera (nascosta su touch) ----------
 tpl = tpl.replace('<div class="nota">Scorciatoie: <kbd>', '<div class="nota nota-tastiera">Scorciatoie: <kbd>')
@@ -239,11 +239,11 @@ data = [{'n': q['num'], 't': q['argomento'], 'q': q['domanda'],
          'a': [q['A'], q['B'], q['C'], q['D']], 'e': 'ABCD'.index(q['es'])} for q in bank]
 spieg = json.load(open('/home/claude/spiegazioni.json'))
 truc = json.load(open('/home/claude/trucchi.json'))
-sotto = json.load(open('/home/claude/sottoargomenti_ocf.json'))
+sotto = json.load(open('/home/claude/sottoargomenti_v2.json'))
 def js(o): return json.dumps(o, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
 open('/home/claude/ocf-online/data.js', 'w', encoding='utf-8').write(
     'window.OCF_DATA={QUESTIONS:' + js(data) + ',SPIEG:' + js(spieg) +
-    ',TRUCCHI:' + js(truc) + ',SOTTO:' + js({'SA': sotto['SA'], 'map': sotto['map']}) + '};')
+    ',TRUCCHI:' + js(truc) + ',SOTTO:' + js(sotto) + '};')
 
 print('index.html e data.js creati')
 import os
