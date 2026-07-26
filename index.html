@@ -933,7 +933,7 @@ function renderOggi(){
                                               : deltaVsIeri(prec, precIeri, ' p.ti'));
 }
 
-const DATA_ESAME = '2026-07-22';   // ultimo giorno di test: mercoledì 22 luglio (esame giovedì 23)
+const DATA_ESAME = '2026-10-14';   // ultimo giorno di test: mercoledì 14 ottobre (esame giovedì 15)
 function giorniAllEsame(){
   const ms = new Date(DATA_ESAME) - new Date(oggiISO());
   return Math.max(1, Math.round(ms / 86400000) + 1);   // giorni di studio, oggi compreso
@@ -941,8 +941,8 @@ function giorniAllEsame(){
 
 function targetOggi(mancanti){
   const oggi = oggiISO();
-  if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)){
-    stato.piano = {giorno: oggi, target: Math.max(1, Math.ceil(mancanti / giorniAllEsame()))};
+  if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0) || stato.piano.esame !== DATA_ESAME){
+    stato.piano = {giorno: oggi, esame: DATA_ESAME, target: Math.max(1, Math.ceil(mancanti / giorniAllEsame()))};
     salvaLocale();
   }
   return stato.piano.target;
@@ -961,7 +961,7 @@ function renderObiettivo(){
   const el = $('testo-obiettivo');
   const gg = giorniAllEsame();
   const scad = new Date(DATA_ESAME).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
-  $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame! 🍀' : `— test fino a ${scad} (${gg === 1 ? 'ultimo giorno!' : gg + ' giorni di studio, oggi compreso'}) · esame giovedì 23 🍀`;
+  $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame! 🍀' : `— test fino a ${scad} (${gg === 1 ? 'ultimo giorno!' : gg + ' giorni di studio, oggi compreso'}) · esame giovedì 15 ottobre 🍀`;
   if(!mancanti){
     el.innerHTML = '<div class="mini-chiaro">Banca dati esaurita 🎉 — nessuna domanda nuova né da recuperare.</div>';
     return;
@@ -972,7 +972,7 @@ function renderObiettivo(){
   el.innerHTML =
     tile('🧮', 'ico-blu', fmt(mancanti), 'risposte esatte mancanti',
          `<div class="kd pari">${fmt(nuove)} nuove + ${fmt(recuperi)} recuperi</div>`) +
-    tile('📈', 'ico-giallo', fmt(alGiorno), `obiettivo fisso di oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni al 22, oggi compreso'})`,
+    tile('📈', 'ico-giallo', fmt(alGiorno), `obiettivo fisso di oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni al 14/10, oggi compreso'})`,
          `<div class="kd pari">≈ ${nTestGiorno} test da ${N_TEST} · domani si ricalcola sul residuo</div>`) +
     tile('🏁', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'esatte oggi / obiettivo del giorno',
          oggiFatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>'
