@@ -812,7 +812,13 @@ function oggiPiuISO(n){
 }
 
 // ripasso distanziato: una sbagliata torna proponibile dopo 4-5 test completati (r.t = n° di test da raggiungere)
-function intervalloRipasso(){ return 4 + Math.floor(Math.random() * 2); }   // 4 o 5
+// ripasso adattivo: più errori accumulati = torna prima; in riconferma (1ª giusta dopo errore) l'intervallo si allunga
+function intervalloErrore(e){
+  const base = e >= 3 ? 2 : (e === 2 ? 3 : 4);          // 1 errore: 4-5 test · 2 errori: 3-4 · 3+: 2-3
+  return base + Math.floor(Math.random() * 2);
+}
+function intervalloRiconferma(){ return 5 + Math.floor(Math.random() * 2); }   // 5-6 test: spazia il consolidamento
+function intervalloRipasso(){ return intervalloErrore(1); }   // compatibilità
 function proponibile(r){
   return !r.t || (stato.nTest || 0) >= r.t;
 }
@@ -967,7 +973,12 @@ function renderObiettivo(){
     if(!r) nuove++;
     else if(r.s === 'ko'){ daRip++; recuperi += Math.max(1, 2 - r.c); }
   });
-  const mancanti = nuove + recuperi;
+  // margine realistico: sulle nuove si sbaglia; ogni errore su una nuova genera 2 esatte in più da fare.
+  // stimato con la TUA precisione al primo colpo (solo se c'è abbastanza storia).
+  const pt = primoTentativo(QUESTIONS);
+  const prec = pt.tot >= 50 ? Math.max(0.5, pt.ok / pt.tot) : null;
+  const margine = prec !== null ? Math.round(nuove * (1 - prec) * 2) : 0;
+  const mancanti = nuove + recuperi + margine;
   const g = stato.giorni[oggiISO()];
   const oggiFatte = g ? g.ok : 0;   // contano le risposte esatte: il traguardo è espresso in esatte
   const el = $('testo-obiettivo');
@@ -983,7 +994,7 @@ function renderObiettivo(){
   const fmt = n => n.toLocaleString('it-IT');
   el.innerHTML =
     tile('🧮', 'ico-blu', fmt(mancanti), 'risposte esatte mancanti',
-         `<div class="kd pari">${fmt(nuove)} nuove + ${fmt(recuperi)} recuperi</div>`) +
+         `<div class="kd pari">${fmt(nuove)} nuove + ${fmt(recuperi)} recuperi${margine ? ` + ${fmt(margine)} margine errori (precisione ${Math.round(prec*100)}%)` : ''}</div>`) +
     tile('📈', 'ico-giallo', fmt(alGiorno), `obiettivo fisso di oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni al 14/10, oggi compreso'})`,
          `<div class="kd pari">≈ ${nTestGiorno} test da ${N_TEST} · domani si ricalcola sul residuo</div>`) +
     tile('🏁', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'esatte oggi / obiettivo del giorno',
@@ -1016,8 +1027,11 @@ function mixKo(){
   return Math.min(k, 100 - mixNuove());
 }
 function mixVinte(){ return 100 - mixNuove() - mixKo(); }
-// una domanda già indovinata torna proponibile dopo almeno 5 test da quando l'hai risposta
-function vintaProponibile(r){ return (stato.nTest || 0) - (r.u || 0) >= 5; }
+// una domanda già indovinata torna proponibile dopo 5 test; a ogni consolidamento riuscito l'attesa si allunga (10, poi 15)
+function vintaProponibile(r){
+  const soglia = Math.min(15, 5 * ((r.v || 0) + 1));
+  return (stato.nTest || 0) - (r.u || 0) >= soglia;
+}
 
 function composizione(s, soloErr){
   // tre quote configurabili: nuove + sbagliate + già indovinate (dopo >=5 test); i buchi si riempiono
@@ -1232,13 +1246,19 @@ function avviaTest(){
   const sel = argomentiSelezionati();
   const pool = QUESTIONS.filter(q => nelPool(q, sel));
   const soloErr = $('chk-solo-errori').checked;
+  // priorità nel ripasso: prima chi ha più errori accumulati, poi chi aspetta da più tempo (con un po' di caso)
+  const prioritaKo = q => {
+    const r = stato.risultati[q.n];
+    return r.e + ((stato.nTest || 0) - (r.u || 0)) / 50 + Math.random() * 0.9;
+  };
   let ripasso;
   if(soloErr){
-    // con "solo errori" ignora il distanziamento, ma metti prima le proponibili
+    // con "solo errori" ignora il distanziamento, ma metti prima le proponibili (e a parità le più sbagliate)
     ripasso = shuffle(pool.filter(q => stato.risultati[q.n] && stato.risultati[q.n].s === 'ko'));
-    ripasso.sort((a, b) => (proponibile(stato.risultati[a.n]) ? 0 : 1) - (proponibile(stato.risultati[b.n]) ? 0 : 1));
+    ripasso.sort((a, b) => ((proponibile(stato.risultati[a.n]) ? 0 : 1) - (proponibile(stato.risultati[b.n]) ? 0 : 1)) || (prioritaKo(b) - prioritaKo(a)));
   } else {
-    ripasso = shuffle(pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko' && proponibile(r); }));
+    ripasso = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko' && proponibile(r); });
+    ripasso.sort((a, b) => prioritaKo(b) - prioritaKo(a));
   }
   const s = statiPool(pool);
   const c = composizione(s, soloErr);
@@ -1247,7 +1267,13 @@ function avviaTest(){
     domande.push(...selezionaNuoveBilanciate(pool.filter(q => !stato.risultati[q.n]), c.nNew, sel));
   }
   if(c.nVin){
-    const vinte = shuffle(pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && vintaProponibile(r); }));
+    // priorità nelle vinte: prima le ex-sbagliate poi le più "vecchie" (con un po' di caso)
+    const vinte = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && vintaProponibile(r); });
+    const prioVin = q => {
+      const r = stato.risultati[q.n];
+      return (r.e > 0 ? 1.2 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 40 + Math.random() * 0.8;
+    };
+    vinte.sort((a, b) => prioVin(b) - prioVin(a));
     domande.push(...vinte.slice(0, c.nVin));
   }
   shuffle(domande);
@@ -1423,16 +1449,17 @@ function fineTest(){
     const r = stato.risultati[q.n];
     if(!r){ stato.risultati[q.n] = {s:'ok', c:1, e:0, u: stato.nTest}; }
     else {
+      if(r.s === 'ok') r.v = (r.v || 0) + 1;   // consolidamento riuscito: la prossima attesa raddoppia
       r.c++;
       r.u = stato.nTest;
       if(r.e === 0 || r.c >= 2){ r.s = 'ok'; delete r.t; delete r.d; }
-      else { r.t = stato.nTest + intervalloRipasso(); }   // 1ª giusta dopo un errore: riconferma tra 4-5 test
+      else { r.t = stato.nTest + intervalloRiconferma(); }   // 1ª giusta dopo un errore: riconferma tra 5-6 test
     }
   });
   errori.forEach(q => {
     const r = stato.risultati[q.n];
-    if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, u: stato.nTest, t: stato.nTest + intervalloRipasso()}; }
-    else { r.e++; r.c = 0; r.s = 'ko'; r.u = stato.nTest; r.t = stato.nTest + intervalloRipasso(); delete r.d; }   // sbagliata: torna tra 4-5 test
+    if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, u: stato.nTest, t: stato.nTest + intervalloErrore(1)}; }
+    else { r.e++; r.c = 0; r.s = 'ko'; r.u = stato.nTest; r.t = stato.nTest + intervalloErrore(r.e); delete r.v; delete r.d; }   // sbagliata: torna prima se recidiva
   });
   if(risposte.length){
     stato.storico.push({ data: new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
