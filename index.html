@@ -587,6 +587,7 @@ button.modo:focus-visible{outline:3px solid var(--ottone); outline-offset:2px;}
   button.avvia:hover, button.modo:hover{transform:none;}
 }
 .mix-box.mix-tre{margin:4px 0;}
+.mix-ris .mix-val{color:var(--vidimato);}
 details.dett{margin-top:14px;}
 details.dett>summary, details.dett-card>summary{cursor:pointer; list-style:none; font-family:'Archivo',sans-serif; font-weight:600; display:flex; align-items:center; gap:9px; padding:9px 2px; user-select:none;}
 details.dett>summary::-webkit-details-marker, details.dett-card>summary::-webkit-details-marker{display:none;}
@@ -686,6 +687,30 @@ b.dubbia{color:var(--ottone);}
 .st-trend{display:inline-block; margin-top:7px; font-size:.83rem; font-weight:600;}
 .st-trend.su{color:var(--vidimato);} .st-trend.giu{color:var(--lacca);} .st-trend.neutro{color:var(--nebbia); font-weight:500;}
 .st-nosim p{margin:12px 0; font-size:.93rem; line-height:1.6;}
+.st-proiezione{margin-top:16px; padding:13px 15px; border-radius:12px;
+  background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.14);}
+.st-proiezione.bene{background:rgba(63,215,155,.10); border-color:rgba(63,215,155,.32);}
+.st-proiezione.male{background:rgba(242,169,59,.10); border-color:rgba(242,169,59,.34);}
+.pj-riga{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:4px;}
+.pj-num b{font-family:'Archivo',sans-serif; font-size:2.1rem; font-weight:800; line-height:1;}
+.st-proiezione.bene .pj-num b{color:var(--vidimato);}
+.st-proiezione.male .pj-num b{color:var(--ottone);}
+.pj-num span{display:block; font-size:.82rem; color:var(--nebbia); margin-top:3px;}
+.pj-meta{font-size:.8rem; color:var(--nebbia); text-align:right; line-height:1.5;}
+.pj-nota{margin-top:9px; font-size:.88rem; line-height:1.55;}
+.pj-freno{display:inline-block; margin-top:6px; color:var(--lacca); font-weight:600;}
+.pj-sub{display:inline-block; margin-top:6px; color:var(--nebbia);}
+.st-ritardo{margin-top:14px; padding:13px 15px; border-radius:12px;
+  background:rgba(255,123,104,.08); border:1px solid rgba(255,123,104,.3);}
+.st-ritardo p{margin:4px 0 10px; font-size:.88rem; line-height:1.55;}
+.rit-lista{display:flex; flex-direction:column; gap:7px;}
+.rit-voce{display:flex; flex-direction:column; align-items:flex-start; gap:2px; width:100%; text-align:left;
+  padding:9px 12px; border-radius:9px; cursor:pointer; min-height:0;
+  background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.14);}
+.rit-voce:hover{background:rgba(var(--velo),.11);}
+.rit-nome{font-weight:600; font-size:.89rem; color:var(--testo);}
+.rit-dati{font-size:.76rem; color:var(--nebbia);}
+@media(max-width:640px){ .pj-meta{text-align:left;} }
 .st-cop{margin-top:14px; padding:10px 13px; border-radius:11px; font-size:.88rem; line-height:1.55;
   background:rgba(var(--velo),.04); border:1px solid rgba(var(--velo),.12);}
 .st-cop.bene{background:rgba(39,107,78,.08); border-color:rgba(39,107,78,.28);}
@@ -857,9 +882,13 @@ b.dubbia{color:var(--ottone);}
         <div class="mix-riga"><span class="mini mix-nome">❌ Sbagliate</span>
           <input type="range" id="mix-ko" min="0" max="100" step="5" value="30" title="Percentuale di domande sbagliate da recuperare">
           <b class="mini mix-val rosso" id="mix-val-k">30%</b></div>
-        <div class="mix-riga"><span class="mini mix-nome">✅ Già indovinate <span title="Domande superate, riproposte per consolidarle: tornano disponibili dopo almeno 5 test da quando le hai risposte">ⓘ</span></span>
+        <div class="mix-riga"><span class="mini mix-nome">✅ Già indovinate <span title="Domande già superate e riconfermate, riproposte per non dimenticarle: tornano dopo 5 test, poi 10, poi 15. Le riconferme di primo giro hanno invece una quota riservata a parte.">ⓘ</span></span>
           <span class="mini spazio"></span>
           <b class="mini mix-val verde" id="mix-val-v">0%</b></div>
+        <div class="mix-riga mix-ris nascosto" id="mix-riconferme">
+          <span class="mini mix-nome">🔁 Da riconfermare <span title="Domande viste una volta sola: tornano una seconda volta a distanza prima di poter contare come sapute. Hanno una quota riservata, indipendente dai cursori.">ⓘ</span></span>
+          <span class="mini spazio"></span>
+          <b class="mini mix-val verde" id="mix-val-r">0%</b></div>
         <span class="nascosto" id="mix-label"></span>
       </div>
       <details class="dett"><summary>📚 Scegli gli argomenti</summary>
@@ -1236,17 +1265,18 @@ function proponibile(r){
 
 // ---------- home ----------
 function statiPool(pool){
-  let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0, dubbie=0;
+  let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0, dubbie=0, daRiconf=0, ricEleg=0;
   pool.forEach(q => {
     const r = stato.risultati[q.n];
     if(!r) nuove++;
     else if(r.s==='ok'){
       if(r.p) dubbie++; else ok++;          // "da confermare" non vale come superata
-      if(vintaProponibile(r)) okEleg++;
+      if(r.k){ daRiconf++; if(vintaProponibile(r)) ricEleg++; }
+      else if(vintaProponibile(r)) okEleg++;
     }
     else { ko++; if(proponibile(r)) koEleg++; }
   });
-  return {ok, ko, nuove, koEleg, okEleg, dubbie, tot: pool.length};
+  return {ok, ko, nuove, koEleg, okEleg, dubbie, daRiconf, ricEleg, tot: pool.length};
 }
 
 function renderHome(){
@@ -1405,18 +1435,26 @@ function sommaFinestra(daN, aN){
 const pctDi = t => (t.ok + t.ko) ? Math.round(100 * t.ok / (t.ok + t.ko)) : null;
 
 // ambito più debole in base allo stato attuale (dato solido, disponibile da subito)
+// Un'unica definizione di padronanza, usata ovunque: quota di domande VISTE
+// che risultano consolidate (superate e riconfermate). Le domande ancora da
+// confermare o da riconfermare non contano come sapute.
+function padronanza(pool){
+  let consolidate = 0, viste = 0, daRip = 0;
+  pool.forEach(q => {
+    const r = stato.risultati[q.n]; if(!r) return;
+    viste++;
+    if(r.s === 'ok' && !r.p && !r.k) consolidate++;
+    if(r.s === 'ko') daRip++;
+  });
+  return {consolidate, viste, daRip, pct: viste ? Math.round(100*consolidate/viste) : null};
+}
+
 function ambitoPiuDebole(){
   let peggiore = null;
   ARGOMENTI.forEach(a => {
-    let ok = 0, ko = 0;
-    QUESTIONS.forEach(q => {
-      if(q.t !== a) return;
-      const r = stato.risultati[q.n]; if(!r) return;
-      if(r.s === 'ok') ok++; else ko++;
-    });
-    if(ok + ko < 20) return;
-    const pct = Math.round(100 * ok / (ok + ko));
-    if(!peggiore || pct < peggiore.pct) peggiore = {arg:a, pct, daRip:ko};
+    const p = padronanza(QUESTIONS.filter(q => q.t === a));
+    if(p.viste < 20 || p.pct === null) return;
+    if(!peggiore || p.pct < peggiore.pct) peggiore = {arg:a, pct:p.pct, daRip:p.daRip};
   });
   return peggiore;
 }
@@ -1482,17 +1520,21 @@ function simulazioni(){
 // statistiche per i sottoargomenti ufficiali del bando
 function statiSottoargomenti(arg){
   const cfg = SOTTO[arg]; if(!cfg) return null;
-  const righe = cfg.SA.map((nome, i) => ({nome, i, tot:0, ok:0, ko:0, dubbie:0, nuove:0}));
+  const righe = cfg.SA.map((nome, i) => ({nome, i, tot:0, ok:0, ko:0, dubbie:0, nuove:0, consolidate:0}));
   QUESTIONS.forEach(q => {
     if(q.t !== arg) return;
     const i = cfg.map[q.n]; if(i === undefined || !righe[i]) return;
     const R = righe[i]; R.tot++;
     const r = stato.risultati[q.n];
     if(!r) R.nuove++;
-    else if(r.s === 'ok'){ if(r.p) R.dubbie++; else R.ok++; }
+    else if(r.s === 'ok'){
+      if(r.p) R.dubbie++; else R.ok++;
+      if(!r.p && !r.k) R.consolidate++;
+    }
     else R.ko++;
   });
-  righe.forEach(R => { const viste = R.ok + R.ko + R.dubbie; R.pct = viste ? Math.round(100*R.ok/viste) : null; R.viste = viste; });
+  // stessa regola di padronanza: consolidate sul totale delle viste
+  righe.forEach(R => { const viste = R.ok + R.ko + R.dubbie; R.pct = viste ? Math.round(100*R.consolidate/viste) : null; R.viste = viste; });
   return righe;
 }
 
@@ -1517,13 +1559,13 @@ function applicaFase(){
   const chiave = 'cons-' + DATA_ESAME;
   if(stato.faseApplicata !== chiave){          // una sola volta: poi i cursori restano tuoi
     stato.faseApplicata = chiave;
-    stato.mixNuove = 20; stato.mixKo = 50;     // 20% nuove · 50% sbagliate · 30% da riconfermare
+    stato.mixNuove = 0; stato.mixKo = 60;      // 0% nuove · 60% sbagliate · 40% già viste da riconfermare
     salvaLocale();
     if(typeof aggiornaMixLabel === 'function') aggiornaMixLabel();
   }
   avviso.classList.remove('nascosto');
   avviso.innerHTML = `<b>🎯 Fase di consolidamento</b> — mancano ${giorniAllEsame()} giorni: `
-    + `l'app ha spostato il mix su <b>20% nuove · 50% sbagliate · 30% da riconfermare</b>. `
+    + `l'app ha azzerato le domande nuove e spostato il mix su <b>60% sbagliate · 40% da riconfermare</b>. `
     + `Ora conta chiudere gli errori e confermare quello che sai, non aggiungere materiale nuovo. `
     + `Puoi comunque cambiare i cursori quando vuoi.`;
 }
@@ -1716,9 +1758,9 @@ function mosseDelGiorno(){
     mosse.push({cls:'avviso',
       testo:`<b>Attenzione alla stanchezza.</b> Oggi sei al ${precOggi}%, contro il tuo ${precAbituale}% abituale, dopo ${rispOggi} domande. Quando la precisione cala così, continuare consolida gli errori: meglio fermarsi, o passare al ripasso delle sbagliate invece che a domande nuove.`,
       breve:`Chiudi qui la giornata. Se vuoi restare sui libri senza rischiare, rileggi le domande già sbagliate con spiegazione e trucco: costa poca energia e consolida invece di rovinare.`});
-  } else if(rispOggi && target && oggi.ok >= target){
+  } else if(rispOggi && target && rispOggi >= target){
     const peg = peggioreDelGiorno(oggi, 6);
-    let t = `<b>Obiettivo di oggi raggiunto</b> (${oggi.ok}/${target} risposte esatte, ${rispOggi} domande al ${precOggi}%). Puoi fermarti qui: il ripasso di domani rende più del sesto test di oggi.`;
+    let t = `<b>Obiettivo di oggi raggiunto</b> (${rispOggi}/${target} domande, ${precOggi}% di esatte). Puoi fermarti qui: il ripasso di domani rende più del sesto test di oggi.`;
     if(peg && peg.pct < 70) t += ` Da annotare per domani: oggi su <b>${peg.arg}</b> sei al ${peg.pct}%.`;
     mosse.push({cls:'ok', testo:t, azione: (peg && peg.pct < 70) ? {lab:`Prepara ${nomeBreve(peg.arg)} per domani`, arg:peg.arg} : null});
   } else if(ricorrente){
@@ -1738,10 +1780,10 @@ function mosseDelGiorno(){
       mosse.push({cls:'info', testo:t, azione:(peg && peg.pct < 70) ? {lab:`Riparti da ${nomeBreve(peg.arg)}`, arg:peg.arg} : null});
     }
   } else {
-    const mancano = target ? Math.max(0, target - oggi.ok) : 0;
+    const mancano = target ? Math.max(0, target - rispOggi) : 0;
     const peg = peggioreDelGiorno(oggi, 6);
     let t = `Oggi: <b>${rispOggi}</b> risposte al <b>${precOggi}%</b>` + (precAbituale !== null ? ` (abituale ${precAbituale}%)` : '') + '. ';
-    t += mancano ? `Mancano <b>${mancano}</b> risposte esatte all'obiettivo, circa ${Math.max(1, Math.ceil(mancano/N_TEST))} test.` : 'Continua così.';
+    t += mancano ? `Mancano <b>${mancano}</b> domande all'obiettivo di oggi, circa ${Math.max(1, Math.round(mancano/N_TEST))} test.` : 'Continua così.';
     if(peg && peg.pct < 70) t += ` Il punto debole di oggi è <b>${peg.arg}</b> (${peg.pct}%).`;
     mosse.push({cls: (precAbituale !== null && precOggi >= precAbituale) ? 'ok' : 'info', testo:t,
                 azione:(peg && peg.pct < 70) ? {lab:`Allena ${nomeBreve(peg.arg)}`, arg:peg.arg} : null});
@@ -1761,10 +1803,85 @@ function statoCopertura(){
   if(ritmo && ritmo > 0){
     const ggPrevisti = Math.ceil(nuoveRimaste / ritmo);
     return ggPrevisti > ggCop
-      ? {ok:false, testo:`<b>${fmt(nuoveRimaste)}</b> domande mai viste e <b>${ggCop} giorni</b> prima del consolidamento. Al ritmo attuale (${ritmo} nuove al giorno) ne servirebbero ${ggPrevisti}: per vederle tutte servono <b>${servono} nuove al giorno</b>.`}
-      : {ok:true, testo:`<b>${fmt(nuoveRimaste)}</b> domande mai viste: al ritmo attuale (${ritmo} al giorno) le vedi tutte in ${ggPrevisti} giorni, dentro i ${ggCop} disponibili.`};
+      ? {ok:false, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste e ${ggCop} giorni prima del consolidamento: delle domande di oggi, almeno <b>${servono}</b> devono essere <b>mai viste</b>. Al ritmo attuale ne vedi ${ritmo} al giorno e non basterebbe.`}
+      : {ok:true, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: al ritmo attuale (${ritmo} nuove al giorno) le vedi tutte in tempo.`};
   }
-  return {ok:null, testo:`<b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: servono circa <b>${servono} domande nuove al giorno</b>.`};
+  return {ok:null, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: delle domande di oggi, almeno <b>${servono}</b> devono essere <b>mai viste</b>.`};
+}
+
+// ====================== PROIEZIONE AL GIORNO D'ESAME ======================
+// L'esame pesca 60 domande a caso dalla banca: il punteggio atteso è la padronanza
+// media. Una domanda mai vista vale la precisione al primo tentativo, una acquisita
+// vale molto di più. Da qui la stima — e quante risposte al giorno servono.
+const P_ACQUISITA = 0.96;
+const RISPOSTE_PER_DOMANDA = 2.75;   // quante risposte servono in media per acquisirne una
+const OBIETTIVO_ESAME = 0.90;
+
+function proiezioneEsame(){
+  let acquisite = 0, inLavorazione = 0, nuoveRimaste = 0;
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r){ nuoveRimaste++; return; }
+    if(r.s === 'ok' && !r.p && !r.k) acquisite++;   // superate E riconfermate
+    else inLavorazione++;                          // già viste ma non ancora acquisite
+  });
+  const pt = primoTentativo(QUESTIONS);
+  const pNuova = pt.tot >= 50 ? Math.max(0.3, Math.min(0.8, pt.ok / pt.tot)) : 0.55;
+  const N = QUESTIONS.length;
+  const stima = c => c * P_ACQUISITA + (1 - c) * pNuova;
+
+  const recenti = giorniAttiviRecenti(13).slice(0, 7);
+  const ritmo = recenti.length
+    ? Math.round(recenti.reduce((a,g) => a + g.ok + g.ko, 0) / recenti.length) : 0;
+  const conNuove = recenti.filter(g => g.nuove !== undefined);
+  // se lo storico non ha ancora il dettaglio delle domande nuove, lo stimo dalla quota del mix
+  const ritmoNuove = conNuove.length
+    ? Math.round(conNuove.reduce((a,g) => a + (g.nuove||0), 0) / conNuove.length)
+    : Math.round(ritmo * mixNuove() / 100);
+  const ritmoNuoveStimato = conNuove.length === 0;
+
+  const gg = giorniAllEsame();          // giorni totali
+  const ggCop = giorniCopertura();      // giorni in cui si possono ancora incontrare domande NUOVE
+
+  // Vincolo delle due fasi: una domanda mai vista può essere acquisita solo se la si
+  // incontra entro l'inizio del consolidamento. Gli ultimi 10 giorni servono a chiudere
+  // ciò che è già stato aperto, non ad aprire materiale nuovo.
+  const nuoveRaggiungibili = inFaseFinale() ? 0 : Math.min(nuoveRimaste, ritmoNuove * ggCop);
+  const tettoDaFase = inLavorazione + nuoveRaggiungibili;      // quante se ne possono ancora acquisire
+  const tettoDaTempo = (ritmo * gg) / RISPOSTE_PER_DOMANDA;    // quante il ritmo consente
+  const acquisibili = Math.max(0, Math.min(tettoDaFase, tettoDaTempo));
+  const limitataDallaCopertura = tettoDaFase < tettoDaTempo;   // il freno è il ritmo sulle nuove
+
+  const previsto = stima((acquisite + acquisibili) / N);
+  const serveAcquisite = Math.min(N, N * (OBIETTIVO_ESAME - pNuova) / (P_ACQUISITA - pNuova));
+  const mancanti = Math.max(0, serveAcquisite - acquisite);
+  const alGiorno = gg > 0 ? Math.ceil(mancanti * RISPOSTE_PER_DOMANDA / gg) : 0;
+  // di quelle, quante devono essere mai viste: vanno tutte incontrate entro il consolidamento
+  const nuoveNecessarie = Math.max(0, Math.min(nuoveRimaste, mancanti - inLavorazione));
+  const nuoveAlGiorno = (!inFaseFinale() && ggCop > 0) ? Math.ceil(nuoveNecessarie / ggCop) : 0;
+
+  return {acquisite, inLavorazione, nuoveRimaste, N, pNuova, ritmo, ritmoNuove, ritmoNuoveStimato, gg, ggCop,
+          previsto: Math.round(previsto * 100),
+          serveAcquisite: Math.round(serveAcquisite), alGiorno, nuoveAlGiorno,
+          limitataDallaCopertura,
+          raggiungibile: previsto >= OBIETTIVO_ESAME};
+}
+
+// sottoargomenti rimasti troppo indietro: sono buchi garantiti il giorno dell'esame
+function copertureInRitardo(){
+  const fatti = [], N = QUESTIONS.length;
+  let vistiTot = 0;
+  QUESTIONS.forEach(q => { if(stato.risultati[q.n]) vistiTot++; });
+  const mediaVista = vistiTot / N;
+  ARGOMENTI.forEach((a, ia) => {
+    const righe = statiSottoargomenti(a); if(!righe) return;
+    righe.forEach(R => {
+      if(R.tot < 20) return;
+      const vista = (R.tot - R.nuove) / R.tot;
+      if(vista < mediaVista * 0.55) fatti.push({arg:a, ia, nome:R.nome, vista, tot:R.tot, nuove:R.nuove, idx:R.i});
+    });
+  });
+  return fatti.sort((x,y) => (y.tot*(1-y.vista)) - (x.tot*(1-x.vista)));
 }
 
 function renderStato(){
@@ -1821,6 +1938,44 @@ function renderStato(){
   const rigaCop = cop ? `<div class="st-cop ${cop.ok === false ? 'male' : (cop.ok ? 'bene' : '')}">
       <span class="st-cop-tit">Copertura della banca dati</span> ${cop.testo}</div>` : '';
 
+  // --- proiezione al giorno d'esame ---
+  const pr = proiezioneEsame();
+  const fmt = n => n.toLocaleString('it-IT');
+  const rigaProiezione = `
+    <div class="st-proiezione ${pr.raggiungibile ? 'bene' : 'male'}">
+      <div class="st-cop-tit">Proiezione al 15 ottobre</div>
+      <div class="pj-riga">
+        <div class="pj-num"><b>${pr.previsto}%</b><span>punteggio previsto all'esame</span></div>
+        <div class="pj-meta">
+          ${fmt(pr.acquisite)} domande consolidate su ${fmt(pr.N)}<br>
+          ritmo attuale ${pr.ritmo ? fmt(pr.ritmo) + ' domande al giorno' : 'non ancora misurabile'}
+        </div>
+      </div>
+      <div class="pj-nota">${pr.raggiungibile
+        ? `Sei sulla strada del <b>90%</b>: a questo ritmo arrivi sopra l'obiettivo. Serve solo non mollare.`
+        : `Per arrivare al <b>90%</b> servono <b>${fmt(pr.serveAcquisite)}</b> domande <b>consolidate</b> — cioè superate e poi riconfermate a distanza. Da qui all'esame sono <b>${fmt(pr.alGiorno)} domande al giorno</b>, ed è l'obiettivo che trovi in cima.`}
+        ${pr.limitataDallaCopertura && !inFaseFinale()
+          ? `<br><span class="pj-freno">⚠ Il freno non è il tempo, è il ritmo sulle domande nuove: quelle che non incontri entro ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})} non rientrano più, perché gli ultimi ${GG_CONSOLIDAMENTO} giorni sono di solo ripasso.</span>`
+          : ''}
+        ${!inFaseFinale() && pr.nuoveAlGiorno
+          ? `<br><span class="pj-sub">Delle ${fmt(pr.alGiorno)} di oggi, almeno <b>${fmt(pr.nuoveAlGiorno)}</b> devono essere mai viste (entro il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'short'})}); gli ultimi ${GG_CONSOLIDAMENTO} giorni chiudono ciò che resta aperto.</span>`
+          : ''}</div>
+    </div>`;
+
+  // --- sottoargomenti rimasti indietro ---
+  const ritardo = copertureInRitardo();
+  const rigaRitardo = ritardo.length ? `
+    <div class="st-ritardo">
+      <div class="st-cop-tit">Sottoargomenti rimasti indietro</div>
+      <p>All'esame le domande escono da tutti i sottoargomenti: quelli lasciati scoperti sono errori quasi garantiti.
+      ${ritardo.length === 1 ? 'Ne è rimasto uno' : 'Ne sono rimasti ' + ritardo.length} molto sotto la media.</p>
+      <div class="rit-lista">${ritardo.slice(0,4).map(r => `
+        <button class="rit-voce" data-arg="${r.ia}" data-sa="${r.idx}">
+          <span class="rit-nome">${r.nome}</span>
+          <span class="rit-dati">${fmt(r.nuove)} mai viste su ${fmt(r.tot)} · ${nomeBreve(r.arg)}</span>
+        </button>`).join('')}</div>
+    </div>` : '';
+
   const mossa = mosseDelGiorno()[0];
   const ap = aperturaCoach();
   const blocco = `<div class="st-coach ${ap.tono}">
@@ -1830,7 +1985,8 @@ function renderStato(){
       ${mossa && mossa.azione ? `<button class="co-btn" data-arg="${mossa.azione.arg}">${mossa.azione.lab} →</button>` : ''}
     </div>`;
 
-  card.innerHTML = testa + blocco + `<div class="st-prove"><div class="st-prove-tit">Le prove</div>` + verdetto + rigaCop + `</div>`;
+  card.innerHTML = testa + blocco + rigaProiezione + rigaRitardo
+                 + `<div class="st-prove"><div class="st-prove-tit">Le prove</div>` + verdetto + rigaCop + `</div>`;
   const bs = $('st-sim'); if(bs) bs.onclick = avviaSimulazione;
 }
 
@@ -2056,10 +2212,15 @@ function giorniCopertura(){
 }
 function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 
-function targetOggi(mancanti){
+// L'obiettivo del giorno è espresso in DOMANDE AFFRONTATE, non in risposte esatte:
+// è l'unica quantità che dipende da chi studia. Con l'obiettivo in esatte, una giornata
+// storta ne chiederebbe di più proprio quando conviene fermarsi prima.
+// Resta fisso per tutta la giornata e si ricalcola domani sul residuo.
+function targetOggi(domandeAlGiorno){
   const oggi = oggiISO();
-  if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0) || stato.piano.esame !== DATA_ESAME){
-    stato.piano = {giorno: oggi, esame: DATA_ESAME, target: Math.max(1, Math.ceil(mancanti / giorniCopertura()))};
+  if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)
+     || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== 'domande'){
+    stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: 'domande', target: Math.max(1, domandeAlGiorno)};
     salvaLocale();
   }
   return stato.piano.target;
@@ -2079,7 +2240,7 @@ function renderObiettivo(){
   const margine = prec !== null ? Math.round(nuove * (1 - prec) * 2) : 0;
   const mancanti = nuove + recuperi + margine;
   const g = stato.giorni[oggiISO()];
-  const oggiFatte = g ? g.ok : 0;   // contano le risposte esatte: il traguardo è espresso in esatte
+  const oggiFatte = g ? (g.ok + g.ko) : 0;   // domande affrontate oggi, esito indifferente
   const el = $('testo-obiettivo');
   const gg = giorniAllEsame();
   const scad = new Date(DATA_ESAME).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
@@ -2087,20 +2248,24 @@ function renderObiettivo(){
   $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame! 🍀'
     : inFaseFinale() ? `— ultimi ${gg} giorni: si consolida, niente materiale nuovo · esame giovedì 15 ottobre 🍀`
     : `— tutte le domande viste entro ${scadCop} (${giorniCopertura()} giorni), poi 10 giorni di consolidamento · esame giovedì 15 ottobre 🍀`;
-  if(!mancanti){
-    el.innerHTML = '<div class="mini-chiaro">Banca dati esaurita 🎉 — nessuna domanda nuova né da recuperare.</div>';
-    $('ob-hero').innerHTML = `<div class="obh-fatto">🎉 <b>Banca dati esaurita</b> — non restano domande nuove né da recuperare.</div>`;
+  // "Finita" vuol dire davvero finita: niente di nuovo, niente da recuperare
+  // e nessuna conferma ancora in sospeso.
+  const prTest = proiezioneEsame();
+  if(prTest.acquisite >= prTest.N){
+    el.innerHTML = '<div class="mini-chiaro">Banca dati completata 🎉 — tutte le domande superate e riconfermate.</div>';
+    $('ob-hero').innerHTML = `<div class="obh-fatto">🎉 <b>Banca dati completata</b> — tutte le domande superate e riconfermate.</div>`;
     return;
   }
-  const alGiorno = targetOggi(mancanti);   // FISSO per tutta la giornata: si ricalcola solo domani sul residuo
-  const nTestGiorno = Math.max(1, Math.ceil(alGiorno / N_TEST));
+  const pr = proiezioneEsame();            // unica fonte del calcolo: obiettivo e proiezione non possono discordare
+  const alGiorno = targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
+  const nTestGiorno = Math.max(1, Math.round(alGiorno / N_TEST));
   const fmt = n => n.toLocaleString('it-IT');
   el.innerHTML =
-    tile('🧮', 'ico-blu', fmt(mancanti), 'risposte esatte mancanti',
-         `<div class="kd pari">${fmt(nuove)} nuove + ${fmt(recuperi)} recuperi${margine ? ` + ${fmt(margine)} margine errori (precisione ${Math.round(prec*100)}%)` : ''}</div>`) +
-    tile('📈', 'ico-giallo', fmt(alGiorno), `obiettivo fisso di oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni al 14/10, oggi compreso'})`,
+    tile('🧮', 'ico-blu', fmt(Math.max(0, pr.serveAcquisite - pr.acquisite)), 'domande ancora da consolidare',
+         `<div class="kd pari">${fmt(pr.acquisite)} già consolidate (superate e riconfermate) su ${fmt(pr.serveAcquisite)} per il 90%</div>`) +
+    tile('📈', 'ico-giallo', fmt(alGiorno), `domande da affrontare oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni all\'esame'})`,
          `<div class="kd pari">≈ ${nTestGiorno} test da ${N_TEST} · domani si ricalcola sul residuo</div>`) +
-    tile('🏁', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'esatte oggi / obiettivo del giorno',
+    tile('🏁', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'domande fatte oggi / obiettivo',
          oggiFatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>'
                                : `<div class="kd pari">ne mancano ${fmt(alGiorno - oggiFatte)}</div>`);
 
@@ -2117,7 +2282,7 @@ function renderObiettivo(){
       ${capofase}
     </div>
     <div class="obh-riga">
-      <div class="obh-num"><b>${fmt(oggiFatte)}</b><span>/${fmt(alGiorno)} risposte esatte</span></div>
+      <div class="obh-num"><b>${fmt(oggiFatte)}</b><span>/${fmt(alGiorno)} domande</span></div>
       <div class="obh-stato ${fatto ? 'ok' : ''}">${fatto ? '✔ obiettivo raggiunto' : `ne mancano <b>${fmt(restano)}</b> · ≈ ${Math.max(1, Math.ceil(restano / N_TEST))} test`}</div>
     </div>
     <div class="obh-bar ${fatto ? 'ok' : ''}"><i style="width:${pctOb}%"></i></div>`;
@@ -2156,28 +2321,34 @@ function mixVinte(){ return 100 - mixNuove() - mixKo(); }
 // una domanda già indovinata torna proponibile dopo 5 test; a ogni consolidamento riuscito l'attesa si allunga (10, poi 15)
 function vintaProponibile(r){
   if(r.p) return (stato.nTest || 0) - (r.u || 0) >= 1;   // da confermare: torna al test successivo
+  if(r.k) return (stato.nTest || 0) - (r.u || 0) >= 2;   // in attesa di riconferma: torna dopo 2 test
   const soglia = Math.min(15, 5 * ((r.v || 0) + 1));
   return (stato.nTest || 0) - (r.u || 0) >= soglia;
 }
 
+// Fino a un quarto del test è riservato alle riconferme in scadenza: una domanda
+// vista una volta sola non si può considerare acquisita, e questa quota lo garantisce
+// senza togliere spazio alle quote scelte con i cursori.
+const QUOTA_RICONFERME = 0.25;
 function composizione(s, soloErr){
-  // tre quote configurabili: nuove + sbagliate + già indovinate (dopo >=5 test); i buchi si riempiono
-  // in ordine nuove -> sbagliate -> vinte. "Solo errori" usa tutte le sbagliate.
-  if(soloErr) return {nRip: Math.min(N_TEST, s.ko), nNew: 0, nVin: 0};
-  let nVin = Math.min(s.okEleg || 0, Math.round(N_TEST * mixVinte() / 100));
-  let nRip = Math.min(s.koEleg, Math.round(N_TEST * mixKo() / 100));
-  let nNew = Math.min(s.nuove, N_TEST - nRip - nVin);
-  nRip = Math.min(s.koEleg, N_TEST - nNew - nVin);
-  nVin = Math.min(s.okEleg || 0, N_TEST - nNew - nRip);
-  return {nRip, nNew, nVin};
+  if(soloErr) return {nRip: Math.min(N_TEST, s.ko), nNew: 0, nVin: 0, nRic: 0};
+  const nRic = Math.min(s.ricEleg || 0, Math.round(N_TEST * QUOTA_RICONFERME));
+  const resto = N_TEST - nRic;
+  let nVin = Math.min(s.okEleg || 0, Math.round(resto * mixVinte() / 100));
+  let nRip = Math.min(s.koEleg, Math.round(resto * mixKo() / 100));
+  let nNew = Math.min(s.nuove, resto - nRip - nVin);
+  nRip = Math.min(s.koEleg, resto - nNew - nVin);
+  nVin = Math.min(s.okEleg || 0, resto - nNew - nRip);
+  return {nRip, nNew, nVin, nRic};
 }
 
 function aggiornaNota(){
+  if(typeof aggiornaQuotaRiconferme === 'function') aggiornaQuotaRiconferme();
   const sel = argomentiSelezionati();
   const pool = QUESTIONS.filter(q => nelPool(q, sel));
   const s = statiPool(pool);
   const soloErr = $('chk-solo-errori').checked;
-  const disponibili = soloErr ? s.ko : s.koEleg + s.nuove + (s.okEleg || 0);
+  const disponibili = soloErr ? s.ko : s.koEleg + s.nuove + (s.okEleg || 0) + (s.ricEleg || 0);
   $('btn-avvia').disabled = disponibili === 0;
   if(pool.length === 0){ $('nota-pool').textContent = 'Seleziona almeno un argomento.'; return; }
   if(disponibili === 0){
@@ -2417,9 +2588,15 @@ function avviaTest(){
   if(c.nNew){
     domande.push(...selezionaNuoveBilanciate(pool.filter(q => !stato.risultati[q.n]), c.nNew, sel));
   }
+  if(c.nRic){
+    // riconferme dovute: prima quelle in attesa da più tempo
+    const ric = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && r.k && vintaProponibile(r); });
+    ric.sort((a,b) => ((stato.nTest||0)-(stato.risultati[b.n].u||0)) - ((stato.nTest||0)-(stato.risultati[a.n].u||0)));
+    domande.push(...ric.slice(0, c.nRic));
+  }
   if(c.nVin){
     // priorità nelle vinte: prima le ex-sbagliate poi le più "vecchie" (con un po' di caso)
-    const vinte = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && vintaProponibile(r); });
+    const vinte = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && !r.k && vintaProponibile(r); });
     const prioVin = q => {
       const r = stato.risultati[q.n];
       return (r.e > 0 ? 1.2 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 40 + Math.random() * 0.8;
@@ -2477,9 +2654,8 @@ function avviaPro(){
   // 3) argomento più debole (precisione peggiore tra quelli con almeno 10 domande affrontate)
   let peggiore = null, minPrec = 2;
   ARGOMENTI.forEach(arg => {
-    const s = statiPool(QUESTIONS.filter(q => q.t === arg));
-    const viste = s.ok + s.ko;
-    if(viste >= 10 && s.ok/viste < minPrec){ minPrec = s.ok/viste; peggiore = arg; }
+    const p = padronanza(QUESTIONS.filter(q => q.t === arg));
+    if(p.viste >= 10 && p.pct !== null && p.pct/100 < minPrec){ minPrec = p.pct/100; peggiore = arg; }
   });
   const pool3 = peggiore ? QUESTIONS.filter(q => q.t === peggiore && (!stato.risultati[q.n] || stato.risultati[q.n].s === 'ko'))
                          : QUESTIONS.filter(q => !stato.risultati[q.n]);
@@ -2515,7 +2691,8 @@ function renderDomanda(){
   const vintaRip = !inRipasso && rq && rq.s === 'ok' && !test.sim;
   $('q-rip').classList.toggle('nascosto', !inRipasso && !vintaRip);
   if(inRipasso) $('q-rip').textContent = `RIPASSO — sbagliata ${rq.e === 1 ? 'una volta' : rq.e + ' volte'} · ${2-rq.c === 1 ? 'manca 1 risposta esatta' : 'mancano 2 risposte esatte'} per superarla`;
-  else if(vintaRip) $('q-rip').textContent = rq.p ? 'DA CONFERMARE — l\'avevi indovinata, ma con esitazione' : 'CONSOLIDAMENTO — già indovinata in passato';
+  else if(vintaRip) $('q-rip').textContent = rq.p ? 'DA CONFERMARE — l\'avevi indovinata, ma con esitazione'
+    : (rq.k ? 'RICONFERMA — l\'avevi vista una volta sola' : 'CONSOLIDAMENTO — già superata e riconfermata');
   $('q-testo').textContent = q.n + '. ' + q.q;
   $('q-feedback').classList.add('nascosto');
   $('q-spiega').classList.add('nascosto');
@@ -2636,10 +2813,10 @@ function fineTest(){
     if(!incerta) aggiornaRitmo(test.tempi[q.n]);
     const r = stato.risultati[q.n];
     if(!r){
-      // giusta al primo colpo: vale come superata solo se la risposta era sicura,
-      // altrimenti resta "da confermare" e torna presto (evita di archiviare i colpi di fortuna)
-      stato.risultati[q.n] = incerta ? {s:'ok', c:1, e:0, u: stato.nTest, p:1}
-                                     : {s:'ok', c:1, e:0, u: stato.nTest};
+      // Giusta al primo colpo: conta come superata, ma non è ancora acquisita.
+      // k=1 la tiene in coda per UNA riconferma a distanza; solo dopo esce dal giro breve.
+      stato.risultati[q.n] = incerta ? {s:'ok', c:1, e:0, u: stato.nTest, p:1, k:1}
+                                     : {s:'ok', c:1, e:0, u: stato.nTest, k:1};
     }
     else {
       if(r.s === 'ok') r.v = (r.v || 0) + 1;   // consolidamento riuscito: la prossima attesa raddoppia
@@ -2648,6 +2825,7 @@ function fineTest(){
       if(r.e === 0 || r.c >= 2){ r.s = 'ok'; delete r.t; delete r.d; }
       else { r.t = stato.nTest + intervalloRiconferma(); }   // 1ª giusta dopo un errore: riconferma tra 5-6 test
       if(incerta) r.p = 1; else delete r.p;   // conferma sicura: la domanda è davvero acquisita
+      if(r.s === 'ok' && !incerta) delete r.k;   // riconferma riuscita: esce dal giro breve
     }
   });
   errori.forEach(q => {
@@ -3103,6 +3281,8 @@ $('andamento-corpo').addEventListener('click', ev => {
   renderAndamento();
 });
 $('card-stato').addEventListener('click', ev => {
+  const v = ev.target.closest('.rit-voce');
+  if(v){ allenaSottoargomento(ARGOMENTI[+v.dataset.arg], +v.dataset.sa); return; }
   const b = ev.target.closest('.co-btn'); if(!b) return;
   allenaArgomento(b.dataset.arg);
 });
@@ -3134,6 +3314,21 @@ $('chk-solo-aperte').onchange = renderRipasso;
 $('chk-solo-errori').onchange = aggiornaNota;
 $('chk-autosave').onchange = () => { stato.autosave = $('chk-autosave').checked; salvaLocale(); };
 $('amore-chiudi').onclick = () => $('velo-amore').classList.add('nascosto');
+// Il quarto riservato alle riconferme non passa dai cursori: va dichiarato,
+// altrimenti le percentuali mostrate non corrispondono al test reale.
+function aggiornaQuotaRiconferme(){
+  const riga = $('mix-riconferme'); if(!riga) return;
+  const s = statiPool(QUESTIONS.filter(q => nelPool(q, argomentiSelezionati())));
+  const nRic = Math.min(s.ricEleg || 0, Math.round(N_TEST * QUOTA_RICONFERME));
+  riga.classList.toggle('nascosto', nRic === 0);
+  if(nRic) $('mix-val-r').textContent = Math.round(100 * nRic / N_TEST) + '%';
+  const resto = N_TEST - nRic;
+  [['n', mixNuove()], ['k', mixKo()], ['v', mixVinte()]].forEach(([k, q]) => {
+    const el = $('mix-val-' + k); if(!el) return;
+    el.title = nRic ? `≈ ${Math.round(resto * q / 100)} domande su ${N_TEST}: la percentuale si applica alle ${resto} non riservate` : '';
+  });
+}
+
 function aggiornaMixLabel(){
   $('mix-nuove').value = mixNuove();
   $('mix-ko').value = mixKo();
@@ -3141,6 +3336,7 @@ function aggiornaMixLabel(){
   $('mix-val-k').textContent = mixKo() + '%';
   $('mix-val-v').textContent = mixVinte() + '%';
   $('mix-label').innerHTML = `<b>${mixNuove()}%</b> nuove · <b class="rosso">${mixKo()}%</b> sbagliate · <b>${mixVinte()}%</b> vinte`;
+  aggiornaQuotaRiconferme();
 }
 $('mix-nuove').oninput = () => {
   stato.mixNuove = +$('mix-nuove').value;
