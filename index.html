@@ -472,6 +472,210 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .tem-fondo{gap:6px;}
 }
 
+/* ===== Home UX v2 ===== */
+.card-azione .azione-testa h2{margin:0;}
+.azione-sub{margin:3px 0 0; color:var(--nebbia); font-size:.9rem;}
+.azione-cta{margin:14px 0 4px;}
+.azione-cta .btn-p#btn-avvia{width:100%; font-size:1.08rem; padding:15px 18px;}
+.azione-alt{display:flex; gap:10px; margin-top:10px;}
+.azione-alt .btn-s{flex:1; margin:0;}
+.mix-box.mix-tre{margin:4px 0;}
+details.dett{margin-top:14px;}
+details.dett>summary, details.dett-card>summary{cursor:pointer; list-style:none; font-family:'Sora',sans-serif; font-weight:600; display:flex; align-items:center; gap:9px; padding:9px 2px; user-select:none;}
+details.dett>summary::-webkit-details-marker, details.dett-card>summary::-webkit-details-marker{display:none;}
+details.dett>summary::before, details.dett-card>summary::before{content:'▸'; font-size:.8em; transition:transform .18s ease; opacity:.55;}
+details[open].dett>summary::before, details[open].dett-card>summary::before{transform:rotate(90deg);}
+details.dett-card>summary{font-size:1.12rem; color:var(--inchiostro);}
+.card-prog details.dett{border-top:1px solid rgba(255,255,255,.16); margin-top:12px;}
+.card-azione details.dett{border-top:1px solid rgba(0,0,0,.08);}
+.storico-scroll{max-height:360px; overflow:auto; border-radius:10px;}
+/* striscia obiettivo del giorno */
+.ob-hero{margin:14px 0 2px; padding:13px 15px; border-radius:13px;
+  background:linear-gradient(180deg,#FFFDF8,#F6F3EA); border:1px solid rgba(28,43,58,.13);}
+.obh-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:7px;}
+.obh-tit{font-family:'Sora',sans-serif; font-weight:700; font-size:.95rem; color:var(--inchiostro);}
+.obh-gg{font-size:.76rem; color:var(--nebbia); white-space:nowrap;}
+.gg-corto{display:none;}
+@media(max-width:640px){ .gg-lungo{display:none;} .gg-corto{display:inline;} .obh-top{flex-wrap:wrap; gap:4px;} }
+.obh-riga{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.obh-num b{font-family:'Sora',sans-serif; font-size:1.9rem; font-weight:800; color:var(--inchiostro); font-variant-numeric:tabular-nums;}
+.obh-num span{font-size:.9rem; color:var(--nebbia); margin-left:5px;}
+.obh-stato{font-size:.85rem; color:var(--lacca); font-weight:600;}
+.obh-stato.ok{color:var(--vidimato);}
+.obh-bar{height:9px; border-radius:99px; background:rgba(28,43,58,.11); overflow:hidden; margin-top:9px;}
+.obh-bar i{display:block; height:100%; border-radius:99px; background:var(--ottone); transition:width .4s ease;}
+.obh-bar.ok i{background:var(--vidimato);}
+.obh-fatto{padding:4px 2px; font-size:.95rem; color:var(--vidimato);}
+/* andamento */
+.and-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.and-head h2{margin:0;}
+.and-switch{display:flex; gap:4px; background:rgba(28,43,58,.07); padding:3px; border-radius:9px;}
+.and-switch button{border:0; background:transparent; font:inherit; font-size:.79rem; color:var(--nebbia);
+  padding:5px 10px; border-radius:7px; cursor:pointer;}
+.and-switch button.attivo{background:var(--foglio); color:var(--inchiostro); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.10);}
+.and-testa{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:14px;}
+.and-num b{font-family:'Sora',sans-serif; font-size:2.5rem; font-weight:800; color:var(--inchiostro); font-variant-numeric:tabular-nums; line-height:1;}
+.and-num span{font-size:.9rem; color:var(--nebbia); margin-left:8px;}
+.and-delta{margin-top:7px; font-size:.9rem; font-weight:600;}
+.and-delta.su{color:var(--vidimato);} .and-delta.giu{color:var(--lacca);} .and-delta.neutro{color:var(--nebbia); font-weight:500;}
+.and-meta{font-size:.78rem; color:var(--nebbia); text-align:right;}
+.and-gr{margin:20px 0 4px; padding-top:14px;}
+.and-plot{position:relative;}
+.and-barre{display:flex; align-items:flex-end; gap:3px; height:100%;}
+.and-col{flex:1 1 0; min-width:0; display:flex; align-items:flex-end; justify-content:center; height:100%;}
+.and-bar{width:100%; max-width:26px; background:var(--inchiostro); opacity:.78; border-radius:4px 4px 0 0;}
+.and-bar.vuota{background:rgba(28,43,58,.16); height:3px;}
+.and-col:hover .and-bar{opacity:1;}
+.and-gg-riga{display:flex; gap:3px; margin-top:6px;}
+.and-gg{flex:1 1 0; min-width:0; text-align:center; font-size:.64rem; color:var(--nebbia); font-variant-numeric:tabular-nums;}
+.and-soglia{position:absolute; left:0; right:0; border-top:1px dashed rgba(28,43,58,.32); pointer-events:none; z-index:1;}
+.and-soglia span{position:absolute; right:0; top:-14px; font-size:.63rem; color:var(--nebbia); background:var(--foglio); padding:0 4px;}
+.and-consiglio{margin-top:14px; padding:11px 13px; border-radius:11px; background:rgba(156,122,45,.10);
+  border:1px solid rgba(156,122,45,.24); font-size:.9rem; line-height:1.55; color:var(--inchiostro);}
+.and-vuoto{margin-top:14px; color:var(--nebbia); font-size:.92rem;}
+/* chip ambito */
+.and-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:14px;}
+.and-chip{border:1px solid rgba(28,43,58,.18); background:var(--foglio); color:var(--nebbia);
+  font:inherit; font-size:.78rem; padding:5px 11px; border-radius:99px; cursor:pointer;}
+.and-chip:hover{border-color:rgba(28,43,58,.38); color:var(--inchiostro);}
+.and-chip.attivo{background:var(--inchiostro); border-color:var(--inchiostro); color:#fff; font-weight:600;}
+/* tabella dettaglio per argomento */
+.dt-blocco{margin-top:20px; border-top:1px solid rgba(28,43,58,.12); padding-top:14px;}
+.dt-tit{font-family:'Sora',sans-serif; font-weight:600; font-size:.95rem; margin-bottom:9px;}
+.dt-hint{font-family:'Inter',sans-serif; font-weight:400; font-size:.76rem; color:var(--nebbia);}
+.dt-tab{width:100%; border-collapse:collapse; font-size:.86rem;}
+.dt-tab th{text-align:left; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--nebbia); font-weight:600; padding:0 8px 7px 0; border-bottom:1px solid rgba(28,43,58,.12);}
+.dt-tab th:not(:first-child), .dt-tab td:not(:first-child){text-align:right; white-space:nowrap;}
+.dt-tab td{padding:9px 8px 9px 0; border-bottom:1px solid rgba(28,43,58,.07);}
+.dt-tab tbody tr[data-amb]{cursor:pointer;}
+.dt-tab tbody tr[data-amb]:hover{background:rgba(28,43,58,.045);}
+.dt-tab tbody tr.sel{background:rgba(156,122,45,.12);}
+.dt-nome{font-weight:600; color:var(--inchiostro);}
+.dt-corto{display:none;}
+b.dubbia{color:var(--ottone);}
+.so-scroll{max-height:330px; overflow:auto;}
+.so-tab .so-nome{font-weight:500; font-size:.85rem;}
+.so-pct{font-variant-numeric:tabular-nums; font-weight:700;}
+.so-basso{color:var(--lacca);} .so-alto{color:var(--vidimato);}
+.so-az{width:38px;}
+.so-btn{border:1px solid rgba(28,43,58,.2); background:var(--foglio); color:var(--inchiostro);
+  border-radius:8px; width:30px; height:28px; cursor:pointer; font-size:.75rem; line-height:1;}
+.so-btn:hover{background:var(--inchiostro); color:#fff; border-color:var(--inchiostro);}
+@media(max-width:640px){ .so-tab .so-nome{font-size:.78rem;} }
+.avviso-fase{margin:12px 0 2px; padding:11px 13px; border-radius:11px; font-size:.88rem; line-height:1.55;
+  background:rgba(156,122,45,.12); border:1px solid rgba(156,122,45,.3);}
+#q-passo{font-size:.82rem; font-weight:600; padding:2px 8px; border-radius:99px;}
+#q-passo.bene{color:var(--vidimato); background:rgba(39,107,78,.12);}
+#q-passo.male{color:var(--lacca); background:rgba(179,58,43,.12);}
+#q-passo.nascosto{display:none;}
+.card-stato{border-left-color:var(--vidimato);}
+.st-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.st-testa h2{margin:0;}
+.st-gg{font-size:.78rem; color:var(--nebbia);}
+.st-riga{display:flex; align-items:flex-start; justify-content:space-between; gap:22px; flex-wrap:wrap;}
+.st-trend{display:inline-block; margin-top:7px; font-size:.83rem; font-weight:600;}
+.st-trend.su{color:var(--vidimato);} .st-trend.giu{color:var(--lacca);} .st-trend.neutro{color:var(--nebbia); font-weight:500;}
+.st-nosim p{margin:12px 0; font-size:.93rem; line-height:1.6;}
+.st-cop{margin-top:14px; padding:10px 13px; border-radius:11px; font-size:.88rem; line-height:1.55;
+  background:rgba(28,43,58,.04); border:1px solid rgba(28,43,58,.12);}
+.st-cop.bene{background:rgba(39,107,78,.08); border-color:rgba(39,107,78,.28);}
+.st-cop.male{background:rgba(179,58,43,.07); border-color:rgba(179,58,43,.28);}
+.st-cop-tit{display:block; font-family:'Sora',sans-serif; font-weight:600; font-size:.8rem;
+  text-transform:uppercase; letter-spacing:.05em; color:var(--nebbia); margin-bottom:3px;}
+.st-coach{margin-top:16px; padding:20px 22px 20px 24px; border-radius:15px; line-height:1.72;
+  border:1px solid rgba(28,43,58,.14); border-left:5px solid var(--nebbia);
+  background:linear-gradient(180deg, rgba(28,43,58,.055), rgba(28,43,58,.02));
+  box-shadow:0 2px 10px rgba(28,43,58,.06);}
+.st-coach.elogio{border-color:rgba(39,107,78,.28); border-left-color:var(--vidimato);
+  background:linear-gradient(180deg, rgba(39,107,78,.13), rgba(39,107,78,.04));}
+.st-coach.sostegno{border-color:rgba(156,122,45,.3); border-left-color:var(--ottone);
+  background:linear-gradient(180deg, rgba(156,122,45,.15), rgba(156,122,45,.05));}
+.st-coach.ripresa{border-left-color:var(--ottone);}
+.st-coach.neutro{border-left-color:var(--inchiostro);}
+.st-coach-testa{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+.st-coach-ico{font-size:1.15rem;}
+.st-coach-tit{font-family:'Sora',sans-serif; font-weight:700; font-size:.8rem; text-transform:uppercase;
+  letter-spacing:.09em; color:var(--nebbia);}
+.st-ap{margin:0; font-size:1.07rem; color:var(--inchiostro);}
+.st-ap b{color:var(--inchiostro);}
+.st-az{margin:14px 0 0; padding-top:13px; border-top:1px solid rgba(28,43,58,.14); font-size:.93rem;
+  color:var(--inchiostro);}
+.st-az-tit{font-family:'Sora',sans-serif; font-weight:700; font-size:.76rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--nebbia);}
+.st-coach .co-btn{margin-top:12px; padding:9px 16px; font-size:.86rem;}
+/* le prove: dati di supporto, volutamente più sobri */
+.st-prove{margin-top:20px; padding-top:16px; border-top:1px solid rgba(28,43,58,.1);}
+.st-prove-tit{font-family:'Sora',sans-serif; font-weight:600; font-size:.72rem; text-transform:uppercase;
+  letter-spacing:.09em; color:var(--nebbia); margin-bottom:10px;}
+.st-badge{display:inline-block; font-family:'Sora',sans-serif; font-weight:700; font-size:.82rem;
+  padding:4px 12px; border-radius:99px; color:#fff;}
+.st-esito.ok .st-badge{background:var(--vidimato);}
+.st-esito.quasi .st-badge{background:var(--ottone);}
+.st-esito.no .st-badge{background:var(--lacca);}
+.st-dati{display:block; margin-top:7px; font-size:.9rem; color:var(--nebbia);}
+.st-dati b{color:var(--inchiostro); font-size:1.05rem;}
+@media(max-width:640px){ .st-coach{padding:17px 16px 17px 18px;} .st-ap{font-size:1.02rem;} }
+.st-mossa-tit{font-family:'Sora',sans-serif; font-weight:700; font-size:.78rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--nebbia); margin-bottom:5px;}
+@media(max-width:640px){ .st-riga{flex-direction:column; gap:14px;} .pr-cap{text-align:left;} }
+.card-coach{border-left-color:var(--ottone);}
+.co-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.co-testa h2{margin:0;}
+.co-serie{font-size:.78rem; color:var(--ottone); font-weight:600; background:rgba(156,122,45,.13);
+  padding:4px 10px; border-radius:99px;}
+.co-msg{margin-top:12px; padding:12px 14px; border-radius:12px; font-size:.92rem; line-height:1.62;
+  border:1px solid rgba(28,43,58,.12); background:rgba(28,43,58,.03);}
+.co-msg.ok{border-color:rgba(39,107,78,.3); background:rgba(39,107,78,.08);}
+.co-msg.avviso{border-color:rgba(179,58,43,.28); background:rgba(179,58,43,.07);}
+.co-msg.info{border-color:rgba(156,122,45,.26); background:rgba(156,122,45,.07);}
+.co-btn{margin-top:10px; border:1px solid var(--inchiostro); background:var(--inchiostro); color:#fff;
+  font:inherit; font-size:.82rem; font-weight:600; padding:7px 13px; border-radius:9px; cursor:pointer;}
+.co-btn:hover{opacity:.88;}
+.card-pronta{border-left-color:var(--vidimato);}
+.pr-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.pr-testa h2{margin:0;}
+.pr-gg{font-size:.78rem; color:var(--nebbia);}
+.pr-vuoto p{margin:10px 0; font-size:.93rem; line-height:1.6;}
+.pr-nota{color:var(--nebbia); font-size:.88rem !important;}
+.pr-vuoto .btn-p{margin-top:6px;}
+.pr-riga{display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-top:14px;}
+.pr-esito b{display:block; font-family:'Sora',sans-serif; font-size:1.7rem; font-weight:800; line-height:1.1;}
+.pr-esito.ok b{color:var(--vidimato);} .pr-esito.quasi b{color:var(--ottone);} .pr-esito.no b{color:var(--lacca);}
+.pr-esito span{font-size:.86rem; color:var(--nebbia);}
+.pr-graf{position:relative; display:flex; align-items:flex-end; gap:7px; height:66px;}
+.pr-col{display:flex; flex-direction:column; align-items:center; justify-content:flex-end;}
+.pr-bar{width:26px; background:rgba(28,43,58,.42); border-radius:4px 4px 0 0;}
+.pr-bar.ok{background:var(--vidimato);}
+.pr-lab{font-size:.6rem; color:var(--nebbia); margin-top:3px; font-variant-numeric:tabular-nums;}
+.pr-soglia{position:absolute; left:-4px; right:-4px; border-top:1px dashed rgba(28,43,58,.35);}
+.pr-cap{font-size:.72rem; color:var(--nebbia); text-align:right; margin-top:4px;}
+.pr-trend{display:inline-block; margin-top:12px; font-size:.87rem; font-weight:600;}
+.pr-trend.su{color:var(--vidimato);} .pr-trend.giu{color:var(--lacca);} .pr-trend.neutro{color:var(--nebbia); font-weight:500;}
+.pr-giudizio{margin-top:8px; font-size:.92rem; line-height:1.6;}
+@media(max-width:640px){ .pr-riga{flex-direction:column; align-items:flex-start; gap:14px;} .pr-cap{text-align:left;} }
+.card-mal{border-left-color:var(--ottone);}
+.mal-testo{margin:6px 0 14px; font-size:.93rem; line-height:1.6;}
+.mal-azioni{display:flex; gap:10px; flex-wrap:wrap;}
+.mal-azioni .btn-p, .mal-azioni .btn-s{margin:0;}
+.mal-avviso{margin:0 0 12px; padding:9px 12px; border-radius:10px; background:rgba(156,122,45,.12);
+  border:1px solid rgba(156,122,45,.28); font-size:.86rem;}
+@media(max-width:640px){ .mal-azioni{flex-direction:column;} .mal-azioni button{width:100%;} }
+.dt-pct{font-variant-numeric:tabular-nums; font-weight:700;}
+.dt-n{font-variant-numeric:tabular-nums; color:var(--nebbia);}
+.dt-d{font-size:.8rem; font-weight:600;}
+.dt-d.su{color:var(--vidimato);} .dt-d.giu{color:var(--lacca);} .dt-d.neutro{color:var(--nebbia); font-weight:500;}
+.neutro{color:var(--nebbia);}
+.dt-nota{margin-top:10px; font-size:.8rem; color:var(--nebbia); line-height:1.5;}
+@media(max-width:640px){
+  .dt-tab{font-size:.8rem;} .dt-tab td{padding:8px 5px 8px 0;}
+  .dt-nome{font-size:.82rem;} .dt-tab th{font-size:.62rem;}
+  .dt-lungo{display:none;} .dt-corto{display:inline;}
+}
+@media(max-width:640px){ .and-num b{font-size:2.1rem;} .and-meta{text-align:left;} .and-gg{font-size:.58rem;} }
+@media(max-width:640px){ .obh-num b{font-size:1.65rem;} .obh-stato{font-size:.8rem;} }
+@media(max-width:640px){ .azione-alt{flex-direction:column;} .azione-alt .btn-s{width:100%;} }
+
 </style>
 </head>
 <body>
@@ -479,7 +683,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   <img src="icons/logo-64.png" alt="" class="logo-img">
   <div class="marchio">
     <h1>Quizz<span class="rosso">Ocf</span></h1>
-    <div class="sub">Banca dati gennaio 2026 · 4.995 domande</div>
+    <div class="sub">Banca dati 2026 · 4.995 domande</div>
   </div>
   <div class="utente-box">
     <span id="sync-stato" class="nascosto"><span class="sync-dot"></span><span id="sync-testo">sincronizzato</span></span>
@@ -499,71 +703,104 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 
   <!-- ==================== HOME ==================== -->
   <div id="vista-home">
+
+    <!-- 1 · AZIONE: allenati -->
+    <div class="card card-azione">
+      <div class="azione-testa">
+        <h2>✏️ Allenati</h2>
+        <p class="azione-sub">Scegli argomenti e mix, poi avvia il test.</p>
+      </div>
+      <div class="ob-hero" id="ob-hero"></div>
+      <div class="avviso-fase nascosto" id="avviso-fase"></div>
+      <div class="azione-cta">
+        <button class="btn-p" id="btn-avvia">▶ Avvia test (60 domande)</button>
+        <div class="azione-alt">
+          <button class="btn-s" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+6+6+5), 85 minuti di tempo, correzione solo alla fine, soglia 80%">🎓 Simulazione esame</button>
+          <button class="btn-s btn-pro" id="btn-pro" title="30 domande mirate al ritmo d'esame: errori ripetuti + tematiche deboli + argomento con precisione peggiore. Correzione alla fine.">🔥 Allenamento PRO</button>
+        </div>
+      </div>
+      <div class="mix-box mix-tre">
+        <div class="mix-riga"><span class="mini mix-nome">🆕 Nuove</span>
+          <input type="range" id="mix-nuove" min="0" max="100" step="5" value="70" title="Percentuale di domande mai viste">
+          <b class="mini mix-val" id="mix-val-n">70%</b></div>
+        <div class="mix-riga"><span class="mini mix-nome">❌ Sbagliate</span>
+          <input type="range" id="mix-ko" min="0" max="100" step="5" value="30" title="Percentuale di domande sbagliate da recuperare">
+          <b class="mini mix-val rosso" id="mix-val-k">30%</b></div>
+        <div class="mix-riga"><span class="mini mix-nome">✅ Già indovinate <span title="Domande superate, riproposte per consolidarle: tornano disponibili dopo almeno 5 test da quando le hai risposte">ⓘ</span></span>
+          <span class="mini spazio"></span>
+          <b class="mini mix-val verde" id="mix-val-v">0%</b></div>
+        <span class="nascosto" id="mix-label"></span>
+      </div>
+      <details class="dett"><summary>📚 Scegli gli argomenti</summary>
+        <div id="lista-argomenti"></div>
+        <div class="opzioni-avvio">
+          <label class="toggle"><input type="checkbox" id="chk-esame"> Modalità esame (correzione solo alla fine)</label>
+          <label class="toggle"><input type="checkbox" id="chk-solo-errori"> 🔁 Solo domande sbagliate</label>
+        </div>
+      </details>
+      <div class="nota" id="nota-pool"></div>
+    </div>
+
+    <!-- 1a · A CHE PUNTO SEI -->
+    <div class="card card-stato" id="card-stato"></div>
+
+    <!-- 1b · DOVE INTERVENIRE -->
+    <div class="card card-and" id="card-andamento">
+      <div class="and-head">
+        <h2>🔎 Dove intervenire</h2>
+        <div class="and-switch" id="and-switch">
+          <button data-gg="3">3 giorni</button>
+          <button data-gg="7" class="attivo">7 giorni</button>
+          <button data-gg="14">14 giorni</button>
+        </div>
+      </div>
+      <div id="andamento-corpo"></div>
+      <div id="blocco-maledette"></div>
+    </div>
+
+    <!-- 2 · PROGRESSI (compatti) -->
     <div class="card card-prog" id="card-progressi">
       <div class="prog-testa">
-        <h2>💾 I tuoi progressi</h2>
+        <h2>📈 I tuoi progressi</h2>
         <div class="prog-pct"><span id="prog-pct">0%</span><span class="prog-pct-lab">della banca dati<br>superata</span></div>
       </div>
       <div class="sbar sbar-prog" id="prog-bar"></div>
       <div class="prog-chips" id="stat-globale"></div>
-      <div class="azioni" style="margin-top:16px">
-        <button id="btn-salva">💾 Salva progressi (file)</button>
-        <button id="btn-carica">📂 Carica progressi</button>
-        <span class="spazio"></span>
-        <button id="btn-reset">🗑 Azzera</button>
-      </div>
-      <input type="file" id="file-progressi" class="filejs" accept=".json,application/json">
-      <label class="toggle toggle-chiaro" style="margin-top:14px"><input type="checkbox" id="chk-autosave" checked> Scarica anche il file .json a fine test (copia di sicurezza) <span class="mini-chiaro" id="ultimo-salvataggio"></span></label>
-      <div class="ultimi-test" id="ultimi-test"></div>
 
       <div class="divisore"></div>
       <div class="sez-tit">📅 Oggi <span class="mini-chiaro" id="oggi-data"></span></div>
       <div class="oggi-grid" id="kpi-oggi"></div>
 
-      <div class="divisore"></div>
-      <div class="sez-tit">🎯 Obiettivo: banca dati esaurita entro l'esame <span class="mini-chiaro" id="ob-countdown"></span></div>
-      <div class="oggi-grid" id="testo-obiettivo"></div>
-
-      <div class="nota nota-chiara" style="margin-top:14px">I progressi si salvano da soli anche nel browser: chiudi e riapri il file e ritrovi tutto, senza caricare niente. Il file .json scaricato a fine test resta come copia di sicurezza (o per passare a un altro computer, con <b>Carica progressi</b>).</div>
-    </div>
-
-    <div class="card">
-      <div class="arg-head">
-        <h2>📚 Argomenti</h2>
-        <div class="mix-box mix-tre">
-          <div class="mix-riga"><span class="mini mix-nome">🆕 Nuove</span>
-            <input type="range" id="mix-nuove" min="0" max="100" step="5" value="70" title="Percentuale di domande mai viste">
-            <b class="mini mix-val" id="mix-val-n">70%</b></div>
-          <div class="mix-riga"><span class="mini mix-nome">❌ Sbagliate</span>
-            <input type="range" id="mix-ko" min="0" max="100" step="5" value="30" title="Percentuale di domande sbagliate da recuperare">
-            <b class="mini mix-val rosso" id="mix-val-k">30%</b></div>
-          <div class="mix-riga"><span class="mini mix-nome">✅ Già indovinate <span title="Domande superate, riproposte per consolidarle: tornano disponibili dopo almeno 5 test da quando le hai risposte">ⓘ</span></span>
-            <span class="mini spazio"></span>
-            <b class="mini mix-val verde" id="mix-val-v">0%</b></div>
-          <span class="nascosto" id="mix-label"></span>
+      <details class="dett"><summary>🎯 Obiettivo e 💾 backup progressi</summary>
+        <div class="sez-tit" style="margin-top:12px">🎯 Obiettivo: banca dati esaurita entro l'esame <span class="mini-chiaro" id="ob-countdown"></span></div>
+        <div class="oggi-grid" id="testo-obiettivo"></div>
+        <div class="azioni" style="margin-top:16px">
+          <button id="btn-salva">💾 Salva progressi (file)</button>
+          <button id="btn-carica">📂 Carica progressi</button>
+          <span class="spazio"></span>
+          <button id="btn-reset">🗑 Azzera</button>
         </div>
-        <button class="btn-p" id="btn-avvia">▶ Avvia test (60 domande)</button>
-        <button class="btn-s" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+6+6+5), 85 minuti di tempo, correzione solo alla fine, soglia 80%">🎓 Simulazione esame</button>
-        <button class="btn-s btn-pro" id="btn-pro" title="30 domande mirate al ritmo d'esame: errori ripetuti + tematiche deboli + argomento con precisione peggiore. Correzione alla fine.">🔥 Allenamento PRO</button>
-      </div>
-      <div id="lista-argomenti"></div>
-      <div class="opzioni-avvio">
-        <label class="toggle"><input type="checkbox" id="chk-esame"> Modalità esame (correzione solo alla fine)</label>
-        <label class="toggle"><input type="checkbox" id="chk-solo-errori"> 🔁 Solo domande sbagliate</label>
-      </div>
-      <div class="nota" id="nota-pool"></div>
+        <input type="file" id="file-progressi" class="filejs" accept=".json,application/json">
+        <label class="toggle toggle-chiaro" style="margin-top:14px"><input type="checkbox" id="chk-autosave" checked> Scarica anche il file .json a fine test (copia di sicurezza) <span class="mini-chiaro" id="ultimo-salvataggio"></span></label>
+        <div class="ultimi-test" id="ultimi-test"></div>
+        <div class="nota nota-chiara" style="margin-top:14px">I progressi si salvano da soli nel browser: chiudi e riapri e ritrovi tutto. Il file .json a fine test resta come copia di sicurezza (o per passare a un altro dispositivo, con <b>Carica progressi</b>).</div>
+      </details>
     </div>
 
+    <!-- 3 · TEMATICHE -->
     <div class="card" id="card-tematiche">
-      <h2>🔥 Tematiche che sbagli di più</h2>
-      <div class="nota" style="margin-top:0">Classifica delle parole chiave ricorrenti nei tuoi errori, per argomento. Con <b>Allenati</b> fai un test su <b>tutte le domande della banca dati</b> che toccano quella tematica (prima le sbagliate, poi le nuove, infine quelle già superate).</div>
-      <div id="lista-tematiche"></div>
+      <details class="dett-card"><summary>🔥 Tematiche che sbagli di più</summary>
+        <div class="nota" style="margin-top:8px">Classifica delle parole chiave ricorrenti nei tuoi errori, per argomento. Con <b>Allenati</b> fai un test su <b>tutte le domande della banca dati</b> che toccano quella tematica (prima le sbagliate, poi le nuove, infine quelle già superate).</div>
+        <div id="lista-tematiche"></div>
+      </details>
     </div>
 
+    <!-- 4 · STORICO -->
     <div class="card" id="card-storico">
-      <h2>Storico test</h2>
-      <table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Punteggio</th></tr></thead><tbody></tbody></table>
-      <div class="nota" id="nota-storico"></div>
+      <details class="dett-card"><summary>🗂 Storico test</summary>
+        <div class="storico-scroll"><table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Punteggio</th></tr></thead><tbody></tbody></table></div>
+        <div class="nota" id="nota-storico"></div>
+      </details>
     </div>
   </div>
 
@@ -573,6 +810,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       <div class="qbar">
         <span id="q-contatore"></span>
         <span id="q-timer">⏱ 00:00</span>
+        <span id="q-passo" class="nascosto"></span>
         <span id="q-parziale"></span>
         <div class="qprog"><div id="q-prog"></div></div>
       </div>
@@ -739,8 +977,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const QUESTIONS = window.OCF_DATA.QUESTIONS;
-const SPIEG = window.OCF_DATA.SPIEG || {};   // spiegazioni (solo Matematica ed economia finanziaria)
-const TRUCCHI = window.OCF_DATA.TRUCCHI || {};   // trucchi per scegliere tra le opzioni (solo Matematica)
+const SPIEG = window.OCF_DATA.SPIEG || {};   // spiegazioni (tutti gli argomenti)
+const TRUCCHI = window.OCF_DATA.TRUCCHI || {};   // trucchi per scegliere tra le opzioni (tutti gli argomenti)
 const N_TEST = 60;
 
 // ---------- stato ----------
@@ -849,14 +1087,17 @@ function proponibile(r){
 
 // ---------- home ----------
 function statiPool(pool){
-  let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0;
+  let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0, dubbie=0;
   pool.forEach(q => {
     const r = stato.risultati[q.n];
     if(!r) nuove++;
-    else if(r.s==='ok'){ ok++; if(vintaProponibile(r)) okEleg++; }
+    else if(r.s==='ok'){
+      if(r.p) dubbie++; else ok++;          // "da confermare" non vale come superata
+      if(vintaProponibile(r)) okEleg++;
+    }
     else { ko++; if(proponibile(r)) koEleg++; }
   });
-  return {ok, ko, nuove, koEleg, okEleg, tot: pool.length};
+  return {ok, ko, nuove, koEleg, okEleg, dubbie, tot: pool.length};
 }
 
 function renderHome(){
@@ -873,7 +1114,7 @@ function renderHome(){
     div.className = 'riga-arg';
     div.innerHTML = `
       <label><input type="checkbox" class="chk-arg" data-arg="${i}" checked> ${arg}</label>
-      <span class="mini">${s.tot} domande · <b class="ok">${s.ok} superate</b> · <b class="ko">${s.ko} da ripassare</b> · ${s.nuove} nuove</span>
+      <span class="mini">${s.tot} domande · <b class="ok">${s.ok} superate</b> · <b class="ko">${s.ko} da ripassare</b>${s.dubbie ? ` · <b class="dubbia">${s.dubbie} da confermare</b>` : ''} · ${s.nuove} nuove</span>
       <div class="barra"><div style="width:100%">
         <div class="segok" style="width:${100*s.ok/s.tot}%"></div>
         <div class="segko" style="width:${100*s.ko/s.tot}%"></div>
@@ -917,6 +1158,10 @@ function renderHome(){
   aggiornaNota();
   renderOggi();
   renderObiettivo();
+  applicaFase();
+  renderStato();
+  renderAndamento();
+  renderMaledette();
   renderTematiche();
   $('chk-autosave').checked = stato.autosave !== false;
   aggiornaMixLabel();
@@ -929,6 +1174,7 @@ function renderHome(){
   $('stat-globale').innerHTML = `
     <span class="chip"><span class="dot" style="background:#86b6ef"></span><span>Superate: <b>${sg.ok}</b></span></span>
     <span class="chip"><span class="dot" style="background:#f0908f"></span><span>Da ripassare: <b>${sg.ko}</b></span></span>
+    ${sg.dubbie ? `<span class="chip" title="Risposte giuste ma date con esitazione (troppo tempo o ripensamenti): tornano al test successivo per una conferma"><span class="dot" style="background:#e0b64d"></span><span>Da confermare: <b>${sg.dubbie}</b></span></span>` : ''}
     <span class="chip"><span class="dot" style="background:rgba(255,255,255,.45)"></span><span>Mai viste: <b>${sg.nuove}</b></span></span>
     <span class="chip"><span>🧾 Test svolti: <b>${stato.storico.length}</b></span></span>
     <span class="chip"><span>📚 Totale: <b>${sg.tot}</b></span></span>`;
@@ -984,16 +1230,687 @@ function renderOggi(){
                                               : deltaVsIeri(prec, precIeri, ' p.ti'));
 }
 
+// ====================== ANDAMENTO: media per giorni + diagnosi per ambito ======================
+let finestraGiorni = 7;   // 3 / 7 / 14
+let ambitoSel = null;     // null = tutti gli argomenti, altrimenti indice in ARGOMENTI
+
+function isoMeno(n){
+  const d = new Date(); d.setDate(d.getDate() - n);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+// somma ok/ko (totali e per argomento) nei giorni [daN ... aN] indietro rispetto a oggi
+function sommaFinestra(daN, aN){
+  const tot = {ok:0, ko:0, giorni:0, arg:{}};
+  for(let n = aN; n <= daN; n++){
+    const g = stato.giorni[isoMeno(n)];
+    if(!g || !(g.ok + g.ko)) continue;
+    tot.ok += g.ok; tot.ko += g.ko; tot.giorni++;
+    if(g.arg) Object.keys(g.arg).forEach(i => {
+      const a = tot.arg[i] || {ok:0, ko:0};
+      a.ok += g.arg[i].ok || 0; a.ko += g.arg[i].ko || 0; tot.arg[i] = a;
+    });
+  }
+  return tot;
+}
+const pctDi = t => (t.ok + t.ko) ? Math.round(100 * t.ok / (t.ok + t.ko)) : null;
+
+// ambito più debole in base allo stato attuale (dato solido, disponibile da subito)
+function ambitoPiuDebole(){
+  let peggiore = null;
+  ARGOMENTI.forEach(a => {
+    let ok = 0, ko = 0;
+    QUESTIONS.forEach(q => {
+      if(q.t !== a) return;
+      const r = stato.risultati[q.n]; if(!r) return;
+      if(r.s === 'ok') ok++; else ko++;
+    });
+    if(ok + ko < 20) return;
+    const pct = Math.round(100 * ok / (ok + ko));
+    if(!peggiore || pct < peggiore.pct) peggiore = {arg:a, pct, daRip:ko};
+  });
+  return peggiore;
+}
+
+// confronto per argomento tra le due finestre (richiede lo storico per-argomento)
+function trendPerAmbito(w1, w2, minRisposte){
+  const out = [];
+  Object.keys(w1.arg).forEach(i => {
+    const a1 = w1.arg[i], a2 = w2.arg[i];
+    if(!a2) return;
+    if(a1.ok + a1.ko < minRisposte || a2.ok + a2.ko < minRisposte) return;
+    const p1 = Math.round(100*a1.ok/(a1.ok+a1.ko)), p2 = Math.round(100*a2.ok/(a2.ok+a2.ko));
+    out.push({arg: ARGOMENTI[i], pct: p1, delta: p1 - p2});
+  });
+  return out.sort((x,y) => x.delta - y.delta);   // dal più in calo al più in crescita
+}
+
+// nome corto per i pulsanti-ambito (lo spazio è poco, soprattutto su telefono)
+function nomeBreve(a){
+  return a.replace('Diritto ', '')
+          .replace('Matematica ed economia finanziaria', 'Matematica')
+          .replace('previdenziale e assicurativo', 'previdenziale')
+          .replace('privato e commerciale', 'privato')
+          .replace('mercato finanziario', 'mercato')
+          .replace(/^./, c => c.toUpperCase());
+}
+
+// serie giornaliera (percentuale di esatte) per l'ambito scelto
+function serieGiorni(N, argIdx){
+  const out = [];
+  for(let n = N-1; n >= 0; n--){
+    const iso = isoMeno(n), g = stato.giorni[iso];
+    let ok = 0, ko = 0;
+    if(g){
+      if(argIdx === null){ ok = g.ok; ko = g.ko; }
+      else if(g.arg && g.arg[argIdx]){ ok = g.arg[argIdx].ok || 0; ko = g.arg[argIdx].ko || 0; }
+    }
+    const risp = ok + ko;
+    out.push({iso, risp, pct: risp ? Math.round(100*ok/risp) : null});
+  }
+  return out;
+}
+const totaleDi = (t, argIdx) => argIdx === null ? {ok:t.ok, ko:t.ko}
+                                                : (t.arg[argIdx] ? {ok:t.arg[argIdx].ok, ko:t.arg[argIdx].ko} : {ok:0, ko:0});
+const pctOkKo = t => (t.ok + t.ko) ? Math.round(100 * t.ok / (t.ok + t.ko)) : null;
+
+// c'è storico giorno-per-giorno diviso per argomento?
+function haDettaglioArg(N){
+  for(let n = 2*N-1; n >= 0; n--){
+    const g = stato.giorni[isoMeno(n)];
+    if(g && g.arg && Object.keys(g.arg).length) return true;
+  }
+  return false;
+}
+
+// ====================== SEI PRONTA? (sintesi delle simulazioni) ======================
+const SOGLIA_ESAME = 80;
+function simulazioni(){
+  return (stato.storico || []).filter(t => (t.argomenti || '').startsWith('Simulazione'))
+                              .map(t => ({...t, pct: t.tot ? Math.round(100*t.punti/t.tot) : 0}));
+}
+
+// statistiche per i sottoargomenti ufficiali del bando
+function statiSottoargomenti(arg){
+  const cfg = SOTTO[arg]; if(!cfg) return null;
+  const righe = cfg.SA.map((nome, i) => ({nome, i, tot:0, ok:0, ko:0, dubbie:0, nuove:0}));
+  QUESTIONS.forEach(q => {
+    if(q.t !== arg) return;
+    const i = cfg.map[q.n]; if(i === undefined || !righe[i]) return;
+    const R = righe[i]; R.tot++;
+    const r = stato.risultati[q.n];
+    if(!r) R.nuove++;
+    else if(r.s === 'ok'){ if(r.p) R.dubbie++; else R.ok++; }
+    else R.ko++;
+  });
+  righe.forEach(R => { const viste = R.ok + R.ko + R.dubbie; R.pct = viste ? Math.round(100*R.ok/viste) : null; R.viste = viste; });
+  return righe;
+}
+
+// test su un singolo sottoargomento: prima le sbagliate, poi le da confermare, poi le nuove
+function allenaSottoargomento(arg, idx){
+  const cfg = SOTTO[arg]; if(!cfg) return;
+  const pool = shuffle(QUESTIONS.filter(q => q.t === arg && cfg.map[q.n] === idx));
+  const rango = q => { const r = stato.risultati[q.n]; return !r ? 2 : (r.s === 'ko' ? 0 : (r.p ? 1 : 3)); };
+  pool.sort((a,b) => rango(a) - rango(b));
+  if(!pool.length) return;
+  lanciaTest(pool.slice(0, Math.min(N_TEST, pool.length)), `${arg} — ${cfg.SA[idx]}`);
+}
+
+// Nell'ultimo tratto macinare domande nuove è controproducente: si consolida ciò che si sa
+// e si chiudono le sbagliate. L'app cambia passo da sola e lo dichiara.
+const GG_CONSOLIDAMENTO = 10;
+function faseStudio(){ return giorniAllEsame() <= GG_CONSOLIDAMENTO ? 'consolidamento' : 'accumulo'; }
+
+function applicaFase(){
+  const avviso = $('avviso-fase'); if(!avviso) return;
+  if(faseStudio() !== 'consolidamento'){ avviso.classList.add('nascosto'); return; }
+  const chiave = 'cons-' + DATA_ESAME;
+  if(stato.faseApplicata !== chiave){          // una sola volta: poi i cursori restano tuoi
+    stato.faseApplicata = chiave;
+    stato.mixNuove = 20; stato.mixKo = 50;     // 20% nuove · 50% sbagliate · 30% da riconfermare
+    salvaLocale();
+    if(typeof aggiornaMixLabel === 'function') aggiornaMixLabel();
+  }
+  avviso.classList.remove('nascosto');
+  avviso.innerHTML = `<b>🎯 Fase di consolidamento</b> — mancano ${giorniAllEsame()} giorni: `
+    + `l'app ha spostato il mix su <b>20% nuove · 50% sbagliate · 30% da riconfermare</b>. `
+    + `Ora conta chiudere gli errori e confermare quello che sai, non aggiungere materiale nuovo. `
+    + `Puoi comunque cambiare i cursori quando vuoi.`;
+}
+
+// ---------- letture dei giorni di studio ----------
+function giorniAttiviRecenti(n){
+  const out = [];
+  for(let k = 0; k <= n; k++){
+    const iso = isoMeno(k), g = stato.giorni[iso];
+    if(g && (g.ok + g.ko)) out.push({iso, k, ...g});
+  }
+  return out;                     // out[0] = oggi, se attivo
+}
+function precisioneMedia(giorni){
+  let ok = 0, ko = 0;
+  giorni.forEach(g => { ok += g.ok; ko += g.ko; });
+  return (ok + ko) ? Math.round(100*ok/(ok+ko)) : null;
+}
+// argomento peggiore di una giornata (richiede il dettaglio per argomento)
+function peggioreDelGiorno(g, minRisposte){
+  if(!g || !g.arg) return null;
+  let peggio = null;
+  Object.keys(g.arg).forEach(i => {
+    const a = g.arg[i], tot = a.ok + a.ko;
+    if(tot < (minRisposte || 6)) return;
+    const pct = Math.round(100*a.ok/tot);
+    if(!peggio || pct < peggio.pct) peggio = {arg: ARGOMENTI[i], idx:+i, pct, tot, ko:a.ko};
+  });
+  return peggio;
+}
+function serieGiorniStudio(){       // giorni consecutivi che finiscono oggi o ieri
+  let n = 0;
+  for(let k = 0; k < 60; k++){
+    const g = stato.giorni[isoMeno(k)];
+    if(g && (g.ok + g.ko)) n++;
+    else if(k > 0) break;
+  }
+  return n;
+}
+// test mirato su un argomento: prima le sbagliate, poi le da confermare, poi le nuove
+function allenaArgomento(arg){
+  const pool = shuffle(QUESTIONS.filter(q => q.t === arg));
+  const rango = q => { const r = stato.risultati[q.n]; return !r ? 2 : (r.s === 'ko' ? 0 : (r.p ? 1 : 3)); };
+  pool.sort((a,b) => rango(a) - rango(b));
+  if(pool.length) lanciaTest(pool.slice(0, Math.min(N_TEST, pool.length)), `Ripasso mirato — ${arg}`);
+}
+
+// ====================== IL COACH: prima riconosce, poi indirizza ======================
+// Gli elogi devono essere veri e verificabili, altrimenti suonano falsi: ogni frase
+// di incoraggiamento nasce da un fatto preciso letto nei dati.
+
+function superateTotali(){
+  let n = 0;
+  QUESTIONS.forEach(q => { const r = stato.risultati[q.n]; if(r && r.s === 'ok' && !r.p) n++; });
+  return n;
+}
+// il giorno migliore per precisione (almeno 30 risposte), escluso oggi
+function recordPrecisione(escludiOggi){
+  let best = null;
+  Object.keys(stato.giorni).forEach(iso => {
+    if(escludiOggi && iso === oggiISO()) return;
+    const g = stato.giorni[iso], tot = g.ok + g.ko;
+    if(tot < 30) return;
+    const pct = Math.round(100*g.ok/tot);
+    if(!best || pct > best.pct) best = {iso, pct, tot};
+  });
+  return best;
+}
+// argomenti che hanno superato l'80% di domande acquisite
+function argomentiSolidi(){
+  return ARGOMENTI.filter(a => {
+    const s = statiPool(QUESTIONS.filter(q => q.t === a));
+    const viste = s.ok + s.ko + s.dubbie;
+    return viste >= 40 && (100*s.ok/viste) >= 80;
+  });
+}
+function variante(lista){                     // varia le parole senza sembrare casuale
+  return lista[new Date().getDate() % lista.length];
+}
+
+// Apertura del coach: tono + paragrafo di riconoscimento, sempre agganciato a un dato reale.
+function aperturaCoach(){
+  const oggi = stato.giorni[oggiISO()];
+  const rispOggi = oggi ? oggi.ok + oggi.ko : 0;
+  const precOggi = rispOggi ? Math.round(100*oggi.ok/rispOggi) : null;
+  const recenti = giorniAttiviRecenti(21).filter(g => g.k > 0);
+  const precAbituale = precisioneMedia(recenti.slice(0, 7));
+  const precVecchia = precisioneMedia(recenti.slice(7, 21));
+  const serie = serieGiorniStudio();
+  const sup = superateTotali();
+  const rec = recordPrecisione(true);
+  const sims = simulazioni();
+
+  // --- 1) la giornata è andata male: sostegno, non prediche ---
+  const giornataDura = precOggi !== null && precAbituale !== null && rispOggi >= 30 && precOggi <= precAbituale - 10;
+  if(giornataDura){
+    let t = variante([
+      `<b>Giornata storta, non un passo indietro.</b> `,
+      `<b>Capita, ed è normale.</b> `,
+      `<b>Oggi è andata più dura del solito.</b> `
+    ]);
+    t += `Oggi sei al ${precOggi}% contro il tuo ${precAbituale}% abituale. `;
+    if(precVecchia !== null && precAbituale > precVecchia)
+      t += `Ma guarda il quadro largo: due settimane fa eri al ${precVecchia}%, ora la tua media è ${precAbituale}%. La direzione è quella giusta, oggi è solo una giornata sotto tono. `;
+    else if(rec)
+      t += `Ricordati che il ${new Date(rec.iso).toLocaleDateString('it-IT',{day:'numeric',month:'long'})} hai chiuso al ${rec.pct}%: quella sei sempre tu, non è fortuna. `;
+    else
+      t += `Una giornata sotto la media non cancella quello che hai costruito finora. `;
+    t += `La stanchezza si vede prima nella precisione che nella testa: fermarti adesso è una scelta tecnica, non una resa.`;
+    return {tono:'sostegno', testo:t};
+  }
+
+  // --- 2) sta andando bene: elogio specifico, mai generico ---
+  const elogi = [];
+  if(precOggi !== null && rec && rispOggi >= 30 && precOggi > rec.pct)
+    elogi.push({peso:5, t:`<b>Record personale.</b> Oggi sei al ${precOggi}% su ${rispOggi} domande: non eri mai andata così bene in una giornata piena. Questo è il livello a cui puoi arrivare, e ci sei arrivata da sola.`});
+  if(sims.length >= 2){
+    const ultima = sims[sims.length-1];
+    const prec = sims.slice(0,-1).map(x => x.pct);
+    const fresca = ultima.iso === oggiISO() || ultima.iso === isoMeno(1);   // solo se appena fatta
+    if(fresca && ultima.pct >= SOGLIA_ESAME && Math.max(...prec) < SOGLIA_ESAME)
+      elogi.push({peso:6, t:`<b>Prima simulazione sopra la soglia.</b> ${ultima.pct}%: hai appena dimostrato che l'esame è alla tua portata. Ora l'obiettivo non è più arrivarci, è renderlo stabile.`});
+    else if(fresca && ultima.pct >= SOGLIA_ESAME && ultima.pct >= Math.max(...prec))
+      elogi.push({peso:5, t:`<b>Miglior simulazione finora: ${ultima.pct}%.</b> Sopra la soglia e in crescita. ${variante(['Questo è il tuo passo.','Continua esattamente così.','Te lo sei guadagnato.'])}`});
+  }
+  if(precAbituale !== null && precVecchia !== null && precAbituale - precVecchia >= 5)
+    elogi.push({peso:4, t:`<b>Stai crescendo davvero.</b> Nelle ultime settimane sei passata dal ${precVecchia}% al ${precAbituale}% di precisione. Non è una giornata fortunata: è il lavoro che comincia a pagare.`});
+  if([7,14,21,30,40,50].includes(serie))
+    elogi.push({peso:4, t:`<b>${serie} giorni di fila.</b> La costanza è quello che divide chi passa da chi rimanda, e tu ce l'hai. ${variante(['Complimenti sinceri.','Non è poco, credimi.','Tienila stretta.'])}`});
+  const okOggi = oggi ? oggi.ok : 0;
+  const traguardo = Math.floor(sup / 250) * 250;
+  if(traguardo >= 250 && okOggi > 0 && (sup - okOggi) < traguardo)     // tagliato proprio oggi
+    elogi.push({peso:4, t:`<b>Hai passato quota ${traguardo.toLocaleString('it-IT')} domande superate.</b> Ognuna è una che all'esame non ti farà paura. ${variante(['Il numero cresce piano, ma cresce.','Un mattone alla volta.','Questo è terreno che non perdi più.'])}`});
+  const solidi = argomentiSolidi();
+  if(solidi.length)
+    elogi.push({peso:3, t:`<b>${solidi.length === 1 ? solidi[0] + ' è ormai solido' : solidi.length + ' argomenti sono ormai solidi'}</b> (sopra l'80% di domande acquisite). ${variante(['Quella parte la sai.','Su quella puoi contare.','Terreno conquistato.'])} Ora il tempo rende di più altrove.`});
+  if(precOggi !== null && precAbituale !== null && rispOggi >= 30 && precOggi >= precAbituale + 8)
+    elogi.push({peso:3, t:`<b>Oggi giri meglio del solito:</b> ${precOggi}% contro il tuo ${precAbituale}% abituale. Quando la testa è in giornata conviene approfittarne sugli argomenti difficili.`});
+
+  if(elogi.length){
+    elogi.sort((a,b) => b.peso - a.peso);
+    return {tono:'elogio', testo: elogi[0].t};
+  }
+
+  // --- 3) ripresa dopo una pausa ---
+  if(!rispOggi && recenti[0] && recenti[0].k >= 3)
+    return {tono:'ripresa', testo:`<b>Bentornata.</b> Sono passati ${recenti[0].k} giorni: la cosa importante è che sei qui adesso. Non serve recuperare tutto oggi — un test solo rimette in moto il meccanismo, e domani ripartire costerà molto meno.`};
+
+  // --- 4) situazione ordinaria: incoraggiamento sobrio e onesto ---
+  const gg = giorniAllEsame();
+  const testi = [
+    `Nessuna scorciatoia e nessun dramma: ${gg} giorni sono tanti se li usi con metodo. ${sup ? `Hai già ${sup.toLocaleString('it-IT')} domande in cassaforte.` : ''}`,
+    `Il lavoro di oggi non si vede oggi: si vedrà nelle simulazioni tra due settimane. ${precAbituale !== null ? `La tua media attuale è ${precAbituale}%.` : ''}`,
+    `Un passo alla volta. ${sup ? `${sup.toLocaleString('it-IT')} domande già superate` : 'Ogni test'} sono la prova che il metodo funziona: serve solo continuare.`
+  ];
+  return {tono:'neutro', testo: variante(testi)};
+}
+
+// ====================== A CHE PUNTO SEI (verdetto + copertura + prossima mossa) ======================
+// Le "mosse" sono ordinate per urgenza: in scheda ne compare una sola, quella in cima.
+function mosseDelGiorno(){
+  const oggi = stato.giorni[oggiISO()];
+  const rispOggi = oggi ? oggi.ok + oggi.ko : 0;
+  const precOggi = rispOggi ? Math.round(100*oggi.ok/rispOggi) : null;
+  const recenti = giorniAttiviRecenti(14).filter(g => g.k > 0);
+  const precAbituale = precisioneMedia(recenti.slice(0, 7));
+  const mosse = [];
+
+  // lacuna ricorrente: pesa più di tutto il resto, non è una giornata storta
+  let ricorrente = null;
+  if(recenti.length >= 3){
+    const conteggio = {};
+    recenti.slice(0, 5).forEach(g => {
+      const p = peggioreDelGiorno(g, 6);
+      if(p && p.pct < 70) conteggio[p.arg] = (conteggio[p.arg] || 0) + 1;
+    });
+    const cand = Object.keys(conteggio).sort((a,b) => conteggio[b] - conteggio[a])[0];
+    if(cand && conteggio[cand] >= 2) ricorrente = {arg: cand, giorni: conteggio[cand]};
+  }
+
+  if(inFaseFinale()){
+    const daRip = QUESTIONS.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko'; }).length;
+    const dubbie = QUESTIONS.filter(q => { const r = stato.risultati[q.n]; return r && r.p; }).length;
+    mosse.push({cls:'info', testo:`<b>Ultimi ${giorniAllEsame()} giorni: si consolida.</b> Niente materiale nuovo: restano <b>${daRip}</b> domande da superare e <b>${dubbie}</b> da confermare. Chiudere quelle vale più di qualsiasi domanda mai vista.`});
+  }
+
+  const target = (stato.piano && stato.piano.target) || 0;
+  const stanca = precAbituale !== null && precOggi !== null && precOggi <= precAbituale - 10 && rispOggi >= 40;
+  if(stanca){
+    mosse.push({cls:'avviso',
+      testo:`<b>Attenzione alla stanchezza.</b> Oggi sei al ${precOggi}%, contro il tuo ${precAbituale}% abituale, dopo ${rispOggi} domande. Quando la precisione cala così, continuare consolida gli errori: meglio fermarsi, o passare al ripasso delle sbagliate invece che a domande nuove.`,
+      breve:`Chiudi qui la giornata. Se vuoi restare sui libri senza rischiare, rileggi le domande già sbagliate con spiegazione e trucco: costa poca energia e consolida invece di rovinare.`});
+  } else if(rispOggi && target && oggi.ok >= target){
+    const peg = peggioreDelGiorno(oggi, 6);
+    let t = `<b>Obiettivo di oggi raggiunto</b> (${oggi.ok}/${target} risposte esatte, ${rispOggi} domande al ${precOggi}%). Puoi fermarti qui: il ripasso di domani rende più del sesto test di oggi.`;
+    if(peg && peg.pct < 70) t += ` Da annotare per domani: oggi su <b>${peg.arg}</b> sei al ${peg.pct}%.`;
+    mosse.push({cls:'ok', testo:t, azione: (peg && peg.pct < 70) ? {lab:`Prepara ${nomeBreve(peg.arg)} per domani`, arg:peg.arg} : null});
+  } else if(ricorrente){
+    mosse.push({cls:'avviso', testo:`<b>${ricorrente.arg}</b> è stato il tuo argomento peggiore in ${ricorrente.giorni} degli ultimi giorni: non è una giornata storta, è una lacuna. Un test mirato rende più che continuare a incontrarlo sparso.`,
+                azione:{lab:`Test mirato su ${nomeBreve(ricorrente.arg)}`, arg:ricorrente.arg}});
+  } else if(!rispOggi){
+    const ieri = recenti[0];
+    if(!ieri){
+      mosse.push({cls:'info', testo:'Non hai ancora fatto test oggi. Comincia con un test da 60: avviare il primo è la parte difficile.'});
+    } else {
+      const pIeri = Math.round(100*ieri.ok/(ieri.ok+ieri.ko));
+      const peg = peggioreDelGiorno(ieri, 6);
+      let t = ieri.k === 1
+        ? `<b>Bentornata.</b> Ieri hai dato ${(ieri.ok+ieri.ko).toLocaleString('it-IT')} risposte al ${pIeri}%.`
+        : `<b>Sono passati ${ieri.k} giorni</b> dall'ultimo allenamento (${pIeri}% quel giorno). Riprendi con un test: le prime domande costano, poi torna tutto.`;
+      if(peg && peg.pct < 70) t += ` Il punto più debole di quel giorno è stato <b>${peg.arg}</b> (${peg.pct}%): è da lì che conviene aprire la giornata.`;
+      mosse.push({cls:'info', testo:t, azione:(peg && peg.pct < 70) ? {lab:`Riparti da ${nomeBreve(peg.arg)}`, arg:peg.arg} : null});
+    }
+  } else {
+    const mancano = target ? Math.max(0, target - oggi.ok) : 0;
+    const peg = peggioreDelGiorno(oggi, 6);
+    let t = `Oggi: <b>${rispOggi}</b> risposte al <b>${precOggi}%</b>` + (precAbituale !== null ? ` (abituale ${precAbituale}%)` : '') + '. ';
+    t += mancano ? `Mancano <b>${mancano}</b> risposte esatte all'obiettivo, circa ${Math.max(1, Math.ceil(mancano/N_TEST))} test.` : 'Continua così.';
+    if(peg && peg.pct < 70) t += ` Il punto debole di oggi è <b>${peg.arg}</b> (${peg.pct}%).`;
+    mosse.push({cls: (precAbituale !== null && precOggi >= precAbituale) ? 'ok' : 'info', testo:t,
+                azione:(peg && peg.pct < 70) ? {lab:`Allena ${nomeBreve(peg.arg)}`, arg:peg.arg} : null});
+  }
+  return mosse;
+}
+
+// stato della copertura: bastano i giorni che restano per vedere tutte le domande?
+function statoCopertura(){
+  const nuoveRimaste = QUESTIONS.filter(q => !stato.risultati[q.n]).length;
+  if(inFaseFinale() || !nuoveRimaste) return null;
+  const ggCop = giorniCopertura();
+  const servono = Math.ceil(nuoveRimaste / ggCop);
+  const conNuove = giorniAttiviRecenti(14).filter(g => g.k > 0 && g.nuove !== undefined).slice(0, 7);
+  const ritmo = conNuove.length ? Math.round(conNuove.reduce((a,g) => a + (g.nuove||0), 0) / conNuove.length) : null;
+  const fmt = n => n.toLocaleString('it-IT');
+  if(ritmo && ritmo > 0){
+    const ggPrevisti = Math.ceil(nuoveRimaste / ritmo);
+    return ggPrevisti > ggCop
+      ? {ok:false, testo:`<b>${fmt(nuoveRimaste)}</b> domande mai viste e <b>${ggCop} giorni</b> prima del consolidamento. Al ritmo attuale (${ritmo} nuove al giorno) ne servirebbero ${ggPrevisti}: per vederle tutte servono <b>${servono} nuove al giorno</b>.`}
+      : {ok:true, testo:`<b>${fmt(nuoveRimaste)}</b> domande mai viste: al ritmo attuale (${ritmo} al giorno) le vedi tutte in ${ggPrevisti} giorni, dentro i ${ggCop} disponibili.`};
+  }
+  return {ok:null, testo:`<b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: servono circa <b>${servono} domande nuove al giorno</b>.`};
+}
+
+function renderStato(){
+  const card = $('card-stato'); if(!card) return;
+  const gg = giorniAllEsame();
+  const sims = simulazioni();
+  const cop = statoCopertura();
+  const serie = serieGiorniStudio();
+
+  const testa = `<div class="st-testa">
+      <h2>🎓 A che punto sei</h2>
+      <span class="st-gg">${gg === 1 ? 'ultimo giorno' : gg + ' giorni all\'esame'}${serie >= 2 ? ` · 🔥 ${serie} di fila` : ''}</span>
+    </div>`;
+
+  // --- verdetto dalle simulazioni ---
+  let verdetto;
+  if(sims.length < 2){
+    verdetto = `<div class="st-nosim">
+        <p>Il metro più onesto è la <b>simulazione d'esame</b>: 60 domande con le quote reali, 85 minuti, correzione alla fine.
+        ${sims.length === 0 ? 'Non ne hai ancora fatta nessuna' : 'Ne hai fatta una'}: dalla seconda compare qui il verdetto.</p>
+        <button class="btn-p" id="st-sim">🎓 Fai una simulazione</button>
+      </div>`;
+  } else {
+    const ultime = sims.slice(-5);
+    const media = Math.round(ultime.reduce((a,t) => a + t.pct, 0) / ultime.length);
+    const meta = Math.ceil(ultime.length/2);
+    const mA = ultime.slice(0, meta).reduce((a,t)=>a+t.pct,0)/meta;
+    const mB = ultime.slice(-meta).reduce((a,t)=>a+t.pct,0)/meta;
+    const trend = Math.round(mB - mA);
+    const superate = ultime.filter(t => t.pct >= SOGLIA_ESAME).length;
+    let livello, cls;
+    if(media >= SOGLIA_ESAME + 5 && superate >= Math.ceil(ultime.length*0.6)){ livello='Pronta'; cls='ok'; }
+    else if(media >= SOGLIA_ESAME - 5){ livello='Ci sei quasi'; cls='quasi'; }
+    else { livello='Non ancora'; cls='no'; }
+    const frecce = trend > 1 ? `<span class="st-trend su">▲ +${trend} punti tra le prime e le ultime</span>`
+                 : trend < -1 ? `<span class="st-trend giu">▼ ${trend} punti tra le prime e le ultime</span>`
+                 : `<span class="st-trend neutro">◆ stabile</span>`;
+    const barre = ultime.map(t => `<div class="pr-col" title="${t.data}: ${t.punti}/${t.tot} (${t.pct}%)">
+        <div class="pr-bar ${t.pct >= SOGLIA_ESAME ? 'ok' : ''}" style="height:${Math.max(4, Math.round(t.pct*0.5))}px"></div>
+        <div class="pr-lab">${t.pct}%</div></div>`).join('');
+    verdetto = `<div class="st-riga">
+        <div class="st-esito ${cls}">
+          <span class="st-badge">${livello}</span>
+          <span class="st-dati"><b>${media}%</b> di media nelle simulazioni · soglia ${SOGLIA_ESAME}%</span>
+          ${frecce}
+        </div>
+        <div class="st-mini">
+          <div class="pr-graf"><div class="pr-soglia" style="bottom:${Math.round(SOGLIA_ESAME*0.5)+16}px"></div>${barre}</div>
+          <div class="pr-cap">ultime ${ultime.length} simulazioni · ${superate} sopra soglia</div>
+        </div>
+      </div>`;
+  }
+
+  const rigaCop = cop ? `<div class="st-cop ${cop.ok === false ? 'male' : (cop.ok ? 'bene' : '')}">
+      <span class="st-cop-tit">Copertura della banca dati</span> ${cop.testo}</div>` : '';
+
+  const mossa = mosseDelGiorno()[0];
+  const ap = aperturaCoach();
+  const blocco = `<div class="st-coach ${ap.tono}">
+      <div class="st-coach-testa"><span class="st-coach-ico">🧭</span><span class="st-coach-tit">Il tuo coach</span></div>
+      <p class="st-ap">${ap.testo}</p>
+      ${mossa ? `<p class="st-az"><span class="st-az-tit">La prossima mossa —</span> ${(ap.tono === 'sostegno' && mossa.breve) ? mossa.breve : mossa.testo}</p>` : ''}
+      ${mossa && mossa.azione ? `<button class="co-btn" data-arg="${mossa.azione.arg}">${mossa.azione.lab} →</button>` : ''}
+    </div>`;
+
+  card.innerHTML = testa + blocco + `<div class="st-prove"><div class="st-prove-tit">Le prove</div>` + verdetto + rigaCop + `</div>`;
+  const bs = $('st-sim'); if(bs) bs.onclick = avviaSimulazione;
+}
+
+
+// domande "maledette": sbagliate almeno 4 volte. Ripeterle uguali non funziona:
+// prima si studiano con spiegazione e trucco, poi si verificano.
+const SOGLIA_MALEDETTA = 4;
+function maledette(){
+  return QUESTIONS.filter(q => { const r = stato.risultati[q.n]; return r && (r.e || 0) >= SOGLIA_MALEDETTA; })
+                  .sort((a,b) => (stato.risultati[b.n].e - stato.risultati[a.n].e));
+}
+let soloMaledette = false;
+
+function renderMaledette(){
+  const box = $('blocco-maledette'); if(!box) return;
+  const m = maledette();
+  if(!m.length){ box.innerHTML = ''; return; }
+  const aperte = m.filter(q => stato.risultati[q.n].s === 'ko').length;
+  const peggio = stato.risultati[m[0].n].e;
+  box.innerHTML = `<div class="dt-blocco">
+      <div class="dt-tit">🔒 Domande che continui a sbagliare</div>
+      <div class="mal-testo">Sono <b>${m.length}</b> domande sbagliate almeno ${SOGLIA_MALEDETTA} volte`
+      + (aperte ? ` (<b>${aperte}</b> ancora da superare)` : '')
+      + `; la più ostinata ti ha fregata <b>${peggio}</b> volte. Riproporle uguali non basta: leggile con spiegazione e trucco, poi verificale.</div>
+      <div class="mal-azioni">
+        <button class="btn-s" id="btn-mal-studia">📖 Studiale una per una</button>
+        <button class="btn-s" id="btn-mal-test">🎯 Mettiti alla prova su queste</button>
+      </div>
+    </div>`;
+  $('btn-mal-studia').onclick = () => { soloMaledette = true; renderRipasso(); mostra('vista-ripasso'); };
+  $('btn-mal-test').onclick = () => {
+    const l = shuffle(maledette());
+    if(l.length) lanciaTest(l.slice(0, Math.min(20, l.length)), 'Domande da sbloccare', {esame:false});
+  };
+}
+
+function renderAndamento(){
+  const box = $('andamento-corpo'); if(!box) return;
+  const N = finestraGiorni;
+  const conArg = haDettaglioArg(N);
+  if(!conArg) ambitoSel = null;
+  const w1 = sommaFinestra(N-1, 0), w2 = sommaFinestra(2*N-1, N);
+  const t1 = totaleDi(w1, ambitoSel), t2 = totaleDi(w2, ambitoSel);
+  const p1 = pctOkKo(t1), p2 = pctOkKo(t2);
+  const fmt = n => n.toLocaleString('it-IT');
+  const nomeAmbito = ambitoSel === null ? 'tutti gli argomenti' : ARGOMENTI[ambitoSel];
+
+  // ---- chip di selezione ambito ----
+  const chip = (lab, idx, attivo) =>
+    `<button class="and-chip${attivo ? ' attivo' : ''}" data-amb="${idx === null ? '' : idx}">${lab}</button>`;
+  const chips = conArg
+    ? `<div class="and-chips">${chip('Tutti', null, ambitoSel === null)}${ARGOMENTI.map((a,i) => chip(nomeBreve(a), i, ambitoSel === i)).join('')}</div>`
+    : '';
+
+  // ---- tabella dettaglio per argomento ----
+  let dettaglio;
+  if(conArg){
+    const righe = ARGOMENTI.map((a, i) => {
+      const a1 = totaleDi(w1, i), a2 = totaleDi(w2, i);
+      const q1 = pctOkKo(a1), q2 = pctOkKo(a2);
+      const risp = a1.ok + a1.ko;
+      let dcell;
+      if(q1 === null) dcell = `<span class="dt-d neutro">—</span>`;
+      else if(q2 === null) dcell = `<span class="dt-d neutro">◆ nuovo</span>`;
+      else {
+        const d = q1 - q2;
+        dcell = `<span class="dt-d ${d>0?'su':(d<0?'giu':'neutro')}">${d>0?'▲ +':(d<0?'▼ ':'= ')}${d===0?'0':d}</span>`;
+      }
+      return {a, i, q1, risp, dcell,
+        html:`<tr class="${ambitoSel===i?'sel':''}" data-amb="${i}">
+          <td class="dt-nome"><span class="dt-lungo">${a}</span><span class="dt-corto">${nomeBreve(a)}</span></td>
+          <td class="dt-pct">${q1===null?'<span class="neutro">—</span>':q1+'%'}</td>
+          <td>${dcell}</td>
+          <td class="dt-n">${risp?fmt(risp):'—'}</td>
+        </tr>`};
+    });
+    dettaglio = `<table class="dt-tab"><thead><tr>
+        <th>Argomento</th><th>Media ${N}gg</th><th>vs ${N}gg prec.</th><th>Risposte</th>
+      </tr></thead><tbody>${righe.map(r=>r.html).join('')}</tbody></table>`;
+  } else {
+    const righe = ARGOMENTI.map(a => {
+      let ok = 0, ko = 0, nuove = 0;
+      QUESTIONS.forEach(q => { if(q.t !== a) return; const r = stato.risultati[q.n];
+        if(!r) nuove++; else if(r.s === 'ok') ok++; else ko++; });
+      const tot = ok + ko;
+      const pct = tot ? Math.round(100*ok/tot) : null;
+      return `<tr><td class="dt-nome"><span class="dt-lungo">${a}</span><span class="dt-corto">${nomeBreve(a)}</span></td>
+        <td class="dt-pct">${pct===null?'<span class="neutro">—</span>':pct+'%'}</td>
+        <td><span class="dt-d ${ko?'giu':'neutro'}">${fmt(ko)} da ripassare</span></td>
+        <td class="dt-n">${fmt(nuove)} mai viste</td></tr>`;
+    }).join('');
+    dettaglio = `<table class="dt-tab"><thead><tr>
+        <th>Argomento</th><th>Superate</th><th>Da ripassare</th><th>Ancora nuove</th>
+      </tr></thead><tbody>${righe}</tbody></table>
+      <div class="dt-nota">Questo è il quadro complessivo per argomento. La media giorno per giorno divisa per argomento parte da adesso: dopo i prossimi test vedrai anche qui se ogni materia sale o scende.</div>`;
+  }
+
+  if(p1 === null){
+    box.innerHTML = `${chips}<div class="and-vuoto">Nessuna risposta ${ambitoSel===null?'':'su '+nomeAmbito+' '}negli ultimi ${N} giorni.</div>
+      <div class="dt-blocco"><div class="dt-tit">Dettaglio per argomento</div>${dettaglio}</div>`;
+    return;
+  }
+
+  // ---- grafico ----
+  const H_PLOT = 68;
+  const serie = serieGiorni(N, ambitoSel);
+  const attivi = serie.filter(d => d.risp).length;
+  const etichetta = iso => new Date(iso).toLocaleDateString('it-IT', {day:'numeric', month:'short'});
+  const barre = serie.map(d => {
+    const tit = d.pct === null ? `${etichetta(d.iso)}: nessuna risposta` : `${etichetta(d.iso)}: ${d.pct}% su ${fmt(d.risp)} risposte`;
+    return d.pct === null
+      ? `<div class="and-col" title="${tit}"><div class="and-bar vuota"></div></div>`
+      : `<div class="and-col" title="${tit}"><div class="and-bar" style="height:${Math.max(3, Math.round(d.pct/100*H_PLOT))}px"></div></div>`;
+  }).join('');
+  const passo = N <= 10 ? 1 : 2;
+  const etichette = serie.map((d, i) =>
+    `<div class="and-gg">${(passo === 1 || i % passo === 0 || i === serie.length-1) ? new Date(d.iso).getDate() : ''}</div>`).join('');
+
+  // ---- confronto ----
+  let riga2;
+  if(p2 === null){
+    riga2 = `<div class="and-delta neutro">◆ primo periodo — dai prossimi giorni vedrai il confronto</div>`;
+  } else {
+    const d = p1 - p2;
+    const cls = d > 0 ? 'su' : (d < 0 ? 'giu' : 'neutro');
+    const ico = d > 0 ? '▲' : (d < 0 ? '▼' : '=');
+    const parola = d > 0 ? 'in miglioramento' : (d < 0 ? 'in calo' : 'stabile');
+    riga2 = `<div class="and-delta ${cls}">${ico} ${parola}: ${d > 0 ? '+' : ''}${d} punti rispetto ai ${N} giorni precedenti (${p2}%)</div>`;
+  }
+
+  // ---- diagnosi ----
+  let consiglio;
+  if(ambitoSel !== null){
+    const soglia = 80;
+    consiglio = p1 >= soglia
+      ? `<b>${nomeAmbito}</b>: ${p1}%, sopra la soglia d'esame dell'${soglia}%.`
+      : `<b>${nomeAmbito}</b>: ${p1}%, ${soglia - p1} punti sotto la soglia d'esame.`;
+  } else {
+    const trend = trendPerAmbito(w1, w2, Math.max(8, N * 2));
+    if(trend.length){
+      const giu = trend[0], su = trend[trend.length - 1];
+      const parti = [];
+      if(giu.delta < 0) parti.push(`in calo <b>${giu.arg}</b> (${giu.pct}%, ${giu.delta} punti)`);
+      if(su.delta > 0 && su.arg !== giu.arg) parti.push(`in crescita <b>${su.arg}</b> (${su.pct}%, +${su.delta})`);
+      if(!parti.length) parti.push('nessun ambito si muove in modo netto rispetto al periodo precedente');
+      consiglio = parti.join(' · ') + '.';
+    } else {
+      const deb = ambitoPiuDebole();
+      consiglio = deb
+        ? `Ambito più debole: <b>${deb.arg}</b> (${deb.pct}% superate, ${fmt(deb.daRip)} da ripassare).`
+        : 'Servono più risposte per confrontare gli ambiti.';
+    }
+  }
+
+  box.innerHTML = `
+    ${chips}
+    <div class="and-testa">
+      <div>
+        <div class="and-num"><b>${p1}%</b><span>media ultimi ${N} giorni${ambitoSel===null?'':' · '+nomeAmbito}</span></div>
+        ${riga2}
+      </div>
+      <div class="and-meta">${fmt(t1.ok + t1.ko)} risposte · ${attivi} ${attivi === 1 ? 'giorno attivo' : 'giorni attivi'}</div>
+    </div>
+    <div class="and-gr">
+      <div class="and-plot" style="height:${H_PLOT}px">
+        <div class="and-soglia" style="bottom:${Math.round(0.8*H_PLOT)}px"><span>soglia esame 80%</span></div>
+        <div class="and-barre">${barre}</div>
+      </div>
+      <div class="and-gg-riga">${etichette}</div>
+    </div>
+    <div class="and-consiglio">💡 ${consiglio}</div>
+    <div class="dt-blocco">
+      <div class="dt-tit">Dettaglio per argomento${conArg ? ' <span class="dt-hint">— tocca una riga per filtrare</span>' : ''}</div>
+      ${dettaglio}
+    </div>
+    ${sottoBlocco()}`;
+}
+
+// blocco sottoargomenti: compare quando è selezionata una materia
+function sottoBlocco(){
+  if(ambitoSel === null) return '';
+  const arg = ARGOMENTI[ambitoSel];
+  const righe = statiSottoargomenti(arg);
+  if(!righe) return '';
+  const ordinate = righe.slice().sort((a,b) => {
+    if(a.pct === null && b.pct === null) return b.tot - a.tot;
+    if(a.pct === null) return 1;
+    if(b.pct === null) return -1;
+    return a.pct - b.pct;                       // dai più deboli ai più solidi
+  });
+  const fmt = n => n.toLocaleString('it-IT');
+  const corpo = ordinate.map(R => `<tr>
+      <td class="so-nome">${R.nome}</td>
+      <td class="so-pct">${R.pct === null ? '<span class="neutro">mai viste</span>'
+          : `<span class="${R.pct < 60 ? 'so-basso' : (R.pct >= 80 ? 'so-alto' : '')}">${R.pct}%</span>`}</td>
+      <td class="dt-n">${R.ko ? `<span class="dt-d giu">${fmt(R.ko)}</span>` : '—'}</td>
+      <td class="dt-n">${fmt(R.nuove)}</td>
+      <td class="so-az"><button class="so-btn" data-sa="${R.i}" title="Allena questo sottoargomento">▶</button></td>
+    </tr>`).join('');
+  return `<div class="dt-blocco">
+      <div class="dt-tit">Sottoargomenti di ${arg} <span class="dt-hint">— dal più debole; ▶ avvia un test mirato</span></div>
+      <div class="so-scroll"><table class="dt-tab so-tab"><thead><tr>
+        <th>Sottoargomento</th><th>Superate</th><th>Da ripassare</th><th>Nuove</th><th></th>
+      </tr></thead><tbody>${corpo}</tbody></table></div>
+    </div>`;
+}
+
 const DATA_ESAME = '2026-10-14';   // ultimo giorno di test: mercoledì 14 ottobre (esame giovedì 15)
 function giorniAllEsame(){
   const ms = new Date(DATA_ESAME) - new Date(oggiISO());
   return Math.max(1, Math.round(ms / 86400000) + 1);   // giorni di studio, oggi compreso
 }
 
+// Le domande vanno viste tutte entro 10 giorni prima dell'esame: gli ultimi 10 giorni
+// servono a consolidare, non a scoprire materiale nuovo.
+function isoCopertura(){
+  const d = new Date(DATA_ESAME); d.setDate(d.getDate() - GG_CONSOLIDAMENTO);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function giorniCopertura(){
+  const ms = new Date(isoCopertura()) - new Date(oggiISO());
+  return Math.max(1, Math.round(ms / 86400000) + 1);
+}
+function inFaseFinale(){ return oggiISO() > isoCopertura(); }
+
 function targetOggi(mancanti){
   const oggi = oggiISO();
   if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0) || stato.piano.esame !== DATA_ESAME){
-    stato.piano = {giorno: oggi, esame: DATA_ESAME, target: Math.max(1, Math.ceil(mancanti / giorniAllEsame()))};
+    stato.piano = {giorno: oggi, esame: DATA_ESAME, target: Math.max(1, Math.ceil(mancanti / giorniCopertura()))};
     salvaLocale();
   }
   return stato.piano.target;
@@ -1017,9 +1934,13 @@ function renderObiettivo(){
   const el = $('testo-obiettivo');
   const gg = giorniAllEsame();
   const scad = new Date(DATA_ESAME).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
-  $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame! 🍀' : `— test fino a ${scad} (${gg === 1 ? 'ultimo giorno!' : gg + ' giorni di studio, oggi compreso'}) · esame giovedì 15 ottobre 🍀`;
+  const scadCop = new Date(isoCopertura()).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
+  $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame! 🍀'
+    : inFaseFinale() ? `— ultimi ${gg} giorni: si consolida, niente materiale nuovo · esame giovedì 15 ottobre 🍀`
+    : `— tutte le domande viste entro ${scadCop} (${giorniCopertura()} giorni), poi 10 giorni di consolidamento · esame giovedì 15 ottobre 🍀`;
   if(!mancanti){
     el.innerHTML = '<div class="mini-chiaro">Banca dati esaurita 🎉 — nessuna domanda nuova né da recuperare.</div>';
+    $('ob-hero').innerHTML = `<div class="obh-fatto">🎉 <b>Banca dati esaurita</b> — non restano domande nuove né da recuperare.</div>`;
     return;
   }
   const alGiorno = targetOggi(mancanti);   // FISSO per tutta la giornata: si ricalcola solo domani sul residuo
@@ -1033,6 +1954,24 @@ function renderObiettivo(){
     tile('🏁', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'esatte oggi / obiettivo del giorno',
          oggiFatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>'
                                : `<div class="kd pari">ne mancano ${fmt(alGiorno - oggiFatte)}</div>`);
+
+  // ---- striscia obiettivo sempre visibile, in cima alla card Allenati ----
+  const restano = Math.max(0, alGiorno - oggiFatte);
+  const pctOb = Math.min(100, Math.round(100 * oggiFatte / alGiorno));
+  const fatto = oggiFatte >= alGiorno;
+  const capofase = inFaseFinale()
+    ? `<span class="obh-gg">ultimi ${gg} giorni · consolidamento</span>`
+    : `<span class="obh-gg"><span class="gg-lungo">${giorniCopertura()} giorni per vedere tutto · esame tra ${gg}</span><span class="gg-corto">${giorniCopertura()} gg per vedere tutto</span></span>`;
+  $('ob-hero').innerHTML = `
+    <div class="obh-top">
+      <span class="obh-tit">🎯 Obiettivo di oggi</span>
+      ${capofase}
+    </div>
+    <div class="obh-riga">
+      <div class="obh-num"><b>${fmt(oggiFatte)}</b><span>/${fmt(alGiorno)} risposte esatte</span></div>
+      <div class="obh-stato ${fatto ? 'ok' : ''}">${fatto ? '✔ obiettivo raggiunto' : `ne mancano <b>${fmt(restano)}</b> · ≈ ${Math.max(1, Math.ceil(restano / N_TEST))} test`}</div>
+    </div>
+    <div class="obh-bar ${fatto ? 'ok' : ''}"><i style="width:${pctOb}%"></i></div>`;
 }
 
 function argomentiSelezionati(){
@@ -1067,6 +2006,7 @@ function mixKo(){
 function mixVinte(){ return 100 - mixNuove() - mixKo(); }
 // una domanda già indovinata torna proponibile dopo 5 test; a ogni consolidamento riuscito l'attesa si allunga (10, poi 15)
 function vintaProponibile(r){
+  if(r.p) return (stato.nTest || 0) - (r.u || 0) >= 1;   // da confermare: torna al test successivo
   const soglia = Math.min(15, 5 * ((r.v || 0) + 1));
   return (stato.nTest || 0) - (r.u || 0) >= soglia;
 }
@@ -1269,7 +2209,8 @@ function lanciaTest(domande, tag, opts){
   if(!domande.length) return;
   opts = opts || {};
   test = { domande, idx: 0, risposte: {}, esame: opts.esame !== undefined ? opts.esame : $('chk-esame').checked,
-           inizio: Date.now(), argomenti: tag, sim: !!opts.sim, scadenza: opts.scadenza || 0, conf: {} };
+           inizio: Date.now(), argomenti: tag, sim: !!opts.sim, scadenza: opts.scadenza || 0, conf: {},
+           tempi: {}, cambi: {}, tIniz: 0 };
   clearInterval(timerInt);
   const aggTimer = () => {
     const trascorsi = Math.floor((Date.now() - test.inizio) / 1000);
@@ -1278,8 +2219,22 @@ function lanciaTest(domande, tag, opts){
       if(resto <= 0){ $('q-timer').textContent = '⏱ 00:00'; clearInterval(timerInt); fineTest(); return; }
       $('q-timer').textContent = '⏳ ' + fmtT(resto);
       $('q-timer').classList.toggle('rosso', resto < 300);
+      // ritmo: confronto tra dove sei e dove dovresti essere a questo punto del tempo
+      const perDomanda = test.scadenza / test.domande.length;
+      const atteso = test.idx * perDomanda;              // secondi che "avresti dovuto" aver speso
+      const scarto = Math.round(atteso - trascorsi);     // >0 = in anticipo
+      const el = $('q-passo');
+      if(test.idx >= 1){
+        el.classList.remove('nascosto');
+        const min = Math.floor(Math.abs(scarto) / 60), sec = Math.abs(scarto) % 60;
+        const quanto = min ? `${min} min` : `${sec} sec`;
+        if(Math.abs(scarto) < 45){ el.className = 'bene'; el.textContent = '⏱ sei in perfetto orario'; }
+        else if(scarto > 0){ el.className = 'bene'; el.textContent = `⏱ in anticipo di ${quanto}`; }
+        else { el.className = 'male'; el.textContent = `⏱ in ritardo di ${quanto}`; }
+      } else el.classList.add('nascosto');
     } else {
       $('q-timer').textContent = '⏱ ' + fmtT(trascorsi);
+      $('q-passo').classList.add('nascosto');
     }
   };
   timerInt = setInterval(aggTimer, 1000);
@@ -1411,13 +2366,15 @@ function renderDomanda(){
   const vintaRip = !inRipasso && rq && rq.s === 'ok' && !test.sim;
   $('q-rip').classList.toggle('nascosto', !inRipasso && !vintaRip);
   if(inRipasso) $('q-rip').textContent = `RIPASSO — sbagliata ${rq.e === 1 ? 'una volta' : rq.e + ' volte'} · ${2-rq.c === 1 ? 'manca 1 risposta esatta' : 'mancano 2 risposte esatte'} per superarla`;
-  else if(vintaRip) $('q-rip').textContent = 'CONSOLIDAMENTO — già indovinata in passato';
+  else if(vintaRip) $('q-rip').textContent = rq.p ? 'DA CONFERMARE — l\'avevi indovinata, ma con esitazione' : 'CONSOLIDAMENTO — già indovinata in passato';
   $('q-testo').textContent = q.n + '. ' + q.q;
   $('q-feedback').classList.add('nascosto');
   $('q-spiega').classList.add('nascosto');
   $('q-trucco').classList.add('nascosto');
   $('btn-prossima').disabled = true;
   $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
+  test.tIniz = Date.now();          // cronometro della singola domanda (serve a capire le risposte incerte)
+  if(test.cambi[q.n] === undefined) test.cambi[q.n] = 0;
   const cont = $('q-opzioni');
   cont.innerHTML = '';
   'ABCD'.split('').forEach((lett, i) => {
@@ -1429,6 +2386,29 @@ function renderDomanda(){
   });
 }
 
+// tempo impiegato sulla domanda: registrato una sola volta, quando la si lascia
+function segnaTempo(q){
+  if(!q || !test.tIniz || test.tempi[q.n] !== undefined) return;
+  test.tempi[q.n] = Date.now() - test.tIniz;
+}
+
+// Una risposta giusta è "sicura" se arriva in tempi normali e senza ripensamenti.
+// Giusta ma lenta o con cambi di idea = probabile tentativo: non vale come superata.
+const T_INTERROTTA = 240000;   // oltre 4 minuti: si è distratta, il tempo non dice nulla
+function rispostaIncerta(q){
+  if((test.cambi[q.n] || 0) > 0) return true;
+  const t = test.tempi[q.n];
+  if(t === undefined || t > T_INTERROTTA) return false;
+  const base = (stato.tN >= 30 && stato.tMedio) ? stato.tMedio : 22000;
+  return t > Math.max(35000, base * 1.8);
+}
+// media dei tempi sulle risposte giuste e sicure (si adatta al ritmo di chi studia)
+function aggiornaRitmo(ms){
+  if(!(ms > 1500) || ms > T_INTERROTTA) return;
+  stato.tN = (stato.tN || 0) + 1;
+  stato.tMedio = stato.tMedio ? stato.tMedio + (ms - stato.tMedio) / Math.min(stato.tN, 40) : ms;
+}
+
 function labelAvanti(){
   return test.idx === test.domande.length - 1 ? 'Chiudi il test ✓' : 'Prossima →';
 }
@@ -1437,6 +2417,7 @@ function labelAvanti(){
 function rispondi(i){
   const q = test.domande[test.idx];
   if(test.conf[q.n]) return;   // già confermata (modalità con correzione): non più modificabile
+  if(test.risposte[q.n] !== undefined && test.risposte[q.n] !== i) test.cambi[q.n] = (test.cambi[q.n] || 0) + 1;
   test.risposte[q.n] = i;
   const opts = [...$('q-opzioni').children];
   opts.forEach((o, j) => o.classList.toggle('sel', j === i));
@@ -1459,6 +2440,7 @@ function spiegaHTML(n){
 function confermaRisposta(){
   const q = test.domande[test.idx];
   const i = test.risposte[q.n];
+  segnaTempo(q);
   test.conf[q.n] = true;
   const opts = [...$('q-opzioni').children];
   opts.forEach(o => { o.disabled = true; o.classList.remove('sel'); });
@@ -1481,6 +2463,7 @@ function confermaRisposta(){
 function prossima(){
   const q = test.domande[test.idx];
   if(test.risposte[q.n] === undefined) return;
+  segnaTempo(q);
   if(!test.esame && !test.conf[q.n]){ confermaRisposta(); return; }
   if(test.idx < test.domande.length - 1){ test.idx++; renderDomanda(); }
   else fineTest();
@@ -1493,20 +2476,29 @@ function fineTest(){
   const risposte = test.domande.filter(q => test.risposte[q.n] !== undefined);
   const errori = [], giuste = [];
   risposte.forEach(q => (test.risposte[q.n] === q.e ? giuste : errori).push(q));
+  const nuoveViste = risposte.filter(q => !stato.risultati[q.n]).length;   // prima che lo stato venga aggiornato
   // aggiorna stato persistente:
   // - domanda mai sbagliata + risposta giusta -> archiviata subito
   // - domanda già sbagliata -> serve arrivare a 2 giuste dopo l'ultimo errore
   // - risposta sbagliata -> azzera il conteggio giuste e torna/resta nel giro
   if(risposte.length) stato.nTest = (stato.nTest || 0) + 1;
   giuste.forEach(q => {
+    const incerta = rispostaIncerta(q);
+    if(!incerta) aggiornaRitmo(test.tempi[q.n]);
     const r = stato.risultati[q.n];
-    if(!r){ stato.risultati[q.n] = {s:'ok', c:1, e:0, u: stato.nTest}; }
+    if(!r){
+      // giusta al primo colpo: vale come superata solo se la risposta era sicura,
+      // altrimenti resta "da confermare" e torna presto (evita di archiviare i colpi di fortuna)
+      stato.risultati[q.n] = incerta ? {s:'ok', c:1, e:0, u: stato.nTest, p:1}
+                                     : {s:'ok', c:1, e:0, u: stato.nTest};
+    }
     else {
       if(r.s === 'ok') r.v = (r.v || 0) + 1;   // consolidamento riuscito: la prossima attesa raddoppia
       r.c++;
       r.u = stato.nTest;
       if(r.e === 0 || r.c >= 2){ r.s = 'ok'; delete r.t; delete r.d; }
       else { r.t = stato.nTest + intervalloRiconferma(); }   // 1ª giusta dopo un errore: riconferma tra 5-6 test
+      if(incerta) r.p = 1; else delete r.p;   // conferma sicura: la domanda è davvero acquisita
     }
   });
   errori.forEach(q => {
@@ -1519,6 +2511,15 @@ function fineTest(){
                          iso: oggiISO(), argomenti: test.argomenti, punti: giuste.length, tot: test.sim ? test.domande.length : risposte.length });
     const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
     g.test++; g.ok += giuste.length; g.ko += errori.length;
+    g.nuove = (g.nuove || 0) + nuoveViste;   // copertura: domande viste per la prima volta
+    // dettaglio per argomento: serve a capire in quale ambito si sta migliorando o peggiorando
+    g.arg = g.arg || {};
+    const conta = (q, campo) => {
+      const i = ARGOMENTI.indexOf(q.t); if(i < 0) return;
+      const a = g.arg[i] || {ok:0, ko:0}; a[campo]++; g.arg[i] = a;
+    };
+    giuste.forEach(q => conta(q, 'ok'));
+    errori.forEach(q => conta(q, 'ko'));
     stato.giorni[oggiISO()] = g;
   }
   if(risposte.length > 0) salvaLocale();
@@ -1795,11 +2796,14 @@ function renderTrend(){
 function renderRipasso(){
   const soloAperte = $('chk-solo-aperte').checked;
   const cont = $('lista-ripasso');
+  const avviso = soloMaledette
+    ? `<div class="mal-avviso">🔒 Stai vedendo solo le domande sbagliate almeno ${SOGLIA_MALEDETTA} volte. <a href="#" id="mal-tutte">Mostra tutti gli errori</a></div>` : '';
   let totale = 0;
   const blocchi = ARGOMENTI.map(arg => {
     const errate = QUESTIONS.filter(q => {
       const r = stato.risultati[q.n];
-      return q.t === arg && r && r.e > 0 && (!soloAperte || r.s === 'ko');
+      return q.t === arg && r && r.e > 0 && (!soloAperte || r.s === 'ko')
+             && (!soloMaledette || (r.e || 0) >= SOGLIA_MALEDETTA);
     });
     totale += errate.length;
     if(!errate.length) return '';
@@ -1821,8 +2825,10 @@ function renderRipasso(){
       <div class="corpo">${items}</div>
     </details>`;
   }).join('');
-  cont.innerHTML = totale ? blocchi :
-    `<div class="vuoto">${soloAperte ? 'Nessuna domanda ancora da superare — tutte le sbagliate sono state recuperate! Togli il filtro per rileggerle.' : 'Ancora nessuna domanda sbagliata: quando ne sbagli una, la ritrovi qui per il ripasso pre-esame.'}</div>`;
+  cont.innerHTML = avviso + (totale ? blocchi :
+    `<div class="vuoto">${soloMaledette ? 'Nessuna domanda sbagliata cosi\u0300 tante volte: ottimo segno.' : (soloAperte ? 'Nessuna domanda ancora da superare — tutte le sbagliate sono state recuperate! Togli il filtro per rileggerle.' : 'Ancora nessuna domanda sbagliata: quando ne sbagli una, la ritrovi qui per il ripasso pre-esame.')}</div>`);
+  const link = $('mal-tutte');
+  if(link) link.onclick = (e) => { e.preventDefault(); soloMaledette = false; renderRipasso(); };
 }
 
 // ---------- dispensa matematica ----------
@@ -1930,6 +2936,28 @@ function renderCerca(){
 }
 
 // ---------- eventi ----------
+$('and-switch').addEventListener('click', ev => {
+  const b = ev.target.closest('button[data-gg]'); if(!b) return;
+  finestraGiorni = +b.dataset.gg;
+  [...$('and-switch').querySelectorAll('button')].forEach(x => x.classList.toggle('attivo', x === b));
+  renderAndamento();
+});
+// scelta dell'ambito: dai chip in alto o cliccando una riga della tabella
+$('andamento-corpo').addEventListener('click', ev => {
+  const sa = ev.target.closest('.so-btn');
+  if(sa){ allenaSottoargomento(ARGOMENTI[ambitoSel], +sa.dataset.sa); return; }
+  const c = ev.target.closest('.and-chip'), r = ev.target.closest('tr[data-amb]');
+  if(!c && !r) return;
+  const val = c ? c.dataset.amb : r.dataset.amb;
+  const idx = val === '' ? null : +val;
+  ambitoSel = (ambitoSel === idx && r) ? null : idx;   // riclicco la riga scelta = torno a "Tutti"
+  renderAndamento();
+});
+$('card-stato').addEventListener('click', ev => {
+  const b = ev.target.closest('.co-btn'); if(!b) return;
+  allenaArgomento(b.dataset.arg);
+});
+$('tab-ripasso').addEventListener('click', () => { soloMaledette = false; });
 $('tab-allenamento').onclick = () => { renderHome(); mostra('vista-home'); };
 $('tab-dashboard').onclick = () => { renderDashboard(); mostra('vista-dashboard'); };
 $('tab-ripasso').onclick = () => { renderRipasso(); mostra('vista-ripasso'); };
