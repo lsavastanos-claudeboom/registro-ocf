@@ -1174,6 +1174,7 @@ const CHIAVE_LOCALE = 'ocf_quiz_progressi_2026';
 function salvaLocale(){
   try{
     stato.salvatoAlle = new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    stato.agg = Date.now();                     // timbro dell'ultimo aggiornamento: serve al confronto con il cloud
     localStorage.setItem(CHIAVE_LOCALE, JSON.stringify(stato));
     return true;
   }catch(e){ return false; }  // storage pieno o non disponibile: si continua con il solo file
@@ -3359,10 +3360,22 @@ $('btn-home').onclick = () => { renderHome(); mostra('vista-home'); };
 $('btn-salva').onclick = salvaProgressi;
 $('btn-carica').onclick = () => $('file-progressi').click();
 $('file-progressi').onchange = caricaProgressi;
-$('btn-reset').onclick = () => conferma('Azzerare tutti i progressi (risultati, storico e giornate)? Verrà cancellato anche il salvataggio automatico nel browser.', () => {
-  stato = {risultati:{}, storico:[], giorni:{}, nTest:0};
+$('btn-reset').onclick = () => conferma('Azzerare tutti i progressi (risultati, storico e giornate)? Verrà cancellato tutto: nel browser e sul tuo account online.', async () => {
+  const autosavePrec = stato.autosave;
+  stato = {risultati:{}, storico:[], giorni:{}, nTest:0, autosave: autosavePrec, azzeratoIl: Date.now()};
   try{ localStorage.removeItem(CHIAVE_LOCALE); }catch(e){}
+  salvaLocale();                       // riscrive subito lo stato vuoto in locale
   renderHome();
+  if(!cloudAttivo || !utente){
+    $('nota-pool').textContent = 'Progressi azzerati. ✔';
+    return;
+  }
+  clearTimeout(pushTimer);             // annulla il push ritardato: lo facciamo adesso
+  $('nota-pool').textContent = 'Azzeramento in corso anche sul tuo account online…';
+  const ok = await pushCloud();
+  $('nota-pool').textContent = ok
+    ? 'Progressi azzerati ✔ — cancellati sia nel browser sia sul tuo account online.'
+    : 'Progressi azzerati nel browser, ma il cloud non ha risposto: resta collegata, l\'app riprova da sola. Non ricaricare la pagina finché l\'indicatore in alto non torna «sincronizzato».';
 });
 
 document.addEventListener('keydown', e => {
@@ -3394,9 +3407,14 @@ function setSync(statoSync, testo){
 }
 
 function statoDaCaricare(remoto, locale){
-  // vince chi ha più storia; a parità il remoto (più recente tra i dispositivi)
   if(!remoto) return locale;
   if(!locale) return remoto;
+  // un azzeramento esplicito vince su qualunque copia più vecchia dell'azzeramento stesso
+  const azzR = remoto.azzeratoIl || 0, azzL = locale.azzeratoIl || 0;
+  const aggR  = remoto.agg || 0,        aggL  = locale.agg || 0;
+  if(azzR > azzL && azzR >= aggL) return remoto;
+  if(azzL > azzR && azzL >= aggR) return locale;
+  // altrimenti vince chi ha più storia; a parità il remoto (più recente tra i dispositivi)
   return (locale.storico || []).length > (remoto.storico || []).length ? locale : remoto;
 }
 
@@ -3410,17 +3428,20 @@ async function pushCloud(){
   if(!cloudAttivo || !utente) return;
   if(pushInCorso){ pushDaRifare = true; return; }
   pushInCorso = true;
+  let esitoPush = false;
   setSync('fuori', 'salvataggio…');
   try{
     const { error } = await sb.from('progressi')
       .upsert({ user_id: utente.id, stato: stato, updated_at: new Date().toISOString() });
     if(error) throw error;
     setSync('ok', 'sincronizzato');
+    esitoPush = true;
   }catch(e){
     setSync('errore', navigator.onLine ? 'errore di sync' : 'offline — riprovo');
   }
   pushInCorso = false;
   if(pushDaRifare){ pushDaRifare = false; pushCloud(); }
+  return esitoPush;
 }
 function pushCloudDebounce(){
   if(!cloudAttivo || !utente) return;
