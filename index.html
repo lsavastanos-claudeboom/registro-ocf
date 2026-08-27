@@ -1171,6 +1171,7 @@ function applicaTema(tema){
 }
 
 const CHIAVE_LOCALE = 'ocf_quiz_progressi_2026';
+const CHIAVE_AZZ = 'ocf_azzerato_il';   // timbro dell'ultimo azzeramento su QUESTO dispositivo
 function salvaLocale(){
   try{
     stato.salvatoAlle = new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -3363,7 +3364,7 @@ $('file-progressi').onchange = caricaProgressi;
 $('btn-reset').onclick = () => conferma('Azzerare tutti i progressi (risultati, storico e giornate)? Verrà cancellato tutto: nel browser e sul tuo account online.', async () => {
   const autosavePrec = stato.autosave;
   stato = {risultati:{}, storico:[], giorni:{}, nTest:0, autosave: autosavePrec, azzeratoIl: Date.now()};
-  try{ localStorage.removeItem(CHIAVE_LOCALE); }catch(e){}
+  try{ localStorage.removeItem(CHIAVE_LOCALE); localStorage.setItem(CHIAVE_AZZ, String(stato.azzeratoIl)); }catch(e){}
   salvaLocale();                       // riscrive subito lo stato vuoto in locale
   renderHome();
   if(!cloudAttivo || !utente){
@@ -3474,13 +3475,25 @@ async function dopoLogin(sessione){
   const locale = caricaLocale() ? stato : null;
   let remoto = null;
   try{ remoto = await caricaCloud(); }catch(e){}
-  const scelto = statoDaCaricare(remoto, locale);
+  let scelto = statoDaCaricare(remoto, locale);
+  // guardia anti-resurrezione: se qui è stato fatto un azzeramento e qualcuno rimanda su
+  // progressi più vecchi dell'azzeramento (tipico di una scheda rimasta aperta con la
+  // versione vecchia dell'app), li rifiutiamo invece di ripescarli
+  let resurrezione = false;
+  let azzLocale = 0;
+  try{ azzLocale = +(localStorage.getItem(CHIAVE_AZZ) || 0); }catch(e){}
+  if(scelto && azzLocale && (scelto.storico || []).length && !((scelto.agg || 0) > azzLocale)){
+    resurrezione = true;
+    scelto = {risultati:{}, storico:[], giorni:{}, nTest:0, autosave:false, azzeratoIl: azzLocale};
+  }
   if(scelto) stato = normalizzaStato(JSON.parse(JSON.stringify(scelto)));
   if(stato.autosave === undefined) stato.autosave = false;   // online: il file .json è solo una copia extra
   _salvaLocaleBase();
   setSync('ok', 'sincronizzato');
   pushCloud();
-  avviaApp('Bentornata! Progressi sincronizzati sul tuo account.');
+  avviaApp(resurrezione
+    ? 'Progressi azzerati ✔ — un altro dispositivo aveva rimandato su i vecchi dati e sono stati rifiutati. Su quel dispositivo ricarica la pagina.'
+    : 'Bentornata! Progressi sincronizzati sul tuo account.');
 }
 
 async function avvio(){
