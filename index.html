@@ -691,6 +691,13 @@ b.dubbia{color:var(--ottone);}
   background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.14);}
 .st-proiezione.bene{background:rgba(63,215,155,.10); border-color:rgba(63,215,155,.32);}
 .st-proiezione.male{background:rgba(242,169,59,.10); border-color:rgba(242,169,59,.34);}
+.st-proiezione.provvisoria{background:rgba(var(--velo),.05); border-color:rgba(var(--velo),.18); border-style:dashed;}
+.st-proiezione.provvisoria .pj-num b{color:var(--nebbia);}
+.pj-tag{display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; vertical-align:middle;
+  font-family:'Manrope',sans-serif; font-size:.66rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--nebbia); background:rgba(var(--velo),.10); border:1px solid rgba(var(--velo),.20);}
+.pj-provv{display:block; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(var(--velo),.18);
+  font-size:.84rem; color:var(--nebbia); line-height:1.55;}
 .pj-riga{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:4px;}
 .pj-num b{font-family:'Archivo',sans-serif; font-size:2.1rem; font-weight:800; line-height:1;}
 .st-proiezione.bene .pj-num b{color:var(--vidimato);}
@@ -1818,6 +1825,13 @@ function statoCopertura(){
 const P_ACQUISITA = 0.96;
 const RISPOSTE_PER_DOMANDA = 2.75;   // quante risposte servono in media per acquisirne una
 const OBIETTIVO_ESAME = 0.90;
+// Quanto fidarsi dei propri dati. Una precisione misurata su poche risposte oscilla
+// di parecchi punti: finché le risposte sono poche la stima resta ancorata al valore
+// prudenziale, e la proiezione si dichiara provvisoria invece di dare un numero secco.
+const PRIOR_NUOVA = 0.55;            // precisione ipotizzata su una domanda mai studiata
+const PESO_PRIOR = 200;              // domande viste perché il dato misurato pesi quanto la stima
+const DOMANDE_MIN_STIMA = 200;       // sotto questa soglia la proiezione è dichiarata provvisoria
+const GG_MIN_RITMO = 3;              // giornate attive minime per parlare di "ritmo"
 
 function proiezioneEsame(){
   let acquisite = 0, inLavorazione = 0, nuoveRimaste = 0;
@@ -1828,13 +1842,23 @@ function proiezioneEsame(){
     else inLavorazione++;                          // già viste ma non ancora acquisite
   });
   const pt = primoTentativo(QUESTIONS);
-  const pNuova = pt.tot >= 50 ? Math.max(0.3, Math.min(0.8, pt.ok / pt.tot)) : 0.55;
+  // La precisione misurata su poche risposte è rumorosa: la si mescola con la stima
+  // prudenziale, con un peso che scende man mano che le risposte vere aumentano.
+  // Con PESO_PRIOR risposte al primo tentativo il dato misurato pesa metà.
+  const pNuova = Math.max(0.3, Math.min(0.8,
+      (pt.ok + PRIOR_NUOVA * PESO_PRIOR) / (pt.tot + PESO_PRIOR)));
+  const pesoMisura = pt.tot / (pt.tot + PESO_PRIOR);          // 0 = tutta stima, 1 = tutto dato reale
+  const pMisurata = pt.tot ? pt.ok / pt.tot : null;
   const N = QUESTIONS.length;
   const stima = c => c * P_ACQUISITA + (1 - c) * pNuova;
 
   const recenti = giorniAttiviRecenti(13).slice(0, 7);
-  const ritmo = recenti.length
-    ? Math.round(recenti.reduce((a,g) => a + g.ok + g.ko, 0) / recenti.length) : 0;
+  // Un giorno solo non è un ritmo: finché non ci sono abbastanza giornate attive
+  // la proiezione non estrapola nulla e si dichiara provvisoria.
+  const ggDati = recenti.length;
+  const datiScarsi = ggDati < GG_MIN_RITMO || pt.tot < DOMANDE_MIN_STIMA;
+  const ritmo = ggDati >= GG_MIN_RITMO
+    ? Math.round(recenti.reduce((a,g) => a + g.ok + g.ko, 0) / ggDati) : 0;
   const conNuove = recenti.filter(g => g.nuove !== undefined);
   // se lo storico non ha ancora il dettaglio delle domande nuove, lo stimo dalla quota del mix
   const ritmoNuove = conNuove.length
@@ -1862,11 +1886,36 @@ function proiezioneEsame(){
   const nuoveNecessarie = Math.max(0, Math.min(nuoveRimaste, mancanti - inLavorazione));
   const nuoveAlGiorno = (!inFaseFinale() && ggCop > 0) ? Math.ceil(nuoveNecessarie / ggCop) : 0;
 
-  return {acquisite, inLavorazione, nuoveRimaste, N, pNuova, ritmo, ritmoNuove, ritmoNuoveStimato, gg, ggCop,
+  return {acquisite, inLavorazione, nuoveRimaste, N, pNuova, pMisurata, pesoMisura, baseMisura: pt.tot,
+          ggDati, datiScarsi, ggMancanti: Math.max(0, GG_MIN_RITMO - ggDati),
+          domandeMancanti: Math.max(0, DOMANDE_MIN_STIMA - pt.tot),
+          ritmo, ritmoNuove, ritmoNuoveStimato, gg, ggCop,
           previsto: Math.round(previsto * 100),
           serveAcquisite: Math.round(serveAcquisite), alGiorno, nuoveAlGiorno,
           limitataDallaCopertura,
           raggiungibile: previsto >= OBIETTIVO_ESAME};
+}
+
+// Spiega perché la proiezione non è ancora affidabile: con pochi dati il numero
+// oscilla di parecchio, e mostrarlo senza dirlo darebbe una falsa sicurezza.
+function notaProvvisoria(pr){
+  const pezzi = [];
+  if(pr.domandeMancanti > 0){
+    pezzi.push(pr.baseMisura === 0
+      ? `la precisione è ancora quella ipotizzata (${Math.round(PRIOR_NUOVA*100)}%): serve almeno un test per misurarla davvero`
+      : `la precisione è misurata su <b>${pr.baseMisura.toLocaleString('it-IT')} domande</b>, troppo poche per fidarsi — `
+        + `hai fatto il <b>${Math.round(pr.pMisurata*100)}%</b>, ma su questa base il valore vero può stare diversi punti sopra o sotto, `
+        + `quindi la proiezione lo mescola ancora con la stima prudenziale (ne servono altre <b>${pr.domandeMancanti.toLocaleString('it-IT')}</b>)`);
+  }
+  if(pr.ggMancanti > 0){
+    pezzi.push(`il ritmo non è ancora calcolabile: ${
+        pr.ggDati === 0 ? `non c'è ancora nessuna giornata di test, ne servono ${GG_MIN_RITMO}`
+      : pr.ggDati === 1 ? `c'è una sola giornata di test, ne servono ${GG_MIN_RITMO}`
+      : `ci sono ${pr.ggDati} giornate di test, ne servono ${GG_MIN_RITMO}`}`);
+  }
+  const testo = pezzi.join('; ');
+  return `<b>Stima provvisoria.</b> ` + testo.charAt(0).toUpperCase() + testo.slice(1)
+       + `. Il numero qui sopra si assesterà man mano che accumuli giornate.`;
 }
 
 // sottoargomenti rimasti troppo indietro: sono buchi garantiti il giorno dell'esame
@@ -1944,13 +1993,14 @@ function renderStato(){
   const pr = proiezioneEsame();
   const fmt = n => n.toLocaleString('it-IT');
   const rigaProiezione = `
-    <div class="st-proiezione ${pr.raggiungibile ? 'bene' : 'male'}">
-      <div class="st-cop-tit">Proiezione al 15 ottobre</div>
+    <div class="st-proiezione ${pr.datiScarsi ? 'provvisoria' : (pr.raggiungibile ? 'bene' : 'male')}">
+      <div class="st-cop-tit">Proiezione al 15 ottobre${pr.datiScarsi ? '<span class="pj-tag">stima provvisoria</span>' : ''}</div>
       <div class="pj-riga">
         <div class="pj-num"><b>${pr.previsto}%</b><span>punteggio previsto all'esame</span></div>
         <div class="pj-meta">
           ${fmt(pr.acquisite)} domande consolidate su ${fmt(pr.N)}<br>
-          ritmo attuale ${pr.ritmo ? fmt(pr.ritmo) + ' domande al giorno' : 'non ancora misurabile'}
+          ritmo attuale ${pr.ritmo ? fmt(pr.ritmo) + ' domande al giorno'
+            : (pr.ggMancanti ? `non ancora misurabile · ${pr.ggMancanti === 1 ? 'serve ancora 1 giornata' : 'servono ancora ' + pr.ggMancanti + ' giornate'} di test` : 'non ancora misurabile')}
         </div>
       </div>
       <div class="pj-nota">${pr.raggiungibile
@@ -1961,7 +2011,8 @@ function renderStato(){
           : ''}
         ${!inFaseFinale() && pr.nuoveAlGiorno
           ? `<br><span class="pj-sub">Delle ${fmt(pr.alGiorno)} di oggi, almeno <b>${fmt(pr.nuoveAlGiorno)}</b> devono essere mai viste (entro il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'short'})}); gli ultimi ${GG_CONSOLIDAMENTO} giorni chiudono ciò che resta aperto.</span>`
-          : ''}</div>
+          : ''}
+        ${pr.datiScarsi ? `<span class="pj-provv">${notaProvvisoria(pr)}</span>` : ''}</div>
     </div>`;
 
   // --- sottoargomenti rimasti indietro ---
