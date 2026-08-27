@@ -1,5 +1,5 @@
 // Service worker Registro OCF: app disponibile anche offline
-const CACHE = 'quizzocf-v6';
+const CACHE = 'quizzocf-v7';
 const SHELL = ['.', 'index.html', 'config.js', 'data.js', 'manifest.webmanifest',
                'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/logo-64.png'];
 
@@ -17,7 +17,9 @@ self.addEventListener('fetch', e => {
   // rete prima per l'app (così gli aggiornamenti arrivano), cache come riserva offline
   if(url.origin === location.origin){
     e.respondWith(
-      fetch(e.request).then(r => {
+      // no-cache: chiede sempre conferma al server, così un aggiornamento arriva subito
+      // (senza, la cache HTTP di GitHub Pages può servire per minuti la versione vecchia)
+      fetch(e.request, {cache: 'no-cache'}).then(r => {
         const copia = r.clone();
         caches.open(CACHE).then(c => c.put(e.request, copia));
         return r;
