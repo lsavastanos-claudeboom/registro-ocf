@@ -203,6 +203,28 @@ header.top .sub{font-family:'Manrope', sans-serif; font-size:.62rem; letter-spac
 .feedback.ok{color:var(--vidimato);} .feedback.ko{color:var(--lacca);}
 .spiega{background:rgba(94,169,255,.10); border:1px solid rgba(94,169,255,.28); border-left:4px solid var(--inchiostro2); border-radius:9px;
         padding:11px 14px; margin:0 0 12px; font-size:.9rem; line-height:1.55;}
+.segnali{background:rgba(139,124,246,.10); border:1px solid rgba(139,124,246,.30); border-left:4px solid #8B7CF6;
+  border-radius:9px; padding:12px 14px; margin-top:10px; font-size:.92rem; line-height:1.6;}
+.segnali .sp-tag{color:#a394ff;}
+.sg-r{margin:7px 0 0;}
+.sg-eti{font-weight:700;}
+.sg-r.neg .sg-eti{color:var(--lacca);} .sg-r.pos .sg-eti{color:var(--vidimato);}
+.sg-pct{white-space:nowrap; font-weight:700;}
+.sg-esito{margin:9px 0 0; padding-top:8px; border-top:1px solid rgba(139,124,246,.22); font-weight:600;}
+.sg-cautela{margin:7px 0 0; font-size:.82rem; color:var(--nebbia);}
+.sgr-testa{font-size:.95rem; line-height:1.6; margin:0 0 12px;}
+.sgr-gruppo{margin-top:14px;}
+.sgr-tit{font-family:'Manrope',sans-serif; font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
+  font-weight:800; color:var(--nebbia); margin-bottom:7px;}
+.sgr-voce{display:flex; align-items:baseline; gap:10px; padding:8px 11px; border-radius:9px; margin-bottom:6px;
+  background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.12);}
+.sgr-voce.neg{border-color:rgba(255,123,104,.30); background:rgba(255,123,104,.07);}
+.sgr-voce.pos{border-color:rgba(63,215,155,.28); background:rgba(63,215,155,.07);}
+.sgr-eti{font-weight:700; flex:0 0 auto; max-width:36%;}
+.sgr-n{margin-left:auto; white-space:nowrap; font-size:.82rem; color:var(--nebbia);}
+.sgr-nota{font-size:.86rem; color:var(--nebbia); line-height:1.55;}
+.sgr-motore{margin-top:14px; padding:11px 13px; border-radius:10px; font-size:.9rem; line-height:1.6;
+  background:rgba(139,124,246,.10); border:1px solid rgba(139,124,246,.28);}
 .trucco{background:var(--ottonebg); border:1px solid rgba(242,169,59,.3); border-left:4px solid var(--ottone); border-radius:9px;
         padding:11px 14px; margin:0 0 12px; font-size:.9rem; line-height:1.55;}
 .spiega .sp-tag, .trucco .sp-tag{font-family:'Manrope', sans-serif; font-size:.62rem; letter-spacing:.1em;
@@ -990,6 +1012,7 @@ b.dubbia{color:var(--ottone);}
       <div class="feedback nascosto" id="q-feedback"></div>
       <div class="spiega nascosto" id="q-spiega"></div>
       <div class="trucco nascosto" id="q-trucco"></div>
+      <div class="segnali nascosto" id="q-segnali"></div>
       <div class="azioni">
         <button class="btn-s" id="btn-abbandona">Termina ora</button>
         <span class="spazio"></span>
@@ -1018,6 +1041,11 @@ b.dubbia{color:var(--ottone);}
         <summary style="cursor:pointer; font-weight:700; color:var(--blu); font-size:1.02rem" id="det-disp-sum">📚 Consulta la dispensa di matematica</summary>
         <div id="disp-corpo-risultati" style="margin-top:12px"></div>
       </details>
+    </div>
+
+    <div class="card nascosto" id="card-segnali">
+      <h2>🔎 I segnali che hai incontrato</h2>
+      <div id="r-segnali"></div>
     </div>
 
     <div class="card" id="card-errori">
@@ -1816,6 +1844,205 @@ function statoCopertura(){
       : {ok:true, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: al ritmo attuale (${ritmo} nuove al giorno) le vedi tutte in tempo.`};
   }
   return {ok:null, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: delle domande di oggi, almeno <b>${servono}</b> devono essere <b>mai viste</b>.`};
+}
+
+
+// ====================== SEGNALI STATISTICI DELLA BANCA DATI ======================
+// Studio sulle 4.995 domande: certe formule ricorrono molto più spesso nelle risposte
+// giuste (linguaggio ripreso dagli articoli) o in quelle sbagliate (assoluti, catene
+// autorizzative inventate). Sono indizi da usare SOLO quando la risposta non si sa:
+// il motore azzecca il 58% quando esprime un vincitore unico — utile, non affidabile.
+// Percentuali e conteggi qui sotto sono ricalcolati sulla banca dati 2026 in uso.
+const SEGNALI = [
+  {i:"si-ma-solo", t:"neg", p:-4, q:3, k:193, r:/^s[iì],\s*ma solo\b/, e:"inizia con \"Sì, ma solo\"", n:"la formulazione-trappola per eccellenza: suona prudente, è quasi sempre falsa", c:["si-ma", "ma-solo", "solo"]},
+  {i:"ma-solo", t:"neg", p:-4, q:0, k:61, r:/\bma solo\b/, e:"contiene \"ma solo\"", n:"la restrizione «ma solo» chiude un caso che la norma lascia aperto", c:["solo"]},
+  {i:"spec-aut", t:"neg", p:-4, q:1, k:84, r:/specifica autorizzazione/, e:"\"specifica autorizzazione\"", n:"un'autorizzazione inventata: è il modo standard di costruire un distrattore giuridico", c:["autorizzazione"]},
+  {i:"supera", t:"neg", p:-4, q:3, k:75, r:/\bsupera\b/, e:"contiene \"supera\"", n:"le soglie «se supera il…» sono quasi sempre inventate"},
+  {i:"inizio-solo", t:"neg", p:-4, q:3, k:392, r:/^(solo|soltanto)\b/, e:"inizia con \"Solo/Soltanto\"", n:"aprire con un assoluto è il segno del distrattore", c:["solo", "soltanto"]},
+  {i:"parere", t:"neg", p:-4, q:3, k:34, r:/\bparere\b/, e:"contiene \"parere\"", n:"il «previo parere di…» è una catena procedurale aggiunta per confondere"},
+  {i:"solo", t:"neg", p:-3, q:5, k:585, r:/\bsolo\b/, e:"contiene \"solo\"", n:"gli assoluti restringono più di quanto faccia la norma"},
+  {i:"mef", t:"neg", p:-3, q:4, k:389, r:/ministero dell'economia/, e:"cita il Ministero dell'Economia", n:"i rimandi ministeriali «a catena lunga» sono tipici dei distrattori"},
+  {i:"inizio-dipende", t:"neg", p:-3, q:6, k:108, r:/^dipende\b/, e:"inizia con \"Dipende\"", n:"«Dipende» sembra la risposta prudente, quasi mai lo è"},
+  {i:"ma-non", t:"neg", p:-3, q:6, k:240, r:/\bma non\b/, e:"contiene \"ma non\"", n:"l'eccezione aggiunta in coda è di solito falsa", x:{"Matematica ed economia finanziaria": [18, 33]}},
+  {i:"inizio-sempre", t:"neg", p:-3, q:6, k:147, r:/^(sempre|esclusivamente)\b/, e:"inizia con \"Sempre/Esclusivamente\"", n:"assoluto in apertura: quasi mai è così che parla la norma", c:["sempre-parola", "esclusivamente"]},
+  {i:"trascorsi", t:"neg", p:-3, q:7, k:30, r:/\btrascorsi\b/, e:"contiene \"trascorsi…\"", n:"i termini «trascorsi X giorni» sono spesso inventati"},
+  {i:"n125", t:"neg", p:-3, q:7, k:191, r:/12,5/, e:"contiene il numero 12,5", n:"l'aliquota 12,5% è il numero-esca più usato della banca dati"},
+  {i:"si-previa", t:"neg", p:-3, q:7, k:73, r:/^s[iì],\s*previa\b/, e:"inizia con \"Sì, previa\"", n:"il «sì condizionato a un'autorizzazione» è quasi sempre falso", c:["previa-aut", "autorizzazione", "si-ma"]},
+  {i:"previa-aut", t:"neg", p:-3, q:8, k:48, r:/previa autorizzazione/, e:"\"previa autorizzazione\"", n:"autorizzazione preventiva: distrattore classico", c:["autorizzazione"]},
+  {i:"esclusivamente", t:"neg", p:-3, q:9, k:150, r:/\besclusivamente\b/, e:"contiene \"esclusivamente\"", n:"assoluto: restringe più della norma"},
+  {i:"intesa", t:"neg", p:-3, q:9, k:34, r:/d'intesa/, e:"contiene \"d'intesa\"", n:"le catene «d'intesa con…» sono aggiunte per dare tono giuridico"},
+  {i:"si-tratta", t:"neg", p:-3, q:9, k:121, r:/si tratta di/, e:"contiene \"si tratta di\"", n:"formula esplicativa tipica delle opzioni costruite a tavolino"},
+  {i:"soltanto", t:"neg", p:-2, q:15, k:104, r:/\bsoltanto\b/, e:"contiene \"soltanto\"", n:"assoluto: restringe più della norma"},
+  {i:"autorizzazione", t:"neg", p:-1, q:17, k:127, r:/\bautorizzazione\b/, e:"contiene \"autorizzazione\"", n:"richiedere un'autorizzazione che la norma non prevede è il distrattore più frequente"},
+  {i:"si-ma", t:"neg", p:-1, q:19, k:168, r:/^s[iì],\s*ma\b/, e:"inizia con \"Sì, ma\"", n:"il «sì con riserva» è quasi sempre una trappola"},
+  {i:"mai", t:"neg", p:-2, q:11, k:431, r:/\bmai\b|in nessun caso/, e:"contiene \"mai\" / \"in nessun caso\"", n:"negazione assoluta: raramente è la norma"},
+  {i:"sentito", t:"neg", p:-2, q:12, k:69, r:/\bsentito\b/, e:"contiene \"sentito\"", n:"«sentito il…» è una catena procedurale aggiunta"},
+  {i:"nessun", t:"neg", p:-1, q:17, k:279, r:/\bnessun\w*\b/, e:"contiene \"nessun…\"", n:"negazione assoluta", x:{"Diritto privato e commerciale": [2, 44]}},
+  {i:"acconto", t:"neg", p:-2, q:14, k:94, r:/d'acconto/, e:"contiene \"d'acconto\"", n:"la ritenuta d'acconto è un'esca ricorrente in tributario"},
+  {i:"inizio-no", t:"neg", p:-2, q:15, k:1050, r:/^no,/, e:"inizia con \"No,\"", n:"nella banca dati il «No» secco è giusto molto meno del «Sì»", x:{"Diritto tributario": [31, 32]}},
+  {i:"derivato", t:"neg", p:-2, q:15, k:91, r:/\bderivat[oi]\b/, e:"contiene \"derivato\"", n:"termine finanziario generico inserito per confondere"},
+  {i:"sempre-parola", t:"neg", p:-3, q:8, k:239, r:/\bsempre\b/, e:"contiene \"sempre\"", n:"assoluto"},
+  {i:"ogni", t:"neg", p:-1, q:19, k:297, r:/\bogni\b/, e:"contiene \"ogni\"", n:"generalizzazione: spesso più ampia della norma", x:{"Diritto privato e commerciale": [5, 38]}},
+  {i:"e-tenuto", t:"neg", p:-1, q:19, k:74, r:/\bè tenuto\b/, e:"contiene \"è tenuto\"", n:"obbligo generico costruito a tavolino"},
+  {i:"tra-altro", t:"pos", p:4, q:71, k:80, r:/tra l'altro/, e:"contiene \"tra l'altro\"", n:"è il segnale più forte in assoluto: è la lingua degli articoli di legge, difficile da imitare"},
+  {i:"nonche", t:"pos", p:4, q:63, k:38, r:/nonch[eé]/, e:"contiene \"nonché\"", n:"connettivo inclusivo tipico del testo normativo"},
+  {i:"si-insieme", t:"pos", p:4, q:56, k:70, r:/^s[iì],\s*(insieme|con)\b/, e:"inizia con \"Sì, insieme/con\"", n:"il «sì che aggiunge» è quasi sempre quello giusto", c:["insieme"]},
+  {i:"principio", t:"pos", p:4, q:56, k:25, r:/il principio di/, e:"contiene \"il principio di\"", n:"richiamo a un principio: linguaggio normativo autentico"},
+  {i:"bi-consob", t:"pos", p:4, q:56, k:32, r:/banca d'italia e la consob/, e:"cita \"Banca d'Italia e la Consob\"", n:"la coppia di autorità è quella vera, non una catena inventata"},
+  {i:"livello-di", t:"pos", p:4, q:56, k:27, r:/il livello di/, e:"contiene \"il livello di\"", n:"formula tecnica ripresa dal testo"},
+  {i:"su-proposta", t:"pos", p:4, q:53, k:30, r:/su proposta della/, e:"contiene \"su proposta della\"", n:"procedura reale, non inventata"},
+  {i:"salvo-che", t:"pos", p:4, q:51, k:45, r:/salvo che/, e:"contiene \"salvo che\"", n:"l'eccezione prevista dalla norma: linguaggio autentico", c:["salvo"]},
+  {i:"previsti", t:"pos", p:4, q:50, k:111, r:/\bprevist[ia]\b/, e:"contiene \"previsti / prevista\"", n:"rimando a ciò che la norma prevede"},
+  {i:"si-e", t:"pos", p:4, q:49, k:88, r:/^s[iì],\s*e\b/, e:"inizia con \"Sì, e\"", n:"il «sì che aggiunge» invece di restringere"},
+  {i:"si-sempre", t:"pos", p:4, q:47, k:100, r:/^s[iì],\s*sempre\b/, e:"inizia con \"Sì, sempre\"", n:"unico caso in cui «sempre» è un buon segno", c:["sempre-parola"], x:{"Diritto mercato finanziario": [60, 63]}},
+  {i:"registro", t:"pos", p:4, q:46, k:26, r:/registro delle imprese/, e:"\"registro delle imprese\"", n:"riferimento istituzionale corretto"},
+  {i:"ovvero", t:"pos", p:3, q:43, k:74, r:/\bovvero\b/, e:"contiene \"ovvero\"", n:"connettivo del linguaggio legislativo"},
+  {i:"secondo-le", t:"pos", p:3, q:43, k:37, r:/secondo le/, e:"contiene \"secondo le\"", n:"rimando normativo", x:{"Diritto mercato finanziario": [31, 26]}},
+  {i:"ai-sensi", t:"pos", p:3, q:43, k:49, r:/ai sensi/, e:"contiene \"ai sensi\"", n:"rimando esplicito alla norma"},
+  {i:"natura", t:"pos", p:3, q:42, k:88, r:/\bnatura\b/, e:"contiene \"natura\"", n:"termine di precisione tipico del testo", x:{"Diritto mercato finanziario": [54, 46]}},
+  {i:"medesimo", t:"pos", p:3, q:41, k:108, r:/\bmedesim[oa]\b/, e:"contiene \"medesimo/medesima\"", n:"il «medesimo» al posto di «stesso» è marca del linguaggio legislativo"},
+  {i:"qualora", t:"pos", p:3, q:40, k:47, r:/\bqualora\b/, e:"contiene \"qualora\"", n:"condizionale normativo"},
+  {i:"di-tale", t:"pos", p:2, q:37, k:51, r:/di tale/, e:"contiene \"di tale\"", n:"rimando interno tipico del testo"},
+  {i:"org-vigilanza", t:"pos", p:2, q:36, k:81, r:/l'organismo di vigilanza/, e:"\"l'organismo di vigilanza\"", n:"riferimento istituzionale corretto"},
+  {i:"base-di", t:"pos", p:1, q:33, k:100, r:/in base a|sulla base di/, e:"\"in base a\" / \"sulla base di\"", n:"rimando al criterio previsto"},
+];
+const SEG_CASUALE = 25;            // una risposta a caso su quattro
+const SEG_DOMANDE = 4995;          // ampiezza dello studio
+
+// Applica le regole a una risposta. Una regola specifica assorbe quelle generiche
+// (es. "Sì, ma solo" assorbe "ma solo" e "solo") così un segnale non conta due volte.
+function segnaliDi(testo, materia, nParole, mediaParole){
+  const t = (testo || '').toLowerCase();
+  const attive = SEGNALI.filter(g => g.r.test(t));
+  const fuori = new Set();
+  attive.forEach(g => (g.c || []).forEach(id => fuori.add(id)));
+  const out = [];
+  attive.forEach(g => {
+    if(fuori.has(g.i)) return;
+    const ecc = g.x && g.x[materia];                    // [percentuale, casi] in questa materia
+    const pct = ecc ? ecc[0] : g.q;
+    if(Math.abs(pct - SEG_CASUALE) < 5.5) return;      // in questa materia il segnale sparisce
+    const p = ecc
+      ? Math.max(-4, Math.min(4, Math.round((pct - SEG_CASUALE)/6))) || (pct > SEG_CASUALE ? 1 : -1)
+      : g.p;
+    out.push({i:g.i, t: pct > SEG_CASUALE ? 'pos' : 'neg', e:g.e, n:g.n, p, pct,
+              k: ecc ? ecc[1] : g.k, m: ecc ? materia : null});
+  });
+  if(nParole !== undefined){
+    if(nParole >= 25)
+      out.push({i:'lung25', t:'pos', p:2, pct:35, k:1255,
+                e:'risposta articolata (25+ parole)', n:'le risposte lunghe e dettagliate sono giuste più spesso della media'});
+    if(mediaParole && nParole / mediaParole >= 1.3){
+      if(materia === 'Diritto previdenziale e assicurativo' || materia === 'Diritto tributario')
+        out.push({i:'lungrel', t:'pos', p:2, pct:38, k:667,
+                  e:'molto più lunga delle altre tre', n:'in questa materia la risposta più lunga è spesso quella giusta'});
+      else if(materia === 'Diritto privato e commerciale')
+        out.push({i:'lungrel', t:'neg', p:-1, pct:22, k:394,
+                  e:'molto più lunga delle altre tre', n:'attenzione: in questa materia la lunghezza NON aiuta, anzi'});
+    }
+  }
+  return out;
+}
+
+// Punteggio di tutte e quattro le risposte di una domanda, con il verdetto del metodo.
+function analizzaDomanda(q){
+  const L = q.a.map(x => x.split(/\s+/).length);
+  const media = L.reduce((a,b) => a+b, 0) / L.length;
+  const per = q.a.map((x,i) => {
+    const sg = segnaliDi(x, q.t, L[i], media);
+    return {sg, punti: sg.reduce((a,g) => a + g.p, 0)};
+  });
+  const punti = per.map(x => x.punti);
+  const max = Math.max(...punti);
+  const vincitori = punti.map((p,i) => p === max ? i : -1).filter(i => i >= 0);
+  const ordinati = [...punti].sort((a,b) => b-a);
+  return {per, punti, vincitore: vincitori.length === 1 ? vincitori[0] : null,
+          margine: max - ordinati[1]};
+}
+
+// Indizio mostrato dopo una risposta sbagliata: cosa avrebbe dovuto far scartare
+// l'opzione scelta, o preferire quella giusta. Si mostra solo se c'è davvero qualcosa.
+const LET = 'ABCD';
+function indizioSegnali(q, iScelta){
+  const an = analizzaDomanda(q);
+  const forti = (lista, tipo) => lista.filter(g => g.t === tipo)
+      .sort((a,b) => Math.abs(b.p) - Math.abs(a.p)).slice(0, 2);
+  const neg = forti(an.per[iScelta].sg, 'neg');
+  const pos = forti(an.per[q.e].sg, 'pos');
+  const motore = an.vincitore === q.e && an.margine >= 2;
+  if(!neg.length && !pos.length && !motore) return '';
+  const riga = (g, cls, chi) => `<p class="sg-r ${cls}">${chi} <span class="sg-eti">${g.e}</span> — ${g.n}. `
+      + (g.m ? `In ${nomeBreve(g.m)} ` : `Nella banca dati `)
+      + `una risposta così è quella giusta <span class="sg-pct">${g.pct}%</span> delle volte `
+      + `(${g.k.toLocaleString('it-IT')} cas${g.k === 1 ? 'o' : 'i'}${g.m ? ' in questa materia' : ''}).</p>`;
+  return `<span class="sp-tag">🔎 Segnali della banca dati</span>`
+    + neg.map(g => riga(g, 'neg', `<b>La tua (${LET[iScelta]})</b>`)).join('')
+    + pos.map(g => riga(g, 'pos', `<b>La giusta (${LET[q.e]})</b>`)).join('')
+    + (motore ? `<p class="sg-esito">✔ Solo dai segnali, senza sapere la materia, si arrivava alla <b>${LET[q.e]}</b> (margine +${an.margine}).</p>` : '')
+    + `<p class="sg-cautela">Sono indizi statistici, non regole: servono quando la risposta non la sai. Da soli azzeccano circa 6 volte su 10.</p>`;
+}
+
+// Riepilogo di fine test: quali formule-trappola l'hanno fregata e quali segnali
+// erano lì da vedere. Serve a trasformare 60 risposte in due o tre regole ricordabili.
+function riepilogoSegnali(domande, scelte){
+  const conta = (mappa, g) => {
+    const v = mappa[g.i] || {e:g.e, n:g.n, pct:g.pct, k:g.k, t:g.t, m:g.m, volte:0};
+    v.volte++; mappa[g.i] = v;
+  };
+  const trappole = {}, mancati = {}, seguiti = {};
+  let conSegnale = 0, motoreTot = 0, motoreOk = 0, salvabili = 0, sbagliate = 0;
+  domande.forEach(q => {
+    const scelta = scelte[q.n];
+    if(scelta === undefined) return;
+    const an = analizzaDomanda(q);
+    const errata = scelta !== q.e;
+    if(errata) sbagliate++;
+    const neg = an.per[scelta].sg.filter(g => g.t === 'neg');
+    const pos = an.per[q.e].sg.filter(g => g.t === 'pos');
+    if(neg.length || pos.length) conSegnale++;
+    if(an.vincitore !== null){
+      motoreTot++;
+      if(an.vincitore === q.e){ motoreOk++; if(errata) salvabili++; }
+    }
+    if(errata){ neg.forEach(g => conta(trappole, g)); pos.forEach(g => conta(mancati, g)); }
+    else { pos.forEach(g => conta(seguiti, g)); }
+  });
+  const ordina = m => Object.values(m).sort((a,b) => b.volte - a.volte || Math.abs(b.pct-25) - Math.abs(a.pct-25));
+  return {trappole: ordina(trappole), mancati: ordina(mancati), seguiti: ordina(seguiti),
+          conSegnale, motoreTot, motoreOk, salvabili, sbagliate, totali: domande.length};
+}
+
+function renderSegnaliTest(r){
+  const card = $('card-segnali');
+  if(!r.conSegnale){ card.classList.add('nascosto'); return; }
+  card.classList.remove('nascosto');
+  const volte = n => n === 1 ? '1 volta' : n + ' volte';
+  const voce = (v, cls) => `<div class="sgr-voce ${cls}">
+      <span class="sgr-eti">${v.e}</span>
+      <span>${v.n}</span>
+      <span class="sgr-n">${volte(v.volte)} · giusta ${v.pct}%${v.m ? ' in ' + nomeBreve(v.m) : ''}</span></div>`;
+  const gruppo = (tit, lista, cls, nota) => lista.length ? `<div class="sgr-gruppo">
+      <div class="sgr-tit">${tit}</div>
+      ${lista.slice(0,3).map(v => voce(v, cls)).join('')}
+      ${nota ? `<p class="sgr-nota">${nota}</p>` : ''}</div>` : '';
+
+  let motore = '';
+  if(r.motoreTot){
+    motore = `<div class="sgr-motore">Il metodo dei segnali, da solo, si esprimeva su <b>${r.motoreTot}</b> `
+      + `${r.motoreTot === 1 ? 'domanda' : 'domande'} e ne ha azzeccate <b>${r.motoreOk}</b>.`
+      + (r.salvabili ? ` Su <b>${r.salvabili}</b> di quelle che hai sbagliato indicava la risposta giusta.` : '')
+      + ` È un aiuto per quando non sai: da solo vale circa il 58%, studiare vale molto di più.</div>`;
+  }
+
+  $('r-segnali').innerHTML =
+    `<p class="sgr-testa">Su <b>${r.totali}</b> domande, <b>${r.conSegnale}</b> avevano nel testo delle risposte
+     una formula che nella banca dati ricorre molto più spesso nelle giuste o nelle sbagliate.</p>`
+    + gruppo('Trappole in cui sei cascata', r.trappole, 'neg',
+             'Erano nelle risposte che hai scelto: nella banca dati queste formule sono quasi sempre dei distrattori. Riconoscerle a colpo d\'occhio elimina due opzioni su quattro.')
+    + gruppo('Segnali che c\'erano e non hai seguito', r.mancati, 'pos',
+             'Erano nella risposta corretta: sono il linguaggio ripreso dagli articoli di legge, difficile da imitare per chi costruisce i distrattori.')
+    + gruppo('Segnali che hai seguito', r.seguiti, 'pos', '')
+    + motore;
 }
 
 // ====================== PROIEZIONE AL GIORNO D'ESAME ======================
@@ -2748,6 +2975,7 @@ function renderDomanda(){
     : (rq.k ? 'RICONFERMA — l\'avevi vista una volta sola' : 'CONSOLIDAMENTO — già superata e riconfermata');
   $('q-testo').textContent = q.n + '. ' + q.q;
   $('q-feedback').classList.add('nascosto');
+  $('q-segnali').classList.add('nascosto');
   $('q-spiega').classList.add('nascosto');
   $('q-trucco').classList.add('nascosto');
   $('btn-prossima').disabled = true;
@@ -2832,6 +3060,8 @@ function confermaRisposta(){
     fb.textContent = '✘ Sbagliato — la risposta esatta è la ' + 'ABCD'[q.e] + '.';
     if(SPIEG[q.n]){ $('q-spiega').innerHTML = spiegaHTML(q.n); $('q-spiega').classList.remove('nascosto'); }
     if(TRUCCHI[q.n]){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
+    const ind = indizioSegnali(q, i);
+    if(ind){ $('q-segnali').innerHTML = ind; $('q-segnali').classList.remove('nascosto'); }
   }
   const giuste = Object.entries(test.risposte).filter(([n,x]) => byNum[n].e === x).length;
   $('q-parziale').textContent = `Parziale: ${giuste}/${Object.keys(test.risposte).length}`;
@@ -2906,6 +3136,7 @@ function fineTest(){
   const autosalva = risposte.length > 0 && stato.autosave !== false;
   if(autosalva) salvaProgressi();
   $('r-autosave').classList.toggle('nascosto', !autosalva);
+  renderSegnaliTest(riepilogoSegnali(risposte, test.risposte));
   $('btn-vai-dispensa').classList.toggle('nascosto', !errori.some(q => q.t === ARG_MAT));
   const nDisp = errateMatematica().length;
   $('card-disp-risultati').classList.toggle('nascosto', nDisp === 0);
