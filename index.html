@@ -718,6 +718,10 @@ b.dubbia{color:var(--ottone);}
 .pj-tag{display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; vertical-align:middle;
   font-family:'Manrope',sans-serif; font-size:.66rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
   color:var(--nebbia); background:rgba(var(--velo),.10); border:1px solid rgba(var(--velo),.20);}
+.pj-ipotesi{display:block; margin-top:8px; padding-top:8px; border-top:1px solid rgba(var(--velo),.14);
+  font-size:.82rem; color:var(--nebbia); line-height:1.55;}
+.pj-ipotesi b{color:var(--inchiostro);}
+.pj-ipotesi.pj-seguito{border-top:none; padding-top:0; margin-top:7px;}
 .pj-provv{display:block; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(var(--velo),.18);
   font-size:.84rem; color:var(--nebbia); line-height:1.55;}
 .pj-riga{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:4px;}
@@ -1237,6 +1241,7 @@ function normalizzaRisultati(ris){
 }
 function normalizzaStato(s){
   if(!s.giorni || typeof s.giorni !== 'object') s.giorni = {};
+  if(!s.mis || !s.mis.rip || !s.mis.cons) s.mis = {rip:{ok:0, ko:0}, cons:{ok:0, ko:0}};
   if(typeof s.nTest !== 'number') s.nTest = s.storico.length;
   normalizzaRisultati(s.risultati);
   return s;
@@ -2049,8 +2054,37 @@ function renderSegnaliTest(r){
 // L'esame pesca 60 domande a caso dalla banca: il punteggio atteso è la padronanza
 // media. Una domanda mai vista vale la precisione al primo tentativo, una acquisita
 // vale molto di più. Da qui la stima — e quante risposte al giorno servono.
-const P_ACQUISITA = 0.96;
-const RISPOSTE_PER_DOMANDA = 2.75;   // quante risposte servono in media per acquisirne una
+// Le due grandezze che muovono di più la proiezione non sono più numeri decisi a
+// tavolino: partono da un'ipotesi prudente e vengono sostituite dai dati veri man
+// mano che si accumulano. Erano il punto debole del modello: un valore ottimista
+// qui gonfiava la previsione di dieci punti senza che nulla lo segnalasse.
+const PRIOR_RIPETUTE = 0.70;   // quanto ci si aspetta di azzeccare su una domanda già vista
+const PESO_RIPETUTE = 60;      // risposte ripetute perché il dato misurato pesi quanto l'ipotesi
+const PRIOR_CONS = 0.93;       // tenuta di una domanda consolidata il giorno dell'esame
+const PESO_CONS = 40;          // verifiche su domande consolidate perché il dato pesi quanto l'ipotesi
+
+function precisioneRipetute(){
+  const m = (stato.mis && stato.mis.rip) || {ok:0, ko:0};
+  const n = m.ok + m.ko;
+  return Math.max(0.35, Math.min(0.95, (m.ok + PRIOR_RIPETUTE*PESO_RIPETUTE) / (n + PESO_RIPETUTE)));
+}
+// Tenuta di una domanda già consolidata: misurata sulle verifiche a distanza.
+function pConsolidata(){
+  const m = (stato.mis && stato.mis.cons) || {ok:0, ko:0};
+  const n = m.ok + m.ko;
+  return Math.max(0.70, Math.min(0.98, (m.ok + PRIOR_CONS*PESO_CONS) / (n + PESO_CONS)));
+}
+// Quante risposte servono, in media, perché una domanda diventi consolidata.
+// Non è una costante: discende dalla regola dell'app (giusta + riconferma, oppure
+// due giuste di fila dopo un errore) applicata alle SUE percentuali reali.
+// Con il 53% al primo colpo e il 70% sulle ripetute servono ~3,7 risposte, non 2,75:
+// è qui che il modello sovrastimava quanto materiale si riesce a consolidare.
+function rispostePerDomanda(p1){
+  const p2 = precisioneRipetute();
+  const E0 = (1 + p2) / (p2 * p2);          // ha sbagliato: servono due giuste di fila
+  const S1 = 1 + (1 - p2) * E0;             // giusta al primo colpo: manca la riconferma
+  return Math.max(2, Math.min(6, 1 + p1 * S1 + (1 - p1) * E0));
+}
 const OBIETTIVO_ESAME = 0.90;
 // Quanto fidarsi dei propri dati. Una precisione misurata su poche risposte oscilla
 // di parecchi punti: finché le risposte sono poche la stima resta ancorata al valore
@@ -2077,7 +2111,9 @@ function proiezioneEsame(){
   const pesoMisura = pt.tot / (pt.tot + PESO_PRIOR);          // 0 = tutta stima, 1 = tutto dato reale
   const pMisurata = pt.tot ? pt.ok / pt.tot : null;
   const N = QUESTIONS.length;
-  const stima = c => c * P_ACQUISITA + (1 - c) * pNuova;
+  const pAcq = pConsolidata();
+  const stima = c => c * pAcq + (1 - c) * pNuova;
+  const rpd = rispostePerDomanda(pNuova);
 
   const recenti = giorniAttiviRecenti(13).slice(0, 7);
   // Un giorno solo non è un ritmo: finché non ci sono abbastanza giornate attive
@@ -2101,19 +2137,28 @@ function proiezioneEsame(){
   // ciò che è già stato aperto, non ad aprire materiale nuovo.
   const nuoveRaggiungibili = inFaseFinale() ? 0 : Math.min(nuoveRimaste, ritmoNuove * ggCop);
   const tettoDaFase = inLavorazione + nuoveRaggiungibili;      // quante se ne possono ancora acquisire
-  const tettoDaTempo = (ritmo * gg) / RISPOSTE_PER_DOMANDA;    // quante il ritmo consente
+  const tettoDaTempo = (ritmo * gg) / rpd;                     // quante il ritmo consente
   const acquisibili = Math.max(0, Math.min(tettoDaFase, tettoDaTempo));
   const limitataDallaCopertura = tettoDaFase < tettoDaTempo;   // il freno è il ritmo sulle nuove
 
   const previsto = stima((acquisite + acquisibili) / N);
-  const serveAcquisite = Math.min(N, N * (OBIETTIVO_ESAME - pNuova) / (P_ACQUISITA - pNuova));
+  // Se una domanda consolidata regge meno dell'obiettivo, l'obiettivo non si raggiunge
+  // nemmeno consolidando tutto: in quel caso il traguardo è l'intera banca dati.
+  const tettoRaggiungibile = pAcq > OBIETTIVO_ESAME;
+  const serveAcquisite = tettoRaggiungibile
+    ? Math.min(N, N * (OBIETTIVO_ESAME - pNuova) / (pAcq - pNuova))
+    : N;
   const mancanti = Math.max(0, serveAcquisite - acquisite);
-  const alGiorno = gg > 0 ? Math.ceil(mancanti * RISPOSTE_PER_DOMANDA / gg) : 0;
+  const alGiorno = gg > 0 ? Math.ceil(mancanti * rpd / gg) : 0;
   // di quelle, quante devono essere mai viste: vanno tutte incontrate entro il consolidamento
   const nuoveNecessarie = Math.max(0, Math.min(nuoveRimaste, mancanti - inLavorazione));
   const nuoveAlGiorno = (!inFaseFinale() && ggCop > 0) ? Math.ceil(nuoveNecessarie / ggCop) : 0;
 
+  const misRip = (stato.mis && stato.mis.rip) || {ok:0, ko:0};
+  const misCons = (stato.mis && stato.mis.cons) || {ok:0, ko:0};
   return {acquisite, inLavorazione, nuoveRimaste, N, pNuova, pMisurata, pesoMisura, baseMisura: pt.tot,
+          pAcq, rpd, p2: precisioneRipetute(), tettoRaggiungibile,
+          nRip: misRip.ok + misRip.ko, nCons: misCons.ok + misCons.ko,
           ggDati, datiScarsi, ggMancanti: Math.max(0, GG_MIN_RITMO - ggDati),
           domandeMancanti: Math.max(0, DOMANDE_MIN_STIMA - pt.tot),
           ritmo, ritmoNuove, ritmoNuoveStimato, gg, ggCop,
@@ -2121,6 +2166,27 @@ function proiezioneEsame(){
           serveAcquisite: Math.round(serveAcquisite), alGiorno, nuoveAlGiorno,
           limitataDallaCopertura,
           raggiungibile: previsto >= OBIETTIVO_ESAME};
+}
+
+// Il numero della proiezione dipende quasi tutto da due ipotesi. Tenerle nascoste
+// faceva sembrare la previsione un dato di fatto: qui si dichiarano, con l'avvertenza
+// di quali sono ancora ipotesi e quali sono ormai misurate sui suoi test.
+function notaIpotesi(pr){
+  const dec = n => n.toLocaleString('it-IT', {minimumFractionDigits:1, maximumFractionDigits:1});
+  const fonteRip = pr.nRip >= 40
+    ? `misurato sulle tue <b>${pr.nRip.toLocaleString('it-IT')}</b> risposte a domande già viste`
+    : `ancora stimato: servono più domande ripetute per misurarlo`;
+  const fonteCons = pr.nCons >= 25
+    ? `misurato su <b>${pr.nCons.toLocaleString('it-IT')}</b> verifiche a distanza`
+    : `ancora stimato: le verifiche a distanza sulle consolidate sono ${pr.nCons === 0 ? 'appena iniziate' : 'solo ' + pr.nCons}`;
+  return `<span class="pj-ipotesi"><b>Su cosa poggia questo numero.</b>
+    Servono <b>${dec(pr.rpd)} risposte</b> per portare una domanda al consolidamento
+    (dalla tua precisione: ${Math.round(pr.pNuova*100)}% al primo colpo, ${Math.round(pr.p2*100)}% su una già vista — ${fonteRip}),
+    e una domanda consolidata regge al <b>${Math.round(pr.pAcq*100)}%</b> il giorno dell'esame (${fonteCons}).
+    Cambia una di queste due e il numero si sposta di parecchi punti.</span>
+    <span class="pj-ipotesi pj-seguito">Non è la media dei tuoi test: quella dice come vai <b>adesso</b>,
+    su domande in gran parte nuove; questa dice come andresti <b>il 15 ottobre</b>, quando la maggior parte
+    sarà già stata superata e riconfermata.</span>`;
 }
 
 // Spiega perché la proiezione non è ancora affidabile: con pochi dati il numero
@@ -2230,7 +2296,9 @@ function renderStato(){
             : (pr.ggMancanti ? `non ancora misurabile · ${pr.ggMancanti === 1 ? 'serve ancora 1 giornata' : 'servono ancora ' + pr.ggMancanti + ' giornate'} di test` : 'non ancora misurabile')}
         </div>
       </div>
-      <div class="pj-nota">${pr.raggiungibile
+      <div class="pj-nota">${!pr.tettoRaggiungibile
+        ? `Con la tenuta che stiamo misurando (<b>${Math.round(pr.pAcq*100)}%</b> su una domanda consolidata) il <b>90%</b> non si raggiunge nemmeno consolidando tutta la banca dati: il traguardo diventa vederla e riconfermarla per intero, e alzare la tenuta con più ripassi.`
+        : pr.raggiungibile
         ? `Sei sulla strada del <b>90%</b>: a questo ritmo arrivi sopra l'obiettivo. Serve solo non mollare.`
         : `Per arrivare al <b>90%</b> servono <b>${fmt(pr.serveAcquisite)}</b> domande <b>consolidate</b> — cioè superate e poi riconfermate a distanza. Da qui all'esame sono <b>${fmt(pr.alGiorno)} domande al giorno</b>, ed è l'obiettivo che trovi in cima.`}
         ${pr.limitataDallaCopertura && !inFaseFinale()
@@ -2239,7 +2307,8 @@ function renderStato(){
         ${!inFaseFinale() && pr.nuoveAlGiorno
           ? `<br><span class="pj-sub">Delle ${fmt(pr.alGiorno)} di oggi, almeno <b>${fmt(pr.nuoveAlGiorno)}</b> devono essere mai viste (entro il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'short'})}); gli ultimi ${GG_CONSOLIDAMENTO} giorni chiudono ciò che resta aperto.</span>`
           : ''}
-        ${pr.datiScarsi ? `<span class="pj-provv">${notaProvvisoria(pr)}</span>` : ''}</div>
+        ${pr.datiScarsi ? `<span class="pj-provv">${notaProvvisoria(pr)}</span>` : ''}
+        ${notaIpotesi(pr)}</div>
     </div>`;
 
   // --- sottoargomenti rimasti indietro ---
@@ -3086,6 +3155,17 @@ function fineTest(){
   const errori = [], giuste = [];
   risposte.forEach(q => (test.risposte[q.n] === q.e ? giuste : errori).push(q));
   const nuoveViste = risposte.filter(q => !stato.risultati[q.n]).length;   // prima che lo stato venga aggiornato
+  // Misura sul campo le due grandezze da cui dipende la proiezione: quanto tiene una
+  // domanda già vista e quanto tiene una già consolidata. Va fatto qui, prima che lo
+  // stato cambi, perché dopo non si distingue più com'era la domanda all'inizio del test.
+  if(!stato.mis || !stato.mis.rip) stato.mis = {rip:{ok:0, ko:0}, cons:{ok:0, ko:0}};
+  risposte.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r) return;                                        // mai vista: non è una ripetizione
+    const esatta = test.risposte[q.n] === q.e;
+    stato.mis.rip[esatta ? 'ok' : 'ko']++;
+    if(r.s === 'ok' && !r.k && !r.p) stato.mis.cons[esatta ? 'ok' : 'ko']++;   // verifica a distanza
+  });
   // aggiorna stato persistente:
   // - domanda mai sbagliata + risposta giusta -> archiviata subito
   // - domanda già sbagliata -> serve arrivare a 2 giuste dopo l'ultimo errore
