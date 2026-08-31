@@ -625,6 +625,9 @@ details.dett-card>summary{font-size:1.12rem; color:var(--testo);}
 :root[data-tema="chiaro"] .ob-hero{background:rgba(19,36,52,.04);}
 .obh-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:7px;}
 .obh-tit{font-family:'Archivo',sans-serif; font-weight:700; font-size:.95rem; color:var(--testo);}
+.obh-trg{display:inline-block; margin-left:9px; padding:2px 9px; border-radius:999px; vertical-align:middle;
+  font-family:'Manrope',sans-serif; font-size:.66rem; font-weight:700; letter-spacing:.03em;
+  color:var(--ottone); background:rgba(242,169,59,.14); border:1px solid rgba(242,169,59,.30);}
 .obh-gg{font-size:.76rem; color:var(--nebbia); white-space:nowrap;}
 .gg-corto{display:none;}
 @media(max-width:640px){ .gg-lungo{display:none;} .gg-corto{display:inline;} .obh-top{flex-wrap:wrap; gap:4px;} }
@@ -718,6 +721,20 @@ b.dubbia{color:var(--ottone);}
 .pj-tag{display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; vertical-align:middle;
   font-family:'Manrope',sans-serif; font-size:.66rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
   color:var(--nebbia); background:rgba(var(--velo),.10); border:1px solid rgba(var(--velo),.20);}
+.pj-scala{margin-top:13px; padding-top:12px; border-top:1px solid rgba(var(--velo),.16);}
+.pjs-intro{margin:6px 0 10px; font-size:.88rem; line-height:1.55;}
+.pjs-riga{display:flex; align-items:baseline; gap:12px; width:100%; text-align:left; cursor:pointer;
+  padding:9px 12px; margin-bottom:6px; border-radius:10px; font:inherit; font-size:.9rem;
+  background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.14); color:var(--testo);
+  transition:background .15s, border-color .15s;}
+.pjs-riga:hover{background:rgba(var(--velo),.10);}
+.pjs-riga.scelto{border-color:var(--ottone); background:rgba(242,169,59,.12);}
+.pjs-riga.ok .pjs-obb{color:var(--vidimato);}
+.pjs-obb{font-family:'Archivo',sans-serif; font-weight:800; font-size:1.15rem; min-width:52px;}
+.pjs-et{color:var(--nebbia); font-size:.84rem;}
+.pjs-num{margin-left:auto; white-space:nowrap;}
+.pjs-nota{margin:8px 0 0; font-size:.8rem; color:var(--nebbia); line-height:1.5;}
+@media(max-width:520px){ .pjs-et{display:none;} }
 .pj-ipotesi{display:block; margin-top:8px; padding-top:8px; border-top:1px solid rgba(var(--velo),.14);
   font-size:.82rem; color:var(--nebbia); line-height:1.55;}
 .pj-ipotesi b{color:var(--inchiostro);}
@@ -1242,6 +1259,7 @@ function normalizzaRisultati(ris){
 function normalizzaStato(s){
   if(!s.giorni || typeof s.giorni !== 'object') s.giorni = {};
   if(!s.mis || !s.mis.rip || !s.mis.cons) s.mis = {rip:{ok:0, ko:0}, cons:{ok:0, ko:0}};
+  if(typeof s.traguardo !== 'number') s.traguardo = OBIETTIVO_ESAME;
   if(typeof s.nTest !== 'number') s.nTest = s.storico.length;
   normalizzaRisultati(s.risultati);
   return s;
@@ -2085,7 +2103,32 @@ function rispostePerDomanda(p1){
   const S1 = 1 + (1 - p2) * E0;             // giusta al primo colpo: manca la riconferma
   return Math.max(2, Math.min(6, 1 + p1 * S1 + (1 - p1) * E0));
 }
-const OBIETTIVO_ESAME = 0.90;
+const OBIETTIVO_ESAME = 0.90;                 // traguardo predefinito
+const TRAGUARDI = [0.80, 0.85, 0.90];         // soglia · margine · sicurezza
+const SECONDI_DEFAULT = 20;                   // passo ipotizzato finché non è misurato
+const ZAVORRA_LETTURA = 1.25;                 // tempo in più per leggere le spiegazioni dopo un errore
+
+// Il traguardo non è una legge di natura: 80% è la soglia di superamento, 90% è
+// margine di sicurezza. Sceglierlo cambia quante domande servono ogni giorno,
+// quindi lo decide lei e l'obiettivo in cima si adegua.
+function traguardo(){
+  const t = stato.traguardo;
+  return (typeof t === 'number' && t >= 0.5 && t <= 0.99) ? t : OBIETTIVO_ESAME;
+}
+// "il 90%" ma "l'80%": l'articolo cambia con la cifra, e scriverlo storto si nota.
+function trgTesto(t, prep){
+  const n = Math.round(t*100);
+  const vocale = String(n)[0] === '8';           // 80, 85 -> l'  ·  90 -> il
+  const forme = {'': vocale ? "l'" : 'il ', 'a': vocale ? "all'" : 'al ', 'di': vocale ? "dell'" : 'del '};
+  return (forme[prep || ''] || forme['']) + n + '%';
+}
+function secondiPerDomanda(){
+  return (stato.tMedio && stato.tN >= 30) ? stato.tMedio/1000 : SECONDI_DEFAULT;
+}
+function tempoStimato(domande){
+  const min = Math.round(domande * secondiPerDomanda() * ZAVORRA_LETTURA / 60);
+  return min < 60 ? `${min} min` : `${Math.floor(min/60)}h${String(min%60).padStart(2,'0')}`;
+}
 // Quanto fidarsi dei propri dati. Una precisione misurata su poche risposte oscilla
 // di parecchi punti: finché le risposte sono poche la stima resta ancorata al valore
 // prudenziale, e la proiezione si dichiara provvisoria invece di dare un numero secco.
@@ -2144,9 +2187,10 @@ function proiezioneEsame(){
   const previsto = stima((acquisite + acquisibili) / N);
   // Se una domanda consolidata regge meno dell'obiettivo, l'obiettivo non si raggiunge
   // nemmeno consolidando tutto: in quel caso il traguardo è l'intera banca dati.
-  const tettoRaggiungibile = pAcq > OBIETTIVO_ESAME;
+  const trg = traguardo();
+  const tettoRaggiungibile = pAcq > trg;
   const serveAcquisite = tettoRaggiungibile
-    ? Math.min(N, N * (OBIETTIVO_ESAME - pNuova) / (pAcq - pNuova))
+    ? Math.min(N, N * (trg - pNuova) / (pAcq - pNuova))
     : N;
   const mancanti = Math.max(0, serveAcquisite - acquisite);
   const alGiorno = gg > 0 ? Math.ceil(mancanti * rpd / gg) : 0;
@@ -2165,7 +2209,41 @@ function proiezioneEsame(){
           previsto: Math.round(previsto * 100),
           serveAcquisite: Math.round(serveAcquisite), alGiorno, nuoveAlGiorno,
           limitataDallaCopertura,
-          raggiungibile: previsto >= OBIETTIVO_ESAME};
+          traguardo: trg,
+          raggiungibile: previsto >= Math.round(trg*100)};
+}
+
+// Quanto costa ogni traguardo, in domande al giorno e in minuti. È la domanda che
+// conta davvero — "quanto devo spingere?" — e finora bisognava chiederlo a mano.
+function scalaRitmi(pr){
+  const righe = TRAGUARDI.map(t => {
+    const serve = pr.pAcq > t ? Math.min(pr.N, pr.N * (t - pr.pNuova) / (pr.pAcq - pr.pNuova)) : pr.N;
+    const mancanti = Math.max(0, serve - pr.acquisite);
+    const alGiorno = pr.gg > 0 ? Math.ceil(mancanti * pr.rpd / pr.gg) : 0;
+    return {t, pct: Math.round(t*100), alGiorno, tempo: tempoStimato(alGiorno),
+            scelto: Math.abs(t - pr.traguardo) < 0.001,
+            fattibile: alGiorno <= pr.ritmo};
+  });
+  return righe;
+}
+
+function renderScala(pr){
+  if(!pr.ritmo) return '';                       // senza un ritmo misurato non c'è confronto da fare
+  const righe = scalaRitmi(pr);
+  const et = t => t.pct === 80 ? 'soglia di superamento' : t.pct === 90 ? 'margine di sicurezza' : 'con un po\' di margine';
+  return `<div class="pj-scala">
+    <div class="st-cop-tit">Quanto costa ogni traguardo</div>
+    <p class="pjs-intro">Al ritmo di adesso — <b>${pr.ritmo.toLocaleString('it-IT')}</b> domande al giorno,
+      circa ${tempoStimato(pr.ritmo)} — arrivi al <b>${pr.previsto}%</b>. Ecco cosa serve per salire.
+      Tocca una riga per scegliere il traguardo: l'obiettivo in cima si adegua.</p>
+    ${righe.map(r => `<button class="pjs-riga${r.scelto ? ' scelto' : ''}${r.fattibile ? ' ok' : ''}" data-trg="${r.t}">
+        <span class="pjs-obb">${r.pct}%</span>
+        <span class="pjs-et">${et(r)}</span>
+        <span class="pjs-num"><b>${r.alGiorno.toLocaleString('it-IT')}</b> al giorno · ${r.tempo}</span>
+      </button>`).join('')}
+    <p class="pjs-nota">I minuti sono sul tuo passo misurato di ${Math.round(secondiPerDomanda())} secondi a domanda,
+      più un quarto di tempo per leggere le spiegazioni dopo gli errori.</p>
+  </div>`;
 }
 
 // Il numero della proiezione dipende quasi tutto da due ipotesi. Tenerle nascoste
@@ -2297,10 +2375,10 @@ function renderStato(){
         </div>
       </div>
       <div class="pj-nota">${!pr.tettoRaggiungibile
-        ? `Con la tenuta che stiamo misurando (<b>${Math.round(pr.pAcq*100)}%</b> su una domanda consolidata) il <b>90%</b> non si raggiunge nemmeno consolidando tutta la banca dati: il traguardo diventa vederla e riconfermarla per intero, e alzare la tenuta con più ripassi.`
+        ? `Con la tenuta che stiamo misurando (<b>${Math.round(pr.pAcq*100)}%</b> su una domanda consolidata) <b>${trgTesto(pr.traguardo)}</b> non si raggiunge nemmeno consolidando tutta la banca dati: il traguardo diventa vederla e riconfermarla per intero, e alzare la tenuta con più ripassi.`
         : pr.raggiungibile
-        ? `Sei sulla strada del <b>90%</b>: a questo ritmo arrivi sopra l'obiettivo. Serve solo non mollare.`
-        : `Per arrivare al <b>90%</b> servono <b>${fmt(pr.serveAcquisite)}</b> domande <b>consolidate</b> — cioè superate e poi riconfermate a distanza. Da qui all'esame sono <b>${fmt(pr.alGiorno)} domande al giorno</b>, ed è l'obiettivo che trovi in cima.`}
+        ? `Sei sulla strada <b>${trgTesto(pr.traguardo,'di')}</b>: a questo ritmo arrivi sopra l'obiettivo. Serve solo non mollare.`
+        : `Per arrivare <b>${trgTesto(pr.traguardo,'a')}</b> servono <b>${fmt(pr.serveAcquisite)}</b> domande <b>consolidate</b> — cioè superate e poi riconfermate a distanza. Da qui all'esame sono <b>${fmt(pr.alGiorno)} domande al giorno</b>, ed è l'obiettivo che trovi in cima.`}
         ${pr.limitataDallaCopertura && !inFaseFinale()
           ? `<br><span class="pj-freno">⚠ Il freno non è il tempo, è il ritmo sulle domande nuove: quelle che non incontri entro ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})} non rientrano più, perché gli ultimi ${GG_CONSOLIDAMENTO} giorni sono di solo ripasso.</span>`
           : ''}
@@ -2309,6 +2387,7 @@ function renderStato(){
           : ''}
         ${pr.datiScarsi ? `<span class="pj-provv">${notaProvvisoria(pr)}</span>` : ''}
         ${notaIpotesi(pr)}</div>
+      ${renderScala(pr)}
     </div>`;
 
   // --- sottoargomenti rimasti indietro ---
@@ -2337,6 +2416,11 @@ function renderStato(){
   card.innerHTML = testa + blocco + rigaProiezione + rigaRitardo
                  + `<div class="st-prove"><div class="st-prove-tit">Le prove</div>` + verdetto + rigaCop + `</div>`;
   const bs = $('st-sim'); if(bs) bs.onclick = avviaSimulazione;
+  card.querySelectorAll('.pjs-riga').forEach(b => b.onclick = () => {
+    stato.traguardo = parseFloat(b.dataset.trg);
+    salvaLocale();
+    renderHome();
+  });
 }
 
 
@@ -2568,8 +2652,10 @@ function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 function targetOggi(domandeAlGiorno){
   const oggi = oggiISO();
   if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)
-     || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== 'domande'){
-    stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: 'domande', target: Math.max(1, domandeAlGiorno)};
+     || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== 'domande'
+     || stato.piano.traguardo !== traguardo()){        // cambiare traguardo deve cambiare l'obiettivo, subito
+    stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: 'domande',
+                   traguardo: traguardo(), target: Math.max(1, domandeAlGiorno)};
     salvaLocale();
   }
   return stato.piano.target;
@@ -2611,7 +2697,7 @@ function renderObiettivo(){
   const fmt = n => n.toLocaleString('it-IT');
   el.innerHTML =
     tile('🧮', 'ico-blu', fmt(Math.max(0, pr.serveAcquisite - pr.acquisite)), 'domande ancora da consolidare',
-         `<div class="kd pari">${fmt(pr.acquisite)} già consolidate (superate e riconfermate) su ${fmt(pr.serveAcquisite)} per il 90%</div>`) +
+         `<div class="kd pari">${fmt(pr.acquisite)} già consolidate (superate e riconfermate) su ${fmt(pr.serveAcquisite)} per ${trgTesto(pr.traguardo)}</div>`) +
     tile('📈', 'ico-giallo', fmt(alGiorno), `domande da affrontare oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni all\'esame'})`,
          `<div class="kd pari">≈ ${nTestGiorno} test da ${N_TEST} · domani si ricalcola sul residuo</div>`) +
     tile('🏁', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'domande fatte oggi / obiettivo',
@@ -2627,7 +2713,7 @@ function renderObiettivo(){
     : `<span class="obh-gg"><span class="gg-lungo">${giorniCopertura()} giorni per vedere tutto · esame tra ${gg}</span><span class="gg-corto">${giorniCopertura()} gg per vedere tutto</span></span>`;
   $('ob-hero').innerHTML = `
     <div class="obh-top">
-      <span class="obh-tit">🎯 Obiettivo di oggi</span>
+      <span class="obh-tit">🎯 Obiettivo di oggi<span class="obh-trg">per ${trgTesto(traguardo())}</span></span>
       ${capofase}
     </div>
     <div class="obh-riga">
