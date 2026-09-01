@@ -721,6 +721,17 @@ b.dubbia{color:var(--ottone);}
 .pj-tag{display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; vertical-align:middle;
   font-family:'Manrope',sans-serif; font-size:.66rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
   color:var(--nebbia); background:rgba(var(--velo),.10); border:1px solid rgba(var(--velo),.20);}
+.pj-verifica{margin-top:13px; padding:12px 14px; border-radius:11px;
+  background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.16);}
+.pj-verifica.manca{background:rgba(255,123,104,.08); border-color:rgba(255,123,104,.30);}
+.pj-verifica p{margin:7px 0 0; font-size:.88rem; line-height:1.6;}
+.pjv-righe{display:flex; gap:10px; flex-wrap:wrap; margin-top:9px;}
+.pjv-box{flex:1 1 120px; padding:9px 11px; border-radius:9px;
+  background:rgba(var(--velo),.06); border:1px solid rgba(var(--velo),.12);}
+.pjv-box.mis{border-color:rgba(63,215,155,.32); background:rgba(63,215,155,.08);}
+.pjv-box b{display:block; font-family:'Archivo',sans-serif; font-size:1.5rem; font-weight:800; line-height:1;}
+.pjv-box span{display:block; margin-top:4px; font-size:.76rem; color:var(--nebbia); line-height:1.4;}
+.pjv-btn{margin-top:11px;}
 .pj-scala{margin-top:13px; padding-top:12px; border-top:1px solid rgba(var(--velo),.16);}
 .pjs-intro{margin:6px 0 10px; font-size:.88rem; line-height:1.55;}
 .pjs-riga{display:flex; align-items:baseline; gap:12px; width:100%; text-align:left; cursor:pointer;
@@ -1258,7 +1269,8 @@ function normalizzaRisultati(ris){
 }
 function normalizzaStato(s){
   if(!s.giorni || typeof s.giorni !== 'object') s.giorni = {};
-  if(!s.mis || !s.mis.rip || !s.mis.cons) s.mis = {rip:{ok:0, ko:0}, cons:{ok:0, ko:0}};
+  if(!s.mis || !s.mis.rip || !s.mis.cons) s.mis = {rip:{ok:0, ko:0}, cons:{ok:0, ko:0}, lon:{ok:0, ko:0}};
+  if(!s.mis.lon) s.mis.lon = {ok:0, ko:0};
   if(typeof s.traguardo !== 'number') s.traguardo = OBIETTIVO_ESAME;
   if(typeof s.nTest !== 'number') s.nTest = s.storico.length;
   normalizzaRisultati(s.risultati);
@@ -2081,6 +2093,17 @@ const PESO_RIPETUTE = 60;      // risposte ripetute perché il dato misurato pes
 const PRIOR_CONS = 0.93;       // tenuta di una domanda consolidata il giorno dell'esame
 const PESO_CONS = 40;          // verifiche su domande consolidate perché il dato pesi quanto l'ipotesi
 
+const DISTANZA_VERA = 5;        // test di distanza perché una ripetizione conti come "a distanza"
+const PRIOR_LAVORAZIONE = 0.65; // resa di una domanda vista ma non ancora consolidata
+const PESO_LAVORAZIONE = 50;
+
+// Resa su una domanda già incontrata ma rivista a distanza di almeno DISTANZA_VERA test.
+// È la grandezza giusta per l'esame: quella sulle ripetizioni ravvicinate è gonfiata.
+function precisioneLavorazione(){
+  const m = (stato.mis && stato.mis.lon) || {ok:0, ko:0};
+  const n = m.ok + m.ko;
+  return Math.max(0.35, Math.min(0.95, (m.ok + PRIOR_LAVORAZIONE*PESO_LAVORAZIONE) / (n + PESO_LAVORAZIONE)));
+}
 function precisioneRipetute(){
   const m = (stato.mis && stato.mis.rip) || {ok:0, ko:0};
   const n = m.ok + m.ko;
@@ -2137,6 +2160,17 @@ const PESO_PRIOR = 200;              // domande viste perché il dato misurato p
 const DOMANDE_MIN_STIMA = 200;       // sotto questa soglia la proiezione è dichiarata provvisoria
 const GG_MIN_RITMO = 3;              // giornate attive minime per parlare di "ritmo"
 
+// La simulazione pesca 60 domande a caso da tutta la banca con la struttura del bando:
+// è l'unica misura non distorta di "quanto prenderei se l'esame fosse oggi". Il modello
+// va confrontato con questa, altrimenti resta una previsione che non risponde a nulla.
+function livelloSimulato(){
+  const sim = simulazioni().filter(t => t.tot >= 40);
+  if(!sim.length) return null;
+  const ultime = sim.slice(-3);
+  return {media: Math.round(ultime.reduce((a,t) => a + t.pct, 0) / ultime.length),
+          n: sim.length, usate: ultime.length, ultimaIso: sim[sim.length-1].iso};
+}
+
 function proiezioneEsame(){
   let acquisite = 0, inLavorazione = 0, nuoveRimaste = 0;
   QUESTIONS.forEach(q => {
@@ -2155,7 +2189,11 @@ function proiezioneEsame(){
   const pMisurata = pt.tot ? pt.ok / pt.tot : null;
   const N = QUESTIONS.length;
   const pAcq = pConsolidata();
-  const stima = c => c * pAcq + (1 - c) * pNuova;
+  const pLav = precisioneLavorazione();
+  // Tre livelli, non due: una domanda già vista ma non ancora consolidata non vale
+  // quanto una mai vista. Prima finivano insieme, e il modello sbagliava di brutto
+  // sul presente proprio mentre pretendeva di indovinare il futuro.
+  const stima = (cons, lav, mai) => (cons * pAcq + lav * pLav + mai * pNuova) / N;
   const rpd = rispostePerDomanda(pNuova);
 
   const recenti = giorniAttiviRecenti(13).slice(0, 7);
@@ -2184,7 +2222,22 @@ function proiezioneEsame(){
   const acquisibili = Math.max(0, Math.min(tettoDaFase, tettoDaTempo));
   const limitataDallaCopertura = tettoDaFase < tettoDaTempo;   // il freno è il ritmo sulle nuove
 
-  const previsto = stima((acquisite + acquisibili) / N);
+  // Composizione della banca dati il giorno dell'esame
+  const viste = N - nuoveRimaste;
+  const vistePreviste = Math.min(N, viste + (inFaseFinale() ? 0 : ritmoNuove * ggCop));
+  const consFinali = Math.min(N, acquisite + acquisibili);
+  const lavFinali = Math.max(0, vistePreviste - consFinali);
+  const maiFinali = Math.max(0, N - vistePreviste);
+  const grezzo = stima(consFinali, lavFinali, maiFinali);
+
+  // Verifica sul campo: cosa direbbe il modello per OGGI, e cosa dicono le simulazioni.
+  // Lo scarto fra i due è l'errore misurato del modello, e va tolto anche dalla previsione.
+  const modelloOggi = stima(acquisite, inLavorazione, nuoveRimaste);
+  const sim = livelloSimulato();
+  const scarto = sim ? Math.max(-0.15, Math.min(0.15, sim.media/100 - modelloOggi)) : 0;
+  // Il tetto resta la tenuta di una domanda consolidata: anche consolidando tutto non si
+  // va oltre. Senza questo limite una simulazione fortunata sparava la proiezione al 100%.
+  const previsto = Math.max(0, Math.min(pAcq, grezzo + scarto));
   // Se una domanda consolidata regge meno dell'obiettivo, l'obiettivo non si raggiunge
   // nemmeno consolidando tutto: in quel caso il traguardo è l'intera banca dati.
   const trg = traguardo();
@@ -2201,8 +2254,11 @@ function proiezioneEsame(){
   const misRip = (stato.mis && stato.mis.rip) || {ok:0, ko:0};
   const misCons = (stato.mis && stato.mis.cons) || {ok:0, ko:0};
   return {acquisite, inLavorazione, nuoveRimaste, N, pNuova, pMisurata, pesoMisura, baseMisura: pt.tot,
-          pAcq, rpd, p2: precisioneRipetute(), tettoRaggiungibile,
+          pAcq, pLav, rpd, p2: precisioneRipetute(), tettoRaggiungibile,
+          sim, modelloOggi: Math.round(modelloOggi*100), grezzo: Math.round(grezzo*100),
+          scarto: Math.round(scarto*100), ancorata: !!sim,
           nRip: misRip.ok + misRip.ko, nCons: misCons.ok + misCons.ko,
+          nLon: ((stato.mis && stato.mis.lon) ? stato.mis.lon.ok + stato.mis.lon.ko : 0),
           ggDati, datiScarsi, ggMancanti: Math.max(0, GG_MIN_RITMO - ggDati),
           domandeMancanti: Math.max(0, DOMANDE_MIN_STIMA - pt.tot),
           ritmo, ritmoNuove, ritmoNuoveStimato, gg, ggCop,
@@ -2211,6 +2267,37 @@ function proiezioneEsame(){
           limitataDallaCopertura,
           traguardo: trg,
           raggiungibile: previsto >= Math.round(trg*100)};
+}
+
+// Il pezzo che mancava: la previsione confrontata con una prova vera. Senza questo
+// la proiezione saliva con il volume di lavoro e nessuno poteva accorgersi se stava
+// dicendo il falso — i punteggi dei test restavano fermi e il numero cresceva lo stesso.
+function renderVerifica(pr){
+  if(!pr.sim){
+    return `<div class="pj-verifica manca">
+      <div class="st-cop-tit">⚠ Mai verificata su una prova vera</div>
+      <p>Il numero qui sopra è un calcolo, non una misura: sale man mano che copri la banca dati,
+        anche se i punteggi dei tuoi test restano fermi. L'unico modo per sapere se è realistico
+        è la <b>simulazione d'esame</b>: 60 domande pescate a caso da tutte le 4.995, con la
+        struttura del bando, esattamente come il 15 ottobre. Quel punteggio dice quanto prenderesti oggi.</p>
+      <button class="btn-p pjv-btn" id="pjv-sim">Fai una simulazione →</button>
+    </div>`;
+  }
+  const segno = pr.scarto > 0 ? '+' : '';
+  const commento = Math.abs(pr.scarto) <= 2
+    ? `Il modello ci prende: la proiezione resta com'è.`
+    : pr.scarto > 0
+      ? `Vai <b>meglio</b> di quanto il modello si aspetti: la proiezione è stata alzata di ${Math.abs(pr.scarto)} punti.`
+      : `Vai <b>peggio</b> di quanto il modello si aspetti: la proiezione è stata abbassata di ${Math.abs(pr.scarto)} punti.`;
+  return `<div class="pj-verifica">
+    <div class="st-cop-tit">Verificata sulle tue simulazioni</div>
+    <div class="pjv-righe">
+      <div class="pjv-box"><b>${pr.modelloOggi}%</b><span>quanto il modello prevede per oggi</span></div>
+      <div class="pjv-box mis"><b>${pr.sim.media}%</b><span>quanto hai fatto davvero${pr.sim.usate > 1 ? ` (ultime ${pr.sim.usate} simulazioni)` : ''}</span></div>
+      <div class="pjv-box"><b>${segno}${pr.scarto}</b><span>correzione applicata</span></div>
+    </div>
+    <p>${commento} Rifalla ogni una o due settimane: è l'unico controllo che tiene onesta la previsione.</p>
+  </div>`;
 }
 
 // Quanto costa ogni traguardo, in domande al giorno e in minuti. È la domanda che
@@ -2387,6 +2474,7 @@ function renderStato(){
           : ''}
         ${pr.datiScarsi ? `<span class="pj-provv">${notaProvvisoria(pr)}</span>` : ''}
         ${notaIpotesi(pr)}</div>
+      ${renderVerifica(pr)}
       ${renderScala(pr)}
     </div>`;
 
@@ -2416,6 +2504,7 @@ function renderStato(){
   card.innerHTML = testa + blocco + rigaProiezione + rigaRitardo
                  + `<div class="st-prove"><div class="st-prove-tit">Le prove</div>` + verdetto + rigaCop + `</div>`;
   const bs = $('st-sim'); if(bs) bs.onclick = avviaSimulazione;
+  const bv = $('pjv-sim'); if(bv) bv.onclick = avviaSimulazione;
   card.querySelectorAll('.pjs-riga').forEach(b => b.onclick = () => {
     stato.traguardo = parseFloat(b.dataset.trg);
     salvaLocale();
@@ -3244,12 +3333,15 @@ function fineTest(){
   // Misura sul campo le due grandezze da cui dipende la proiezione: quanto tiene una
   // domanda già vista e quanto tiene una già consolidata. Va fatto qui, prima che lo
   // stato cambi, perché dopo non si distingue più com'era la domanda all'inizio del test.
-  if(!stato.mis || !stato.mis.rip) stato.mis = {rip:{ok:0, ko:0}, cons:{ok:0, ko:0}};
+  if(!stato.mis || !stato.mis.rip || !stato.mis.lon) stato.mis = Object.assign({rip:{ok:0,ko:0}, cons:{ok:0,ko:0}, lon:{ok:0,ko:0}}, stato.mis || {}, {lon:(stato.mis && stato.mis.lon) || {ok:0,ko:0}});
   risposte.forEach(q => {
     const r = stato.risultati[q.n];
     if(!r) return;                                        // mai vista: non è una ripetizione
     const esatta = test.risposte[q.n] === q.e;
     stato.mis.rip[esatta ? 'ok' : 'ko']++;
+    // Rivedere una domanda il giorno stesso non dice niente su come andrà fra un mese:
+    // le ripetizioni a distanza si contano a parte, e sono quelle che pesano nel modello.
+    if((stato.nTest - (r.u || 0)) >= DISTANZA_VERA) stato.mis.lon[esatta ? 'ok' : 'ko']++;
     if(r.s === 'ok' && !r.k && !r.p) stato.mis.cons[esatta ? 'ok' : 'ko']++;   // verifica a distanza
   });
   // aggiorna stato persistente:

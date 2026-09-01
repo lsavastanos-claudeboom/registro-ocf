@@ -1,5 +1,5 @@
 // Service worker Registro OCF: app disponibile anche offline
-const CACHE = 'quizzocf-v12';
+const CACHE = 'quizzocf-v13';
 const SHELL = ['.', 'index.html', 'config.js', 'data.js', 'manifest.webmanifest',
                'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/logo-64.png'];
 
