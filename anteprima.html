@@ -3355,7 +3355,7 @@ function aperturaCoach(){
   const okOggi = oggi ? oggi.ok : 0;
   const traguardo = Math.floor(sup / 250) * 250;
   if(traguardo >= 250 && okOggi > 0 && (sup - okOggi) < traguardo)     // tagliato proprio oggi
-    elogi.push({peso:4, t:`<b>Hai passato quota ${traguardo.toLocaleString('it-IT')} domande superate.</b> Ognuna è una che all'esame non ti farà paura. ${variante(['Il numero cresce piano, ma cresce.','Un mattone alla volta.','Questo è terreno che non perdi più.'])}`});
+    elogi.push({peso:4, t:`<b>Hai passato quota ${traguardo.toLocaleString('it-IT', {useGrouping:true})} domande superate.</b> Ognuna è una che all'esame non ti farà paura. ${variante(['Il numero cresce piano, ma cresce.','Un mattone alla volta.','Questo è terreno che non perdi più.'])}`});
   const solidi = argomentiSolidi();
   if(solidi.length)
     elogi.push({peso:3, t:`<b>${solidi.length === 1 ? solidi[0] + ' è ormai solido' : solidi.length + ' argomenti sono ormai solidi'}</b> (sopra l'80% di domande acquisite). ${variante(['Quella parte la sai.','Su quella puoi contare.','Terreno conquistato.'])} Ora il tempo rende di più altrove.`});
@@ -3374,9 +3374,9 @@ function aperturaCoach(){
   // --- 4) situazione ordinaria: incoraggiamento sobrio e onesto ---
   const gg = giorniAllEsame();
   const testi = [
-    `Nessuna scorciatoia e nessun dramma: ${gg} giorni sono tanti se li usi con metodo. ${sup ? `Hai già ${sup.toLocaleString('it-IT')} domande in cassaforte.` : ''}`,
+    `Nessuna scorciatoia e nessun dramma: ${gg} giorni sono tanti se li usi con metodo. ${sup ? `Hai già ${sup.toLocaleString('it-IT', {useGrouping:true})} domande in cassaforte.` : ''}`,
     `Il lavoro di oggi non si vede oggi: si vedrà nelle simulazioni tra due settimane. ${precAbituale !== null ? `La tua media attuale è ${precAbituale}%.` : ''}`,
-    `Un passo alla volta. ${sup ? `${sup.toLocaleString('it-IT')} domande già superate` : 'Ogni test'} sono la prova che il metodo funziona: serve solo continuare.`
+    `Un passo alla volta. ${sup ? `${sup.toLocaleString('it-IT', {useGrouping:true})} domande già superate` : 'Ogni test'} sono la prova che il metodo funziona: serve solo continuare.`
   ];
   return {tono:'neutro', testo: variante(testi)};
 }
@@ -3431,7 +3431,7 @@ function mosseDelGiorno(){
       const pIeri = Math.round(100*ieri.ok/(ieri.ok+ieri.ko));
       const peg = peggioreDelGiorno(ieri, 6);
       let t = ieri.k === 1
-        ? `<b>Bentornata.</b> Ieri hai dato ${(ieri.ok+ieri.ko).toLocaleString('it-IT')} risposte al ${pIeri}%.`
+        ? `<b>Bentornata.</b> Ieri hai dato ${(ieri.ok+ieri.ko).toLocaleString('it-IT', {useGrouping:true})} risposte al ${pIeri}%.`
         : `<b>Sono passati ${ieri.k} giorni</b> dall'ultimo allenamento (${pIeri}% quel giorno). Riprendi con un test: le prime domande costano, poi torna tutto.`;
       if(peg && peg.pct < 70) t += ` Il punto più debole di quel giorno è stato <b>${peg.arg}</b> (${peg.pct}%): è da lì che conviene aprire la giornata.`;
       mosse.push({cls:'info', testo:t, azione:(peg && peg.pct < 70) ? {lab:`Riparti da ${nomeBreve(peg.arg)}`, arg:peg.arg} : null});
@@ -3456,7 +3456,7 @@ function statoCopertura(){
   const servono = Math.ceil(nuoveRimaste / ggCop);
   const conNuove = giorniAttiviRecenti(14).filter(g => g.k > 0 && g.nuove !== undefined).slice(0, 7);
   const ritmo = conNuove.length ? Math.round(conNuove.reduce((a,g) => a + (g.nuove||0), 0) / conNuove.length) : null;
-  const fmt = n => n.toLocaleString('it-IT');
+  const fmt = n => n.toLocaleString('it-IT', {useGrouping:true});
   if(ritmo && ritmo > 0){
     const ggPrevisti = Math.ceil(nuoveRimaste / ritmo);
     return ggPrevisti > ggCop
@@ -3524,7 +3524,7 @@ function disegnaCampo(animato){
 function renderCampo(){
   const conta = {nuova:0, aperta:0, attesa:0, salda:0};
   QUESTIONS.forEach(q => conta[statoDomanda(q)]++);
-  const fmt = n => n.toLocaleString('it-IT');
+  const fmt = n => n.toLocaleString('it-IT', {useGrouping:true});
   const leg = $('campo-leg');
   if(leg) leg.innerHTML =
       `<span><i class="stato-p sp-salda"></i> <b>${fmt(conta.salda)}</b> consolidate</span>`
@@ -3681,7 +3681,7 @@ function indizioSegnali(q, iScelta){
   const riga = (g, cls, chi) => `<p class="sg-r ${cls}">${chi} <span class="sg-eti">${g.e}</span> — ${g.n}. `
       + (g.m ? `In ${nomeBreve(g.m)} ` : `Nella banca dati `)
       + `una risposta così è quella giusta <span class="sg-pct">${g.pct}%</span> delle volte `
-      + `(${g.k.toLocaleString('it-IT')} cas${g.k === 1 ? 'o' : 'i'}${g.m ? ' in questa materia' : ''}).</p>`;
+      + `(${g.k.toLocaleString('it-IT', {useGrouping:true})} cas${g.k === 1 ? 'o' : 'i'}${g.m ? ' in questa materia' : ''}).</p>`;
   return `<span class="sp-tag"><svg class="ic"><use href="#i-segnali"/></svg> Segnali della banca dati</span>`
     + neg.map(g => riga(g, 'neg', `<b>La tua (${LET[iScelta]})</b>`)).join('')
     + pos.map(g => riga(g, 'pos', `<b>La giusta (${LET[q.e]})</b>`)).join('')
@@ -3999,7 +3999,7 @@ function renderMotori(pr){
   const m = mediePerTest();
   const tn = testNecessari(pr);
   const fc = fineCopertura(pr);
-  const n = x => Math.round(x).toLocaleString('it-IT');
+  const n = x => Math.round(x).toLocaleString('it-IT', {useGrouping:true});
   const dec = x => x.toLocaleString('it-IT', {minimumFractionDigits:1, maximumFractionDigits:1});
   const pct = x => Math.round(x*100) + '%';
   const riga = (i, tit, val, note, cls) => `<div class="mot-riga ${cls||''}">
@@ -4100,7 +4100,7 @@ function renderScala(pr){
   const et = t => t.pct === 80 ? 'soglia di superamento' : t.pct === 90 ? 'margine di sicurezza' : 'con un po\' di margine';
   return `<div class="pj-scala">
     <div class="st-cop-tit">Quanto costa ogni traguardo</div>
-    <p class="pjs-intro">Al ritmo di adesso — <b>${pr.ritmo.toLocaleString('it-IT')}</b> domande al giorno,
+    <p class="pjs-intro">Al ritmo di adesso — <b>${pr.ritmo.toLocaleString('it-IT', {useGrouping:true})}</b> domande al giorno,
       circa ${tempoStimato(pr.ritmo)} — arrivi al <b>${pr.previsto}%</b>. Ecco cosa serve per salire.
       Tocca una riga per scegliere il traguardo: l'obiettivo in cima si adegua.</p>
     ${righe.map(r => `<button class="pjs-riga${r.scelto ? ' scelto' : ''}${r.fattibile ? ' ok' : ''}${r.oltreTenuta ? ' oltre' : ''}" data-trg="${r.t}">
@@ -4108,7 +4108,7 @@ function renderScala(pr){
         <span class="pjs-et">${et(r)}</span>
         <span class="pjs-num">${r.oltreTenuta
           ? `<span class="pjs-oltre">oltre la tenuta attuale (${Math.round(pr.pRic*100)}%)</span> · tutta la banca dati`
-          : `<b>${r.alGiorno.toLocaleString('it-IT')}</b> al giorno · ${r.tempo}`}</span>
+          : `<b>${r.alGiorno.toLocaleString('it-IT', {useGrouping:true})}</b> al giorno · ${r.tempo}`}</span>
       </button>`).join('')}
     ${righe.some(r => r.oltreTenuta) ? `<p class="pjs-nota pjs-avviso">Le righe segnate «oltre la tenuta» chiedono più di quanto una domanda riconfermata regga oggi (${Math.round(pr.pRic*100)}%): non si raggiungono aggiungendo domande nuove, ma alzando la tenuta con più ripassi distanziati.</p>` : ''}
     <p class="pjs-nota">I minuti sono sul tuo passo misurato di ${Math.round(secondiPerDomanda())} secondi a domanda,
@@ -4123,9 +4123,9 @@ function notaProvvisoria(pr){
   if(pr.domandeMancanti > 0){
     pezzi.push(pr.baseMisura === 0
       ? `la precisione è ancora quella ipotizzata (${Math.round(PRIOR_NUOVA*100)}%): serve almeno un test per misurarla davvero`
-      : `la precisione è misurata su <b>${pr.baseMisura.toLocaleString('it-IT')} domande</b>, troppo poche per fidarsi — `
+      : `la precisione è misurata su <b>${pr.baseMisura.toLocaleString('it-IT', {useGrouping:true})} domande</b>, troppo poche per fidarsi — `
         + `hai fatto il <b>${Math.round(pr.pMisurata*100)}%</b>, ma su questa base il valore vero può stare diversi punti sopra o sotto, `
-        + `quindi la proiezione lo mescola ancora con la stima prudenziale (ne servono altre <b>${pr.domandeMancanti.toLocaleString('it-IT')}</b>)`);
+        + `quindi la proiezione lo mescola ancora con la stima prudenziale (ne servono altre <b>${pr.domandeMancanti.toLocaleString('it-IT', {useGrouping:true})}</b>)`);
   }
   if(pr.ggMancanti > 0){
     pezzi.push(`il ritmo non è ancora calcolabile: ${
@@ -4211,7 +4211,7 @@ function renderStato(){
 
   // --- proiezione al giorno d'esame ---
   const pr = proiezioneEsame();
-  const fmt = n => n.toLocaleString('it-IT');
+  const fmt = n => n.toLocaleString('it-IT', {useGrouping:true});
   const rigaProiezione = `
     <div class="st-proiezione ${pr.datiScarsi ? 'provvisoria' : (pr.raggiungibile ? 'bene' : 'male')}">
       <div class="st-cop-tit">Proiezione al 15 ottobre${pr.datiScarsi ? '<span class="pj-tag">stima provvisoria</span>' : ''}</div>
@@ -4316,7 +4316,7 @@ function renderAndamento(){
   const w1 = sommaFinestra(N-1, 0), w2 = sommaFinestra(2*N-1, N);
   const t1 = totaleDi(w1, ambitoSel), t2 = totaleDi(w2, ambitoSel);
   const p1 = pctOkKo(t1), p2 = pctOkKo(t2);
-  const fmt = n => n.toLocaleString('it-IT');
+  const fmt = n => n.toLocaleString('it-IT', {useGrouping:true});
   const nomeAmbito = ambitoSel === null ? 'tutti gli argomenti' : ARGOMENTI[ambitoSel];
 
   // ---- chip di selezione ambito ----
@@ -4462,7 +4462,7 @@ function sottoBlocco(){
     if(b.pct === null) return -1;
     return a.pct - b.pct;                       // dai più deboli ai più solidi
   });
-  const fmt = n => n.toLocaleString('it-IT');
+  const fmt = n => n.toLocaleString('it-IT', {useGrouping:true});
   const corpo = ordinate.map(R => `<tr>
       <td class="so-nome">${R.nome}</td>
       <td class="so-pct">${R.pct === null ? '<span class="neutro">mai viste</span>'
@@ -4546,7 +4546,7 @@ function renderObiettivo(){
   const pr = proiezioneEsame();            // unica fonte del calcolo: obiettivo e proiezione non possono discordare
   const alGiorno = targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
   const nTestGiorno = Math.max(1, Math.round(alGiorno / N_TEST));
-  const fmt = n => n.toLocaleString('it-IT');
+  const fmt = n => n.toLocaleString('it-IT', {useGrouping:true});
   el.innerHTML =
     tile('<svg class="ic"><use href="#i-calcolo"/></svg>', 'ico-blu', fmt(Math.max(0, pr.serveAcquisite - pr.acquisite)), 'domande ancora da consolidare',
          `<div class="kd pari">${fmt(pr.acquisite)} già consolidate (superate e riconfermate) su ${fmt(pr.serveAcquisite)} per ${trgTesto(pr.traguardo)}</div>`) +
@@ -5878,7 +5878,6 @@ $('btn-esci').onclick = () => conferma('Vuoi uscire dall\'account? I progressi r
 
 // anteprima: nessun service worker
 
-// ---- stato dimostrativo dell'anteprima ----
 (function(){
   try{ if(localStorage.getItem(CHIAVE_LOCALE)) return; }catch(e){ return; }
   const ris = {}; let i = 0;
@@ -5897,7 +5896,7 @@ $('btn-esci').onclick = () => conferma('Vuoi uscire dall\'account? I progressi r
       arg:{0:{ok:Math.round(o*.5),ko:Math.round(ko*.5)},1:{ok:Math.round(o*.3),ko:Math.round(ko*.3)},2:{ok:9,ko:5},3:{ok:6,ko:3},4:{ok:5,ko:2}}};
   });
   const demo = {risultati:ris, storico:new Array(17).fill(0).map(()=>({iso:isoMeno(0), argomenti:'Tutti', punti:37, tot:60})),
-                giorni:g, nTest:17, autosave:false, tMedio:15000, tN:306,
+                giorni:g, nTest:17, autosave:false, tMedio:15000, tN:306, salvatoAlle:'anteprima',
                 mis:{nuove:{ok:400,ko:340}, ric:{ok:79,ko:11}, rip:{ok:60,ko:25}, ricLon:{ok:0,ko:0}}};
   try{ localStorage.setItem(CHIAVE_LOCALE, JSON.stringify(demo)); }catch(e){}
 })();
