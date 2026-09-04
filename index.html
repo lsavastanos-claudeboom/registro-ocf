@@ -4997,7 +4997,9 @@ function composizionePiano(s){
   // da recuperare, ogni posto speso su una gia' consolidata e' un posto tolto
   // alla copertura — e una probabilita' in piu' di rimandarla a zero.
   const terrenoScoperto = (s.nuove > 0) || (s.ko > 0) || (s.daRiconf > 0);
-  let nVin = terrenoScoperto ? 0 : Math.min(s.okEleg || 0, resto - nRic - nRip);
+  // Negli ultimi dieci giorni il ripasso di cio' che e' gia' chiuso e' solo un
+  // rischio: se si rompe qualcosa non c'e' piu' tempo per rimetterlo a posto.
+  let nVin = (terrenoScoperto || inFaseFinale()) ? 0 : Math.min(s.okEleg || 0, resto - nRic - nRip);
   // se le code sono a secco (tutto in pausa) si riempie con le nuove
   const vuoti = N_TEST - nNew - nRic - nRip - nVin;
   if(vuoti > 0 && !P.immissioneChiusa) nNew = Math.min(s.nuove, nNew + vuoti);
@@ -5312,7 +5314,15 @@ function avviaTest(){
   // ripasso un giorno prima del dovuto che un test a metà.
   if(domande.length < N_TEST){
     const dentro = new Set(domande.map(q => q.n));
-    const resto = pool.filter(q => !dentro.has(q.n) && stato.risultati[q.n]);
+    const resto = pool.filter(q => {
+      if(dentro.has(q.n)) return false;
+      const r = stato.risultati[q.n];
+      if(!r) return false;
+      // nella fase finale il ripiego non tocca le consolidate: meglio un test
+      // corto che rimettere in gioco una domanda gia' chiusa
+      if(inFaseFinale() && r.s === 'ok' && !r.k && !r.p) return false;
+      return true;
+    });
     // quanto manca alla scadenza: negativo = gia' scaduta, si prende prima.
     // Le gia' consolidate vanno in fondo: si ripescano solo se non c'e' altro.
     const manca = q => {
