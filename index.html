@@ -2932,19 +2932,13 @@ function applicaLapidi(s){
   s.cancellati = [...lapidi];
   scriviLapidiLocali(s.cancellati);
   if(Array.isArray(s.storico)){
-    const tolti = s.storico.filter(h => lapidi.has(chiaveTest(h)));
+    const prima = s.storico.length;
     s.storico = s.storico.filter(h => !lapidi.has(chiaveTest(h)));
-    // la giornata perde quel test: un test in meno, le sue esatte e le sue
-    // sbagliate. Il dettaglio per argomento e per classe e' cumulativo di
-    // giornata e non e' scomponibile per singolo test: resta com'e'.
-    tolti.forEach(h => {
-      const g = s.giorni && s.giorni[h.iso];
-      if(!g) return;
-      g.test = Math.max(0, (g.test || 0) - 1);
-      g.ok   = Math.max(0, (g.ok   || 0) - h.punti);
-      g.ko   = Math.max(0, (g.ko   || 0) - (h.tot - h.punti));
-    });
-    s._risorti = (s._risorti || 0) + tolti.length;   // quanti ne ha rimessi dentro una copia vecchia
+    // I conteggi della giornata non si toccano: sono il registro di cio' che
+    // e' stato fatto, e la loro ripartizione per materia non e' scomponibile
+    // per singolo test. Sottrarne solo una parte lascerebbe i totali del
+    // giorno e le righe per materia che non tornano fra loro.
+    s._risorti = (s._risorti || 0) + (prima - s.storico.length);
   }
   return s;
 }
@@ -3207,7 +3201,8 @@ function cancellaTest(chiave){
   if(i < 0) return;
   const h = stato.storico[i];
   conferma(`Togliere dallo storico il test del ${h.data} (${h.argomenti}, ${h.punti}/${h.tot})? ` +
-           `Le domande che hai gia' incontrato restano come sono: sparisce il test, non lo studio.`,
+           `Sparisce dall'elenco dei test. Le domande incontrate e il lavoro di quella giornata ` +
+           `restano come sono: si cancella il test, non lo studio.`,
     async () => {
       stato.cancellati = [...new Set([...(stato.cancellati || []), ...lapidiLocali(), chiave])];
       scriviLapidiLocali(stato.cancellati);
