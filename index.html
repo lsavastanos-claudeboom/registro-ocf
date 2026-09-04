@@ -262,6 +262,10 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .btn-s:hover{background:var(--azz);}
 .btn-danger{background:var(--foglio); color:var(--lacca-t); border:1.5px solid var(--lacca);}
 .btn-danger:hover{background:var(--laccabg);}
+.btn-canc{background:transparent; border:none; padding:4px 6px; min-height:0; color:var(--nebbia);
+  border-radius:var(--r-min); line-height:0; opacity:.55; transition:opacity .18s, color .18s, background .18s;}
+.btn-canc .ic{width:16px; height:16px;}
+.btn-canc:hover{opacity:1; color:var(--lacca-t); background:var(--laccabg);}
 .btn-pro{border-color:var(--azione); color:var(--inchiostro2);}
 .btn-pro:hover{background:rgba(var(--azione-rgb),.12);}
 
@@ -1318,7 +1322,7 @@ b.dubbia{color:var(--ottone-t);}
     <!-- 4 · STORICO -->
     <div class="card" id="card-storico">
       <details class="dett-card"><summary><svg class="ic"><use href="#i-archivio"/></svg> Storico test</summary>
-        <div class="storico-scroll"><table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Punteggio</th></tr></thead><tbody></tbody></table></div>
+        <div class="storico-scroll"><table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Punteggio</th><th></th></tr></thead><tbody></tbody></table></div>
         <div class="nota" id="nota-storico"></div>
       </details>
     </div>
@@ -2901,6 +2905,39 @@ function applicaTema(tema){
 
 const CHIAVE_LOCALE = 'ocf_quiz_progressi_2026';
 const CHIAVE_AZZ = 'ocf_azzerato_il';   // timbro dell'ultimo azzeramento su QUESTO dispositivo
+const CHIAVE_LAPIDI = 'ocf_test_cancellati';   // fuori dallo stato: la sincronia non puo' cancellarle
+
+// La chiave di un test: i suoi stessi dati. Non serve un identificativo nuovo,
+// e funziona anche sui test salvati dalle versioni precedenti dell'app.
+const chiaveTest = h => [h.iso, h.data, h.punti, h.tot, h.argomenti].join('|');
+
+function lapidiLocali(){
+  try{ const v = JSON.parse(localStorage.getItem(CHIAVE_LAPIDI) || '[]'); return Array.isArray(v) ? v : []; }
+  catch(e){ return []; }
+}
+function scriviLapidiLocali(elenco){
+  try{ localStorage.setItem(CHIAVE_LAPIDI, JSON.stringify(elenco.slice(-500))); }catch(e){}
+}
+function unisciLapidi(){
+  const tutte = new Set([...lapidiLocali(), ...((stato && stato.cancellati) || [])]);
+  const elenco = [...tutte];
+  scriviLapidiLocali(elenco);
+  return elenco;
+}
+// Toglie dallo storico tutto cio' che ha una lapide. Va chiamata a ogni
+// caricamento: e' quello che rende la cancellazione definitiva.
+function applicaLapidi(s){
+  const lapidi = new Set([...lapidiLocali(), ...((s && s.cancellati) || [])]);
+  if(!lapidi.size) return s;
+  s.cancellati = [...lapidi];
+  scriviLapidiLocali(s.cancellati);
+  if(Array.isArray(s.storico)){
+    const prima = s.storico.length;
+    s.storico = s.storico.filter(h => !lapidi.has(chiaveTest(h)));
+    s._risorti = prima - s.storico.length;   // quanti ne ha rimessi dentro una copia vecchia
+  }
+  return s;
+}
 function salvaLocale(){
   try{
     stato.salvatoAlle = new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -2944,6 +2981,7 @@ function normalizzaRisultati(ris){
 }
 function normalizzaStato(s){
   if(!s.giorni || typeof s.giorni !== 'object') s.giorni = {};
+  applicaLapidi(s);
   s.mis = normalizzaMisure(s.mis);
   if(typeof s.traguardo !== 'number') s.traguardo = OBIETTIVO_ESAME;
   if(typeof s.nTest !== 'number') s.nTest = s.storico.length;
@@ -3139,10 +3177,49 @@ function renderHome(){
   stato.storico.slice(-15).reverse().forEach((h, i) => {
     const tr = document.createElement('tr');
     const pct = Math.round(100*h.punti/h.tot);
-    tr.innerHTML = `<td>${stato.storico.length - i}</td><td>${h.data}</td><td>${h.argomenti}</td><td><b>${h.punti}/${h.tot}</b> (${pct}%)</td>`;
+    tr.innerHTML = `<td>${stato.storico.length - i}</td><td>${h.data}</td><td>${h.argomenti}</td>` +
+      `<td><b>${h.punti}/${h.tot}</b> (${pct}%)</td>` +
+      `<td><button class="btn-canc" data-chiave="${chiaveTest(h).replace(/"/g, '&quot;')}" ` +
+      `title="Togli questo test dallo storico">` +
+      `<svg class="ic"><use href="#i-cestino"/></svg></button></td>`;
     tb.appendChild(tr);
   });
+  tb.querySelectorAll('.btn-canc').forEach(b => b.onclick = () => cancellaTest(b.dataset.chiave));
   $('nota-storico').textContent = stato.storico.length ? '' : 'Nessun test ancora svolto.';
+}
+
+// Cancella un test dallo storico e ne lascia la lapide, cosi' non puo' tornare.
+// Alla giornata tolgo solo cio' che e' attribuibile con certezza a quel test:
+// un test in meno, le sue esatte e le sue sbagliate. Il dettaglio per argomento
+// e per classe e' cumulativo di giornata e non e' scomponibile: resta com'e'.
+function cancellaTest(chiave){
+  const i = stato.storico.findIndex(h => chiaveTest(h) === chiave);
+  if(i < 0) return;
+  const h = stato.storico[i];
+  conferma(`Togliere dallo storico il test del ${h.data} (${h.argomenti}, ${h.punti}/${h.tot})? ` +
+           `Le domande che hai gia' incontrato restano come sono: sparisce il test, non lo studio.`,
+    async () => {
+      stato.storico.splice(i, 1);
+      const g = stato.giorni[h.iso];
+      if(g){
+        g.test = Math.max(0, (g.test || 0) - 1);
+        g.ok   = Math.max(0, (g.ok   || 0) - h.punti);
+        g.ko   = Math.max(0, (g.ko   || 0) - (h.tot - h.punti));
+      }
+      stato.cancellati = [...new Set([...(stato.cancellati || []), ...lapidiLocali(), chiave])];
+      scriviLapidiLocali(stato.cancellati);
+      salvaLocale();
+      renderHome();
+      if(cloudAttivo && utente){
+        clearTimeout(pushTimer);
+        const ok = await pushCloud();
+        $('nota-pool').textContent = ok
+          ? 'Test tolto dallo storico ✔ — anche sul tuo account online.'
+          : 'Test tolto qui, ma la sincronia online non e\' riuscita: riprovo al prossimo salvataggio.';
+      } else {
+        $('nota-pool').textContent = 'Test tolto dallo storico ✔';
+      }
+    });
 }
 
 function ieriISO(){
@@ -5867,8 +5944,14 @@ function statoDaCaricare(remoto, locale){
   const aggR  = remoto.agg || 0,        aggL  = locale.agg || 0;
   if(azzR > azzL && azzR >= aggL) return remoto;
   if(azzL > azzR && azzL >= aggR) return locale;
+  // Le lapidi non si scelgono: si sommano. Se un dispositivo ha cancellato un
+  // test e un altro no, il test resta cancellato — altrimenti basterebbe una
+  // copia vecchia per farlo tornare.
+  const lapidi = [...new Set([...(remoto.cancellati || []), ...(locale.cancellati || []), ...lapidiLocali()])];
   // altrimenti vince chi ha più storia; a parità il remoto (più recente tra i dispositivi)
-  return (locale.storico || []).length > (remoto.storico || []).length ? locale : remoto;
+  const scelto = (locale.storico || []).length > (remoto.storico || []).length ? locale : remoto;
+  if(lapidi.length){ scelto.cancellati = lapidi; scriviLapidiLocali(lapidi); applicaLapidi(scelto); }
+  return scelto;
 }
 
 async function caricaCloud(){
@@ -5943,9 +6026,13 @@ async function dopoLogin(sessione){
   _salvaLocaleBase();
   setSync('ok', 'sincronizzato');
   pushCloud();
+  const risorti = stato._risorti || 0;
+  delete stato._risorti;
   avviaApp(resurrezione
     ? 'Progressi azzerati ✔ — un altro dispositivo aveva rimandato su i vecchi dati e sono stati rifiutati. Su quel dispositivo ricarica la pagina.'
-    : 'Bentornata! Progressi sincronizzati sul tuo account.');
+    : risorti
+      ? `Bentornata! Progressi sincronizzati. ${risorti === 1 ? 'Un test cancellato era' : risorti + ' test cancellati erano'} tornato dentro da un altro dispositivo: l'ho tolto di nuovo.`
+      : 'Bentornata! Progressi sincronizzati sul tuo account.');
 }
 
 async function avvio(){
