@@ -858,6 +858,12 @@ details.dett-card>summary{font-size:1.12rem; color:var(--testo);}
   background:rgba(var(--ombra),.35); border:1px solid rgba(var(--velo),.12);}
 :root[data-tema="chiaro"] .ob-hero{background:rgba(var(--ombra),.05);}
 .obh-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:7px;}
+.obh-piano{margin-top:10px; padding-top:9px; border-top:1px solid var(--filo); font-size:.85rem;
+  color:var(--nebbia); display:flex; align-items:baseline; gap:7px; line-height:1.45;}
+.obh-piano b{color:var(--testo);}
+.obh-piano .ic{width:15px; height:15px; flex:none; transform:translateY(2px);}
+.obh-piano.ok{color:var(--vidimato-t);} .obh-piano.ok b{color:var(--vidimato-t);}
+.obh-piano.male{color:var(--ottone-t);} .obh-piano.male b{color:var(--ottone-t);}
 .obh-tit{font-family:var(--f-display); font-weight:700; font-size:.95rem; color:var(--testo);}
 .obh-trg{display:inline-block; margin-left:9px; padding:2px 9px; border-radius:999px; vertical-align:middle;
   font-family:var(--f-testo); font-size:.66rem; font-weight:700; letter-spacing:.03em;
@@ -3081,7 +3087,10 @@ function statiPool(pool){
     if(!r) nuove++;
     else if(r.s==='ok'){
       if(r.p) dubbie++; else ok++;          // "da confermare" non vale come superata
-      if(r.k){ daRiconf++; if(vintaProponibile(r)) ricEleg++; }
+      // anche una "da confermare" senza il contrassegno di riconferma va ripescata
+      // dalla quota riconferme: altrimenti resta ferma finche' il cursore delle
+      // gia' indovinate e' a zero, e non consolida mai
+      if(r.k || r.p){ daRiconf++; if(vintaProponibile(r)) ricEleg++; }
       else if(vintaProponibile(r)) okEleg++;
     }
     else { ko++; if(proponibile(r)) koEleg++; }
@@ -3954,8 +3963,8 @@ function renderSegnaliTest(r){
 // ma non vengono più alimentate: contavano insieme cose che vanno tenute distinte.
 function normalizzaMisure(m){
   const v = {ok:0, ko:0};
-  const out = {nuove:{...v}, ric:{...v}, rip:{...v}, ricLon:{...v}};
-  if(m) ['nuove','ric','rip','ricLon'].forEach(k => { if(m[k]) out[k] = {ok:m[k].ok||0, ko:m[k].ko||0}; });
+  const out = {nuove:{...v}, ric:{...v}, rip:{...v}, ricLon:{...v}, ripLon:{...v}};
+  if(m) ['nuove','ric','rip','ricLon','ripLon'].forEach(k => { if(m[k]) out[k] = {ok:m[k].ok||0, ko:m[k].ko||0}; });
   return out;
 }
 function quota(m, prior, peso){
@@ -4027,20 +4036,29 @@ function livelloSimulato(){
 // Finché i dati sono pochi restano vicine all'ipotesi di partenza; man mano che
 // arrivano risposte la sostituiscono. La banda è l'incertezza statistica vera:
 // con zero misure è larghissima, ed è giusto che si veda.
-const PRIOR_CL = {nuove:0.55, ric:0.85, rip:0.60};
+const PRIOR_CL = {nuove:0.55, ric:0.85, rip:0.58};
 const PESO_CL  = {nuove:150,  ric:80,   rip:80};
+// Il ripasso misurato a distanza corta e' ottimista per costruzione: la domanda
+// e' tornata dopo quattro-cinque test, con la spiegazione ancora fresca. Finche'
+// non ci sono abbastanza ripassi a distanza vera, quel dato pesa la meta'.
+const PESO_RIP_CORTO = 160;
 function reseMisurate(){
   const m = normalizzaMisure(stato.mis);
   const nLon = m.ricLon.ok + m.ricLon.ko;
+  const nRipLon = m.ripLon.ok + m.ripLon.ko;
   // per le riconferme conta la distanza: se ce ne sono abbastanza a 5+ test, usa solo quelle
   const fonteRic = nLon >= 30 ? m.ricLon : m.ric;
-  const q = (mm, k) => {
-    const r = quota(mm, PRIOR_CL[k], PESO_CL[k]);
+  const q = (mm, k, peso) => {
+    const r = quota(mm, PRIOR_CL[k], peso || PESO_CL[k]);
     r.banda = Math.min(0.18, 1.96 * (r.n >= 10 ? Math.sqrt(r.p*(1-r.p)/r.n) : 0.0765));
     return r;
   };
-  return {nuove: q(m.nuove,'nuove'), ric: q(fonteRic,'ric'), rip: q(m.rip,'rip'),
-          ricADistanza: nLon >= 30, nLon, grezze: m};
+  // stessa logica per i ripassi: a distanza vera se ce ne sono, altrimenti il dato
+  // corto con il doppio del peso del prior, perche' e' ottimista per costruzione
+  const rip = nRipLon >= 30 ? q(m.ripLon, 'rip') : q(m.rip, 'rip', PESO_RIP_CORTO);
+  return {nuove: q(m.nuove,'nuove'), ric: q(fonteRic,'ric'), rip,
+          ricADistanza: nLon >= 30, nLon,
+          ripADistanza: nRipLon >= 30, nRipLon, grezze: m};
 }
 
 function proiezioneEsame(){
@@ -4693,9 +4711,9 @@ function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 function targetOggi(domandeAlGiorno){
   const oggi = oggiISO();
   if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)
-     || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== 'domande'
+     || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== (pianoAttivo() ? 'piano' : 'domande')
      || stato.piano.traguardo !== traguardo()){        // cambiare traguardo deve cambiare l'obiettivo, subito
-    stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: 'domande',
+    stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: pianoAttivo() ? 'piano' : 'domande',
                    traguardo: traguardo(), target: Math.max(1, domandeAlGiorno)};
     salvaLocale();
   }
@@ -4733,7 +4751,14 @@ function renderObiettivo(){
     return;
   }
   const pr = proiezioneEsame();            // unica fonte del calcolo: obiettivo e proiezione non possono discordare
-  const alGiorno = targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
+  const P = piano();
+  // L'obiettivo del giorno nasce dal piano: quante risposte servono ancora per
+  // portare tutta la banca dati a consolidamento, diviso i giorni che restano.
+  // passa comunque da targetOggi: l'obiettivo si fissa una volta al giorno e non
+  // deve ballare mentre lei risponde
+  const alGiorno = pianoAttivo()
+    ? targetOggi(Math.max(N_TEST, P.domandeAlGiorno))
+    : targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
   const nTestGiorno = Math.max(1, Math.round(alGiorno / N_TEST));
   const fmt = fmtN;
   el.innerHTML =
@@ -4751,17 +4776,27 @@ function renderObiettivo(){
   const fatto = oggiFatte >= alGiorno;
   const capofase = inFaseFinale()
     ? `<span class="obh-gg">ultimi ${gg} giorni · consolidamento</span>`
-    : `<span class="obh-gg"><span class="gg-lungo">${giorniCopertura()} giorni per vedere tutto · esame tra ${gg}</span><span class="gg-corto">${giorniCopertura()} gg per vedere tutto</span></span>`;
+    : `<span class="obh-gg"><span class="gg-lungo">${giorniCopertura()} giorni per coprire tutto · esame tra ${gg}</span><span class="gg-corto">${giorniCopertura()} gg per coprire</span></span>`;
+  // La riga del piano: cosa serve, cosa sta facendo, e dove si arriva davvero.
+  const rigaPiano = (!pianoAttivo() || inFaseFinale()) ? '' : (() => {
+    const serve = Math.round(P.testAlGiorno * 10) / 10;
+    const fa = P.ritmoAttuale ? Math.round(P.ritmoAttuale / N_TEST * 10) / 10 : 0;
+    if(!P.ritmoAttuale) return `<div class="obh-piano">Servono <b>${serve}</b> test al giorno per arrivare coperta entro il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})}.</div>`;
+    return P.inLinea
+      ? `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Sei in linea: servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>.</div>`
+      : `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>: a questo ritmo ne consolidi circa il <b>${Math.round(P.copribile*100)}%</b>.</div>`;
+  })();
   $('ob-hero').innerHTML = `
     <div class="obh-top">
-      <span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo di oggi<span class="obh-trg">per ${trgTesto(traguardo())}</span></span>
+      <span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo di oggi<span class="obh-trg">${pianoAttivo() ? 'per coprire tutto' : 'per ' + trgTesto(traguardo())}</span></span>
       ${capofase}
     </div>
     <div class="obh-riga">
       <div class="obh-num"><b>${fmt(oggiFatte)}</b><span>/${fmt(alGiorno)} domande</span></div>
       <div class="obh-stato ${fatto ? 'ok' : ''}">${fatto ? '✔ obiettivo raggiunto' : `ne mancano <b>${fmt(restano)}</b> · ≈ ${Math.max(1, Math.ceil(restano / N_TEST))} test`}</div>
     </div>
-    <div class="obh-bar ${fatto ? 'ok' : ''}"><i style="width:${pctOb}%"></i></div>`;
+    <div class="obh-bar ${fatto ? 'ok' : ''}"><i style="width:${pctOb}%"></i></div>
+    ${rigaPiano}`;
 }
 
 function argomentiSelezionati(){
@@ -4783,6 +4818,83 @@ function argFiltrati(sel){
   return sel.filter(a => SOTTO[a] && saStato[a] && saStato[a].some(v => !v))
             .map(a => ({a, on: saStato[a].filter(Boolean).length, tot: saStato[a].length}));
 }
+
+
+// ============ IL PIANO ============
+// Quanto costa, in risposte, portare una domanda fino a consolidata. Non e' un
+// numero fisso: dipende dalle rese misurate su chi studia, quindi si ricalcola.
+const CODA_PIPELINE = 12;   // test che servono a una domanda nuova per arrivare in fondo
+function costiConsolidamento(){
+  const r = reseMisurate();
+  const pN = Math.max(.2, Math.min(.95, r.nuove.p));
+  const pR = Math.max(.2, Math.min(.95, r.ric.p));
+  const pP = Math.max(.2, Math.min(.95, r.rip.p));
+  // una riconferma vale solo se e' anche sicura: l'esitazione la rimanda indietro
+  const pSicura = 1 - tassoEsitazione();
+  const eK = 1 / Math.max(.15, pR * pSicura);
+  // una sbagliata chiede due giuste di fila dopo l'ultimo errore
+  const eR = 1/pP + 1 + (1 - pP)/pP;
+  const eU = 1 + pN*eK + (1 - pN)*eR;
+  return {eU, eK, eR, pN, pR, pP, pSicura};
+}
+// quota di risposte giuste che l'app ha classificato come esitate
+function tassoEsitazione(){
+  const giuste = Object.values(stato.giorni || {}).reduce((a,g) => a + (g.ok||0), 0);
+  const sicure = stato.tN || 0;
+  if(giuste < 60) return 0.10;
+  return Math.max(0, Math.min(0.35, (giuste - sicure) / giuste));
+}
+// il lavoro che manca, contato in risposte da dare
+function lavoroResiduo(){
+  const c = costiConsolidamento();
+  let U = 0, K = 0, R = 0, C = 0;
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r) U++;
+    else if(r.s !== 'ok') R++;
+    else if(r.k || r.p) K++;
+    else C++;
+  });
+  return {U, K, R, C, costi: c,
+          risposte: Math.round(U*c.eU + K*c.eK + R*c.eR)};
+}
+// il piano di oggi: quanto serve, quanto sta facendo, e se basta
+function piano(){
+  const L = lavoroResiduo();
+  const gg = giorniCopertura();                  // giorni fino a dieci giorni prima dell'esame
+  const dom = Math.ceil(L.risposte / gg);
+  const testGiorno = L.risposte / gg / N_TEST;
+  const recenti = giorniAttiviRecenti(13).slice(0, 7);
+  const ritmo = recenti.length
+    ? Math.round(recenti.reduce((a,g) => a + g.ok + g.ko, 0) / recenti.length) : 0;
+  const testRimasti = Math.max(1, Math.round(gg * Math.max(testGiorno, ritmo/N_TEST)));
+  return {...L, giorni: gg, domandeAlGiorno: dom, testAlGiorno: Math.ceil(testGiorno*10)/10,
+          ritmoAttuale: ritmo, testRimasti,
+          inLinea: ritmo >= dom,
+          copribile: Math.min(1, (L.C + (QUESTIONS.length - L.C) *
+                       Math.min(1, ritmo * gg / Math.max(1, L.risposte))) / QUESTIONS.length),
+          immissioneChiusa: testRimasti <= CODA_PIPELINE || inFaseFinale()};
+}
+// La composizione secondo il piano: le nuove entrano al ritmo che le fa arrivare
+// tutte entro la chiusura dell'immissione, il resto va alle due code in
+// proporzione al lavoro che ciascuna ha ancora davanti.
+function composizionePiano(s){
+  const P = piano();
+  const testPerNuove = Math.max(1, P.testRimasti - CODA_PIPELINE);
+  let nNew = P.immissioneChiusa ? 0 : Math.min(s.nuove, Math.ceil(P.U / testPerNuove));
+  nNew = Math.min(nNew, N_TEST);
+  let resto = N_TEST - nNew;
+  const wK = P.K * P.costi.eK, wR = P.R * P.costi.eR, tot = wK + wR;
+  let nRic = Math.min(s.ricEleg || 0, Math.round(resto * (tot ? wK/tot : .5)));
+  let nRip = Math.min(s.koEleg, resto - nRic);
+  nRic = Math.min(s.ricEleg || 0, resto - nRip);
+  let nVin = Math.min(s.okEleg || 0, resto - nRic - nRip);
+  // se le code sono a secco (tutto in pausa) si riempie con le nuove
+  const vuoti = N_TEST - nNew - nRic - nRip - nVin;
+  if(vuoti > 0 && !P.immissioneChiusa) nNew = Math.min(s.nuove, nNew + vuoti);
+  return {nRip, nNew, nVin, nRic};
+}
+function pianoAttivo(){ return stato.pianoAuto !== false; }
 
 function mixNuove(){
   const m = stato.mixNuove;
@@ -4808,6 +4920,7 @@ function vintaProponibile(r){
 const QUOTA_RICONFERME = 0.25;
 function composizione(s, soloErr){
   if(soloErr) return {nRip: Math.min(N_TEST, s.ko), nNew: 0, nVin: 0, nRic: 0};
+  if(pianoAttivo()) return composizionePiano(s);
   const nRic = Math.min(s.ricEleg || 0, Math.round(N_TEST * QUOTA_RICONFERME));
   const resto = N_TEST - nRic;
   let nVin = Math.min(s.okEleg || 0, Math.round(resto * mixVinte() / 100));
@@ -5066,13 +5179,13 @@ function avviaTest(){
   }
   if(c.nRic){
     // riconferme dovute: prima quelle in attesa da più tempo
-    const ric = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && r.k && vintaProponibile(r); });
+    const ric = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && (r.k || r.p) && vintaProponibile(r); });
     ric.sort((a,b) => ((stato.nTest||0)-(stato.risultati[b.n].u||0)) - ((stato.nTest||0)-(stato.risultati[a.n].u||0)));
     domande.push(...ric.slice(0, c.nRic));
   }
   if(c.nVin){
     // priorità nelle vinte: prima le ex-sbagliate poi le più "vecchie" (con un po' di caso)
-    const vinte = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && !r.k && vintaProponibile(r); });
+    const vinte = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && !r.k && !r.p && vintaProponibile(r); });
     const prioVin = q => {
       const r = stato.risultati[q.n];
       return (r.e > 0 ? 1.2 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 40 + Math.random() * 0.8;
@@ -5198,18 +5311,41 @@ function segnaTempo(q){
 // Una risposta giusta è "sicura" se arriva in tempi normali e senza ripensamenti.
 // Giusta ma lenta o con cambi di idea = probabile tentativo: non vale come superata.
 const T_INTERROTTA = 240000;   // oltre 4 minuti: si è distratta, il tempo non dice nulla
+// Quanto c'e' da leggere: domanda piu' le quattro risposte.
+function lunghezzaTesto(q){ return (q.q + q.a.join(' ')).length; }
+
+// La soglia oltre la quale una risposta giusta si considera esitata.
+// Prima era un minimo fisso di 35 secondi: ma qui la domanda mediana e' lunga
+// 462 caratteri e una su quattro supera i 600, quindi 35 secondi erano il solo
+// tempo di lettura. Ora la soglia parte dal tempo di lettura stimato al ritmo
+// di chi studia, piu' un margine per ragionare e confrontare le opzioni.
+const MS_CARATTERE = 30;        // ritmo di riserva finche' non ce n'e' uno misurato
+function sogliaEsitazione(q){
+  const perChar = (stato.cN >= 40 && stato.cMedio) ? stato.cMedio : MS_CARATTERE;
+  return 14000 + lunghezzaTesto(q) * perChar * 1.6;
+}
 function rispostaIncerta(q){
-  if((test.cambi[q.n] || 0) > 0) return true;
+  const cambi = test.cambi[q.n] || 0;
+  if(cambi >= 2) return true;                       // due ripensamenti: incertezza vera
   const t = test.tempi[q.n];
   if(t === undefined || t > T_INTERROTTA) return false;
-  const base = (stato.tN >= 30 && stato.tMedio) ? stato.tMedio : 22000;
-  return t > Math.max(35000, base * 1.8);
+  const soglia = sogliaEsitazione(q);
+  // Un solo ripensamento non basta da solo: rileggere e correggersi e' il metodo
+  // che la dispensa insegna. Pesa solo se accompagnato da lentezza.
+  return cambi === 1 ? t > soglia * 0.75 : t > soglia;
 }
-// media dei tempi sulle risposte giuste e sicure (si adatta al ritmo di chi studia)
-function aggiornaRitmo(ms){
+// Ritmo di chi studia, misurato sulle risposte giuste e sicure: sia il tempo per
+// domanda (per compatibilita') sia quello per carattere, che e' il dato utile.
+function aggiornaRitmo(ms, q){
   if(!(ms > 1500) || ms > T_INTERROTTA) return;
   stato.tN = (stato.tN || 0) + 1;
   stato.tMedio = stato.tMedio ? stato.tMedio + (ms - stato.tMedio) / Math.min(stato.tN, 40) : ms;
+  const L = q ? lunghezzaTesto(q) : 0;
+  if(L > 80){
+    const pc = ms / L;
+    stato.cN = (stato.cN || 0) + 1;
+    stato.cMedio = stato.cMedio ? stato.cMedio + (pc - stato.cMedio) / Math.min(stato.cN, 60) : pc;
+  }
 }
 
 function labelAvanti(){
@@ -5289,7 +5425,7 @@ function fineTest(){
   // Va fatto qui, prima che lo stato cambi: dopo non si distingue più.
   stato.mis = normalizzaMisure(stato.mis);
   const idTest = (stato.nTest || 0) + 1;
-  const clsGiorno = {nuove:{ok:0,ko:0}, ric:{ok:0,ko:0}, rip:{ok:0,ko:0}, ricLon:{ok:0,ko:0}};
+  const clsGiorno = {nuove:{ok:0,ko:0}, ric:{ok:0,ko:0}, rip:{ok:0,ko:0}, ricLon:{ok:0,ko:0}, ripLon:{ok:0,ko:0}};
   risposte.forEach(q => {
     const r = stato.risultati[q.n];
     const esatta = test.risposte[q.n] === q.e ? 'ok' : 'ko';
@@ -5299,6 +5435,11 @@ function fineTest(){
       // riconferma a vera distanza: è il solo dato che dice qualcosa sulla tenuta a settimane
       stato.mis.ricLon[esatta]++; clsGiorno.ricLon[esatta]++;
     }
+    // Lo stesso per i ripassi: una sbagliata rivista dopo due test dice poco su
+    // come andra' all'esame, una rivista dopo cinque o piu' dice molto.
+    if(cls === 'rip' && (idTest - (r.u || 0)) >= DISTANZA_VERA){
+      stato.mis.ripLon[esatta]++; clsGiorno.ripLon[esatta]++;
+    }
   });
   // aggiorna stato persistente:
   // - domanda mai sbagliata + risposta giusta -> archiviata subito
@@ -5307,7 +5448,7 @@ function fineTest(){
   if(risposte.length) stato.nTest = (stato.nTest || 0) + 1;
   giuste.forEach(q => {
     const incerta = rispostaIncerta(q);
-    if(!incerta) aggiornaRitmo(test.tempi[q.n]);
+    if(!incerta) aggiornaRitmo(test.tempi[q.n], q);
     const r = stato.risultati[q.n];
     if(!r){
       // Giusta al primo colpo: conta come superata, ma non è ancora acquisita.
@@ -5336,7 +5477,8 @@ function fineTest(){
     const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
     g.test++; g.ok += giuste.length; g.ko += errori.length;
     g.nuove = (g.nuove || 0) + nuoveViste;   // copertura: domande viste per la prima volta
-    g.cls = g.cls || {nuove:{ok:0,ko:0}, ric:{ok:0,ko:0}, rip:{ok:0,ko:0}, ricLon:{ok:0,ko:0}};
+    g.cls = g.cls || {};
+    Object.keys(clsGiorno).forEach(k => { if(!g.cls[k]) g.cls[k] = {ok:0, ko:0}; });
     Object.keys(clsGiorno).forEach(k => { g.cls[k].ok += clsGiorno[k].ok; g.cls[k].ko += clsGiorno[k].ko; });
     // dettaglio per argomento: serve a capire in quale ambito si sta migliorando o peggiorando
     g.arg = g.arg || {};
