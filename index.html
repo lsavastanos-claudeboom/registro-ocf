@@ -2932,9 +2932,19 @@ function applicaLapidi(s){
   s.cancellati = [...lapidi];
   scriviLapidiLocali(s.cancellati);
   if(Array.isArray(s.storico)){
-    const prima = s.storico.length;
+    const tolti = s.storico.filter(h => lapidi.has(chiaveTest(h)));
     s.storico = s.storico.filter(h => !lapidi.has(chiaveTest(h)));
-    s._risorti = prima - s.storico.length;   // quanti ne ha rimessi dentro una copia vecchia
+    // la giornata perde quel test: un test in meno, le sue esatte e le sue
+    // sbagliate. Il dettaglio per argomento e per classe e' cumulativo di
+    // giornata e non e' scomponibile per singolo test: resta com'e'.
+    tolti.forEach(h => {
+      const g = s.giorni && s.giorni[h.iso];
+      if(!g) return;
+      g.test = Math.max(0, (g.test || 0) - 1);
+      g.ok   = Math.max(0, (g.ok   || 0) - h.punti);
+      g.ko   = Math.max(0, (g.ko   || 0) - (h.tot - h.punti));
+    });
+    s._risorti = (s._risorti || 0) + tolti.length;   // quanti ne ha rimessi dentro una copia vecchia
   }
   return s;
 }
@@ -3199,15 +3209,10 @@ function cancellaTest(chiave){
   conferma(`Togliere dallo storico il test del ${h.data} (${h.argomenti}, ${h.punti}/${h.tot})? ` +
            `Le domande che hai gia' incontrato restano come sono: sparisce il test, non lo studio.`,
     async () => {
-      stato.storico.splice(i, 1);
-      const g = stato.giorni[h.iso];
-      if(g){
-        g.test = Math.max(0, (g.test || 0) - 1);
-        g.ok   = Math.max(0, (g.ok   || 0) - h.punti);
-        g.ko   = Math.max(0, (g.ko   || 0) - (h.tot - h.punti));
-      }
       stato.cancellati = [...new Set([...(stato.cancellati || []), ...lapidiLocali(), chiave])];
       scriviLapidiLocali(stato.cancellati);
+      applicaLapidi(stato);          // toglie la riga e sistema i conteggi della giornata
+      delete stato._risorti;
       salvaLocale();
       renderHome();
       if(cloudAttivo && utente){
