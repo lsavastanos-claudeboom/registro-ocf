@@ -3057,6 +3057,17 @@ function mostra(vista){
   window.scrollTo(0,0);
 }
 
+// Giorno assoluto: numero di giorni dal 1970. Serve a misurare le distanze in
+// giorni invece che in test, che e' l'unita' con cui funziona la memoria.
+function oggiNum(){
+  const d = new Date();
+  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+}
+// distanza in giorni dall'ultima volta che si e' vista quella domanda
+function giorniDa(r){
+  if(!r || r.gg === undefined) return null;      // salvataggi vecchi: distanza sconosciuta
+  return Math.max(0, oggiNum() - r.gg);
+}
 function oggiISO(){
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -3074,8 +3085,36 @@ function intervalloErrore(e){
   return base + Math.floor(Math.random() * 2);
 }
 function intervalloRiconferma(){ return 5 + Math.floor(Math.random() * 2); }   // 5-6 test: spazia il consolidamento
+
+// ---- le pause vere, in giorni ----
+// Una domanda sbagliata torna presto, una consolidata sempre piu' tardi. La scala
+// si allarga a ogni conferma riuscita: e' l'allargamento che costruisce memoria,
+// non la ripetizione ravvicinata. Il tetto tiene conto dei giorni che restano:
+// non ha senso rimandare una domanda a dopo l'esame.
+const SCALA_GIORNI = [1, 3, 7, 14];
+function attesaGiorni(r){
+  if(!r) return 0;
+  if(r.p) return 0;                              // da confermare: anche oggi stesso
+  if(r.s !== 'ok'){
+    const e = r.e || 1;
+    if(r.c >= 1) return 2;                       // una giusta gia' fatta: si distanzia
+    return e >= 3 ? 1 : (e === 2 ? 1 : 2);       // piu' la sbaglia, prima torna
+  }
+  if(r.k) return 1;                              // vista una volta sola: domani
+  const passo = Math.min(SCALA_GIORNI.length - 1, r.v || 0);
+  const tetto = Math.max(1, giorniCopertura() - 1);
+  return Math.min(SCALA_GIORNI[passo], tetto);
+}
+// pronta per essere riproposta? in giorni, con ripiego sui test per i salvataggi vecchi
+function scadutaAGiorni(r){
+  const g = giorniDa(r);
+  if(g === null) return null;
+  return g >= attesaGiorni(r);
+}
 function intervalloRipasso(){ return intervalloErrore(1); }   // compatibilità
 function proponibile(r){
+  const perGiorni = scadutaAGiorni(r);
+  if(perGiorni !== null) return perGiorni;
   return !r.t || (stato.nTest || 0) >= r.t;
 }
 
@@ -3963,8 +4002,10 @@ function renderSegnaliTest(r){
 // ma non vengono più alimentate: contavano insieme cose che vanno tenute distinte.
 function normalizzaMisure(m){
   const v = {ok:0, ko:0};
-  const out = {nuove:{...v}, ric:{...v}, rip:{...v}, ricLon:{...v}, ripLon:{...v}};
-  if(m) ['nuove','ric','rip','ricLon','ripLon'].forEach(k => { if(m[k]) out[k] = {ok:m[k].ok||0, ko:m[k].ko||0}; });
+  const CH = ['nuove','ric','rip','ricLon','ripLon','ricG3','ricG7','ripG3','ripG7'];
+  const out = {};
+  CH.forEach(k => out[k] = {...v});
+  if(m) CH.forEach(k => { if(m[k]) out[k] = {ok:m[k].ok||0, ko:m[k].ko||0}; });
   return out;
 }
 function quota(m, prior, peso){
@@ -3972,7 +4013,10 @@ function quota(m, prior, peso){
   return {n, ok:m.ok||0, grezza: n ? m.ok/n : null,
           p: Math.max(0.15, Math.min(0.98, (m.ok + prior*peso) / (n + peso)))};
 }
-const DISTANZA_VERA = 5;        // test di distanza perché una riconferma conti "a distanza"
+const DISTANZA_VERA = 5;        // test di distanza (misura vecchia, tenuta per compatibilità)
+// Le fasce che contano davvero, in GIORNI. All'esame quasi tutte le domande
+// saranno state viste da settimane: la tenuta a un giorno non dice niente.
+const FASCIA_G3 = 3, FASCIA_G7 = 7;
 
 // Resa su una domanda già incontrata, di qualunque tipo: serve solo a stimare quante
 // risposte costa portare una domanda al consolidamento.
@@ -4044,10 +4088,20 @@ const PESO_CL  = {nuove:150,  ric:80,   rip:80};
 const PESO_RIP_CORTO = 160;
 function reseMisurate(){
   const m = normalizzaMisure(stato.mis);
-  const nLon = m.ricLon.ok + m.ricLon.ko;
-  const nRipLon = m.ripLon.ok + m.ripLon.ko;
-  // per le riconferme conta la distanza: se ce ne sono abbastanza a 5+ test, usa solo quelle
-  const fonteRic = nLon >= 30 ? m.ricLon : m.ric;
+  const n = x => x.ok + x.ko;
+  // La fonte migliore e' la piu' lontana di cui ci siano abbastanza dati: sette
+  // giorni batte tre, tre battono la vecchia misura in test, che batte il crudo.
+  const scegli = (fam) => {
+    if(n(m[fam+'G7']) >= 30) return {m: m[fam+'G7'], gg: FASCIA_G7, n: n(m[fam+'G7'])};
+    if(n(m[fam+'G3']) >= 30) return {m: m[fam+'G3'], gg: FASCIA_G3, n: n(m[fam+'G3'])};
+    const vecchia = fam === 'ric' ? m.ricLon : m.ripLon;
+    if(n(vecchia) >= 30) return {m: vecchia, gg: null, n: n(vecchia)};
+    return {m: m[fam], gg: 0, n: n(m[fam])};
+  };
+  const fR = scegli('ric'), fP = scegli('rip');
+  const nLon = fR.n;
+  const nRipLon = fP.gg ? fP.n : 0;
+  const fonteRic = fR.m;
   const q = (mm, k, peso) => {
     const r = quota(mm, PRIOR_CL[k], peso || PESO_CL[k]);
     r.banda = Math.min(0.18, 1.96 * (r.n >= 10 ? Math.sqrt(r.p*(1-r.p)/r.n) : 0.0765));
@@ -4055,10 +4109,10 @@ function reseMisurate(){
   };
   // stessa logica per i ripassi: a distanza vera se ce ne sono, altrimenti il dato
   // corto con il doppio del peso del prior, perche' e' ottimista per costruzione
-  const rip = nRipLon >= 30 ? q(m.ripLon, 'rip') : q(m.rip, 'rip', PESO_RIP_CORTO);
+  const rip = fP.gg ? q(fP.m, 'rip') : q(fP.m, 'rip', PESO_RIP_CORTO);
   return {nuove: q(m.nuove,'nuove'), ric: q(fonteRic,'ric'), rip,
-          ricADistanza: nLon >= 30, nLon,
-          ripADistanza: nRipLon >= 30, nRipLon, grezze: m};
+          ricADistanza: nLon >= 30 && fR.gg !== 0, nLon, fasciaRic: fR.gg,
+          ripADistanza: nRipLon >= 30, nRipLon, fasciaRip: fP.gg, grezze: m};
 }
 
 function proiezioneEsame(){
@@ -4908,8 +4962,11 @@ function mixKo(){
 function mixVinte(){ return 100 - mixNuove() - mixKo(); }
 // una domanda già indovinata torna proponibile dopo 5 test; a ogni consolidamento riuscito l'attesa si allunga (10, poi 15)
 function vintaProponibile(r){
-  if(r.p) return (stato.nTest || 0) - (r.u || 0) >= 1;   // da confermare: torna al test successivo
-  if(r.k) return (stato.nTest || 0) - (r.u || 0) >= 2;   // in attesa di riconferma: torna dopo 2 test
+  const perGiorni = scadutaAGiorni(r);
+  if(perGiorni !== null) return perGiorni;
+  // salvataggi anteriori alla misura in giorni: si ricade sul conteggio dei test
+  if(r.p) return (stato.nTest || 0) - (r.u || 0) >= 1;
+  if(r.k) return (stato.nTest || 0) - (r.u || 0) >= 2;
   const soglia = Math.min(15, 5 * ((r.v || 0) + 1));
   return (stato.nTest || 0) - (r.u || 0) >= soglia;
 }
@@ -4937,7 +4994,10 @@ function aggiornaNota(){
   const pool = QUESTIONS.filter(q => nelPool(q, sel));
   const s = statiPool(pool);
   const soloErr = $('chk-solo-errori').checked;
-  const disponibili = soloErr ? s.ko : s.koEleg + s.nuove + (s.okEleg || 0) + (s.ricEleg || 0);
+  // Con il ripiego attivo basta avere domande gia' incontrate: se non c'e' niente
+  // di scaduto si anticipa il ripasso invece di bloccare la giornata.
+  const disponibili = soloErr ? s.ko
+    : (s.koEleg + s.nuove + (s.okEleg || 0) + (s.ricEleg || 0)) || (s.tot - s.nuove);
   $('btn-avvia').disabled = disponibili === 0;
   if(pool.length === 0){ $('nota-pool').textContent = 'Seleziona almeno un argomento.'; return; }
   if(disponibili === 0){
@@ -4945,7 +5005,7 @@ function aggiornaNota(){
     $('nota-pool').textContent = soloErr
       ? 'Nessuna domanda da ripassare in questi argomenti — togli la spunta "Solo domande sbagliate" per proseguire con le nuove.'
       : (pausate > 0
-        ? `Al momento non ci sono domande disponibili: le ${pausate} sbagliate sono in pausa di ripasso distanziato. Usa "Solo domande sbagliate" per riprenderle subito.`
+        ? `Al momento non c'è nulla di scaduto: le ${pausate} sbagliate sono in pausa di ripasso distanziato. Usa "Solo domande sbagliate" per riprenderle subito.`
         : 'Hai superato tutte le domande di questi argomenti! Azzera i progressi per ricominciare.');
     return;
   }
@@ -5193,6 +5253,20 @@ function avviaTest(){
     vinte.sort((a, b) => prioVin(b) - prioVin(a));
     domande.push(...vinte.slice(0, c.nVin));
   }
+  // Ripiego: se non c'e' abbastanza materiale scaduto, si anticipa. Meglio un
+  // ripasso un giorno prima del dovuto che un test a metà.
+  if(domande.length < N_TEST){
+    const dentro = new Set(domande.map(q => q.n));
+    const resto = pool.filter(q => !dentro.has(q.n) && stato.risultati[q.n]);
+    // quanto manca alla scadenza: negativo = gia' scaduta, si prende prima
+    const manca = q => {
+      const r = stato.risultati[q.n];
+      const g = giorniDa(r);
+      return g === null ? 99 : attesaGiorni(r) - g;
+    };
+    resto.sort((a, b) => manca(a) - manca(b));
+    domande.push(...resto.slice(0, N_TEST - domande.length));
+  }
   shuffle(domande);
   let tag = sel.length === ARGOMENTI.length ? 'Tutti' : sel.map(a => a.split(' ')[0] + ' ' + (a.split(' ')[1]||'')).join(', ');
   const filtriTag = argFiltrati(sel);
@@ -5293,13 +5367,41 @@ function renderDomanda(){
   if(test.cambi[q.n] === undefined) test.cambi[q.n] = 0;
   const cont = $('q-opzioni');
   cont.innerHTML = '';
-  'ABCD'.split('').forEach((lett, i) => {
+  const ordine = ordineOpzioni(q);
+  'ABCD'.split('').forEach((lett, j) => {
+    const i = ordine[j];                       // posizione mostrata -> risposta originale
     const b = document.createElement('button');
     b.className = 'opt';
     b.innerHTML = `<span class="lett">${lett}</span><span>${q.a[i].replace(/</g,'&lt;')}</span>`;
-    b.onclick = () => rispondi(i);
+    b.onclick = () => rispondi(i);             // si risponde sempre nell'indice originale
     cont.appendChild(b);
   });
+}
+
+// L'ordine in cui mostrare le quattro risposte. Al primo incontro resta quello
+// originale; da li' in poi si mescola, cosi' una domanda non si puo' ricordare
+// "per posizione". L'ordine e' stabile dentro lo stesso test: si estrae una
+// volta e si tiene, altrimenti cambierebbe a ogni ridisegno.
+function ordineOpzioni(q){
+  if(!test.ordine) test.ordine = {};
+  if(test.ordine[q.n]) return test.ordine[q.n];
+  const r = stato.risultati[q.n];
+  const primaVolta = !r;
+  let o = [0,1,2,3];
+  if(!primaVolta){
+    for(let i = o.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [o[i], o[j]] = [o[j], o[i]];
+    }
+  }
+  test.ordine[q.n] = o;
+  return o;
+}
+// la lettera con cui una risposta e' comparsa a schermo in questo test
+function letteraMostrata(q, i){
+  const o = (test && test.ordine && test.ordine[q.n]) || [0,1,2,3];
+  const j = o.indexOf(i);
+  return 'ABCD'[j < 0 ? i : j];
 }
 
 // tempo impiegato sulla domanda: registrato una sola volta, quando la si lascia
@@ -5389,7 +5491,7 @@ function confermaRisposta(){
   if(i === q.e){ fb.classList.add('ok'); fb.textContent = '✔ Esatto!'; }
   else {
     opts[i].classList.add('sbagliata'); fb.classList.add('ko');
-    fb.textContent = '✘ Sbagliato — la risposta esatta è la ' + 'ABCD'[q.e] + '.';
+    fb.textContent = '✘ Sbagliato — la risposta esatta è la ' + letteraMostrata(q, q.e) + '.';
     if(SPIEG[q.n]){ $('q-spiega').innerHTML = spiegaHTML(q.n); $('q-spiega').classList.remove('nascosto'); }
     if(TRUCCHI[q.n]){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
     const ind = indizioSegnali(q, i);
@@ -5425,7 +5527,8 @@ function fineTest(){
   // Va fatto qui, prima che lo stato cambi: dopo non si distingue più.
   stato.mis = normalizzaMisure(stato.mis);
   const idTest = (stato.nTest || 0) + 1;
-  const clsGiorno = {nuove:{ok:0,ko:0}, ric:{ok:0,ko:0}, rip:{ok:0,ko:0}, ricLon:{ok:0,ko:0}, ripLon:{ok:0,ko:0}};
+  const clsGiorno = {nuove:{ok:0,ko:0}, ric:{ok:0,ko:0}, rip:{ok:0,ko:0}, ricLon:{ok:0,ko:0}, ripLon:{ok:0,ko:0},
+                     ricG3:{ok:0,ko:0}, ricG7:{ok:0,ko:0}, ripG3:{ok:0,ko:0}, ripG7:{ok:0,ko:0}};
   risposte.forEach(q => {
     const r = stato.risultati[q.n];
     const esatta = test.risposte[q.n] === q.e ? 'ok' : 'ko';
@@ -5440,6 +5543,13 @@ function fineTest(){
     if(cls === 'rip' && (idTest - (r.u || 0)) >= DISTANZA_VERA){
       stato.mis.ripLon[esatta]++; clsGiorno.ripLon[esatta]++;
     }
+    // Le fasce in giorni: sono quelle che dicono qualcosa sull'esame.
+    const gd = r ? giorniDa(r) : null;
+    if(gd !== null && cls !== 'nuove'){
+      const fam = cls === 'ric' ? 'ric' : 'rip';
+      if(gd >= FASCIA_G3){ stato.mis[fam+'G3'][esatta]++; clsGiorno[fam+'G3'][esatta]++; }
+      if(gd >= FASCIA_G7){ stato.mis[fam+'G7'][esatta]++; clsGiorno[fam+'G7'][esatta]++; }
+    }
   });
   // aggiorna stato persistente:
   // - domanda mai sbagliata + risposta giusta -> archiviata subito
@@ -5453,13 +5563,13 @@ function fineTest(){
     if(!r){
       // Giusta al primo colpo: conta come superata, ma non è ancora acquisita.
       // k=1 la tiene in coda per UNA riconferma a distanza; solo dopo esce dal giro breve.
-      stato.risultati[q.n] = incerta ? {s:'ok', c:1, e:0, u: stato.nTest, p:1, k:1}
-                                     : {s:'ok', c:1, e:0, u: stato.nTest, k:1};
+      stato.risultati[q.n] = incerta ? {s:'ok', c:1, e:0, u: stato.nTest, gg: oggiNum(), p:1, k:1}
+                                     : {s:'ok', c:1, e:0, u: stato.nTest, gg: oggiNum(), k:1};
     }
     else {
       if(r.s === 'ok') r.v = (r.v || 0) + 1;   // consolidamento riuscito: la prossima attesa raddoppia
       r.c++;
-      r.u = stato.nTest;
+      r.u = stato.nTest; r.gg = oggiNum();
       if(r.e === 0 || r.c >= 2){ r.s = 'ok'; delete r.t; delete r.d; }
       else { r.t = stato.nTest + intervalloRiconferma(); }   // 1ª giusta dopo un errore: riconferma tra 5-6 test
       if(incerta) r.p = 1; else delete r.p;   // conferma sicura: la domanda è davvero acquisita
@@ -5468,8 +5578,8 @@ function fineTest(){
   });
   errori.forEach(q => {
     const r = stato.risultati[q.n];
-    if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, u: stato.nTest, t: stato.nTest + intervalloErrore(1)}; }
-    else { r.e++; r.c = 0; r.s = 'ko'; r.u = stato.nTest; r.t = stato.nTest + intervalloErrore(r.e); delete r.v; delete r.d; }   // sbagliata: torna prima se recidiva
+    if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, u: stato.nTest, gg: oggiNum(), t: stato.nTest + intervalloErrore(1)}; }
+    else { r.e++; r.c = 0; r.s = 'ko'; r.u = stato.nTest; r.gg = oggiNum(); r.t = stato.nTest + intervalloErrore(r.e); delete r.v; delete r.d; }   // sbagliata: torna prima se recidiva
   });
   if(risposte.length){
     stato.storico.push({ data: new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
@@ -5532,8 +5642,8 @@ function fineTest(){
     <div class="err-item">
       <span class="pill pill-arg">${q.t}</span>
       <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
-      <div class="tua">✘ La tua risposta: ${'ABCD'[test.risposte[q.n]]}) ${q.a[test.risposte[q.n]].replace(/</g,'&lt;')}</div>
-      <div class="r">✔ Risposta esatta: ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
+      <div class="tua">✘ La tua risposta: ${letteraMostrata(q, test.risposte[q.n])}) ${q.a[test.risposte[q.n]].replace(/</g,'&lt;')}</div>
+      <div class="r">✔ Risposta esatta: ${letteraMostrata(q, q.e)}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
       ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
       ${TRUCCHI[q.n] ? `<div class="trucco" style="margin-top:8px">${truccoHTML(q.n)}</div>` : ''}
     </div>`).join('');
@@ -6057,10 +6167,10 @@ document.addEventListener('keydown', e => {
   const q = test.domande[test.idx];
   if(k === 'enter'){ e.preventDefault(); prossima(); return; }
   if(!test.conf[q.n]){
-    let i = -1;
-    if(['1','2','3','4'].includes(k)) i = +k - 1;
-    if(['a','b','c','d'].includes(k)) i = 'abcd'.indexOf(k);
-    if(i >= 0){ e.preventDefault(); rispondi(i); }
+    let j = -1;                                  // posizione a schermo, non indice originale
+    if(['1','2','3','4'].includes(k)) j = +k - 1;
+    if(['a','b','c','d'].includes(k)) j = 'abcd'.indexOf(k);
+    if(j >= 0){ e.preventDefault(); rispondi(ordineOpzioni(q)[j]); }
   }
 });
 
