@@ -4877,7 +4877,10 @@ function argFiltrati(sel){
 // ============ IL PIANO ============
 // Quanto costa, in risposte, portare una domanda fino a consolidata. Non e' un
 // numero fisso: dipende dalle rese misurate su chi studia, quindi si ricalcola.
-const CODA_PIPELINE = 12;   // test che servono a una domanda nuova per arrivare in fondo
+// Giorni che servono a una domanda nuova per arrivare in fondo: se la indovina
+// basta il giorno dopo, se la sbaglia servono due giuste distanziate. Dieci
+// giorni coprono quasi tutti i casi.
+const CODA_GIORNI = 10;
 function costiConsolidamento(){
   const r = reseMisurate();
   const pN = Math.max(.2, Math.min(.95, r.nuove.p));
@@ -4922,19 +4925,24 @@ function piano(){
   const ritmo = recenti.length
     ? Math.round(recenti.reduce((a,g) => a + g.ok + g.ko, 0) / recenti.length) : 0;
   const testRimasti = Math.max(1, Math.round(gg * Math.max(testGiorno, ritmo/N_TEST)));
+  // i giorni in cui ha ancora senso proporre domande mai viste
+  const ggImmissione = Math.max(0, gg - CODA_GIORNI);
+  const testAlGiornoEff = Math.max(testGiorno, ritmo/N_TEST, 1);
   return {...L, giorni: gg, domandeAlGiorno: dom, testAlGiorno: Math.ceil(testGiorno*10)/10,
           ritmoAttuale: ritmo, testRimasti,
+          giorniImmissione: ggImmissione,
+          testPerImmissione: Math.max(1, Math.round(ggImmissione * testAlGiornoEff)),
           inLinea: ritmo >= dom,
           copribile: Math.min(1, (L.C + (QUESTIONS.length - L.C) *
                        Math.min(1, ritmo * gg / Math.max(1, L.risposte))) / QUESTIONS.length),
-          immissioneChiusa: testRimasti <= CODA_PIPELINE || inFaseFinale()};
+          immissioneChiusa: ggImmissione <= 0 || inFaseFinale()};
 }
 // La composizione secondo il piano: le nuove entrano al ritmo che le fa arrivare
 // tutte entro la chiusura dell'immissione, il resto va alle due code in
 // proporzione al lavoro che ciascuna ha ancora davanti.
 function composizionePiano(s){
   const P = piano();
-  const testPerNuove = Math.max(1, P.testRimasti - CODA_PIPELINE);
+  const testPerNuove = Math.max(1, P.testPerImmissione);
   let nNew = P.immissioneChiusa ? 0 : Math.min(s.nuove, Math.ceil(P.U / testPerNuove));
   nNew = Math.min(nNew, N_TEST);
   let resto = N_TEST - nNew;
@@ -4942,7 +4950,11 @@ function composizionePiano(s){
   let nRic = Math.min(s.ricEleg || 0, Math.round(resto * (tot ? wK/tot : .5)));
   let nRip = Math.min(s.koEleg, resto - nRic);
   nRic = Math.min(s.ricEleg || 0, resto - nRip);
-  let nVin = Math.min(s.okEleg || 0, resto - nRic - nRip);
+  // Il mantenimento aspetta: finche' restano domande mai viste, da confermare o
+  // da recuperare, ogni posto speso su una gia' consolidata e' un posto tolto
+  // alla copertura — e una probabilita' in piu' di rimandarla a zero.
+  const terrenoScoperto = (s.nuove > 0) || (s.ko > 0) || (s.daRiconf > 0);
+  let nVin = terrenoScoperto ? 0 : Math.min(s.okEleg || 0, resto - nRic - nRip);
   // se le code sono a secco (tutto in pausa) si riempie con le nuove
   const vuoti = N_TEST - nNew - nRic - nRip - nVin;
   if(vuoti > 0 && !P.immissioneChiusa) nNew = Math.min(s.nuove, nNew + vuoti);
@@ -5258,11 +5270,14 @@ function avviaTest(){
   if(domande.length < N_TEST){
     const dentro = new Set(domande.map(q => q.n));
     const resto = pool.filter(q => !dentro.has(q.n) && stato.risultati[q.n]);
-    // quanto manca alla scadenza: negativo = gia' scaduta, si prende prima
+    // quanto manca alla scadenza: negativo = gia' scaduta, si prende prima.
+    // Le gia' consolidate vanno in fondo: si ripescano solo se non c'e' altro.
     const manca = q => {
       const r = stato.risultati[q.n];
       const g = giorniDa(r);
-      return g === null ? 99 : attesaGiorni(r) - g;
+      const base = g === null ? 99 : attesaGiorni(r) - g;
+      const consolidata = r.s === 'ok' && !r.k && !r.p;
+      return base + (consolidata ? 1000 : 0);
     };
     resto.sort((a, b) => manca(a) - manca(b));
     domande.push(...resto.slice(0, N_TEST - domande.length));
