@@ -54,6 +54,35 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 .fb.ok{animation:scatto .34s ease, accendi .6s ease;}
 @media (prefers-reduced-motion: reduce){ html.si-muove *{animation:none !important;} }
 
+
+/* ---------- calendario del piano ---------- */
+.cal-intro{color:var(--nebbia); font-size:.88rem; margin-bottom:14px; line-height:1.5;}
+.cal-griglia{display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;}
+.cal-dow{font-size:.66rem; color:var(--nebbia); text-align:center; padding-bottom:2px; font-weight:600;}
+.cal-g{border:1px solid var(--filo); border-radius:var(--r-min); padding:7px 4px 6px; text-align:center;
+  min-height:62px; display:flex; flex-direction:column; gap:2px; justify-content:center;
+  background:rgba(var(--velo),.03);}
+.cal-g.vuoto{border:none; background:none;}
+.cal-n{font-size:.74rem; color:var(--nebbia); line-height:1;}
+.cal-v{font-family:var(--f-display); font-weight:600; font-size:1.02rem; color:var(--testo); line-height:1.05;}
+.cal-s{font-size:.6rem; color:var(--nebbia); line-height:1.15;}
+.cal-g.fatto{background:var(--vidibg); border-color:rgba(var(--ok-rgb),.34);}
+.cal-g.fatto .cal-v{color:var(--vidimato-t);}
+.cal-g.parziale{background:var(--ottonebg); border-color:rgba(var(--amb-rgb),.34);}
+.cal-g.parziale .cal-v{color:var(--ottone-t);}
+.cal-g.saltato{background:var(--laccabg); border-color:rgba(var(--ko-rgb),.30);}
+.cal-g.saltato .cal-v{color:var(--lacca-t);}
+.cal-g.oggi{border-color:var(--azione); border-width:2px; background:rgba(var(--azione-rgb),.10);}
+.cal-g.oggi .cal-v{color:var(--inchiostro2);}
+.cal-g.finale{background:rgba(var(--velo),.06); border-style:dashed;}
+.cal-leg{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:.74rem; color:var(--nebbia);}
+.cal-leg span{display:inline-flex; align-items:center; gap:6px;}
+.cal-leg i{width:11px; height:11px; border-radius:3px; display:inline-block; border:1px solid var(--filo);}
+.cal-riass{margin-top:14px; padding-top:12px; border-top:1px solid var(--filo); font-size:.9rem; line-height:1.55;}
+.cal-riass b{color:var(--testo);}
+.cal-male{color:var(--ottone-t);} .cal-male b{color:var(--ottone-t);}
+@media(max-width:640px){ .cal-g{min-height:54px; padding:5px 2px;} .cal-v{font-size:.9rem;} .cal-s{font-size:.55rem;} }
+
 /* ============ IL CAMPO ============
    L'unica cosa che questa app può mostrare e nessun'altra: la banca dati è
    chiusa e contabile. 4.995 segni, uno per domanda, nei quattro stati.
@@ -2804,6 +2833,20 @@ b.dubbia{color:var(--ottone-t);}
         <span><span class="swatch" style="background:var(--rip)"></span> Da ripassare</span>
         <span><span class="swatch" style="background:var(--nuo); opacity:.32"></span> Non ancora viste</span>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>Il calendario</h2>
+      <p class="cal-intro" id="cal-intro"></p>
+      <div class="cal-griglia" id="cal-griglia"></div>
+      <div class="cal-leg">
+        <span><i style="background:var(--vidibg); border-color:rgba(var(--ok-rgb),.34)"></i> obiettivo raggiunto</span>
+        <span><i style="background:var(--ottonebg); border-color:rgba(var(--amb-rgb),.34)"></i> parziale</span>
+        <span><i style="background:var(--laccabg); border-color:rgba(var(--ko-rgb),.30)"></i> saltato</span>
+        <span><i style="border-color:var(--azione); border-width:2px"></i> oggi</span>
+        <span><i style="border-style:dashed"></i> ultimi 10 giorni: solo consolidamento</span>
+      </div>
+      <div class="cal-riass" id="cal-riass"></div>
     </div>
 
     <div class="card">
@@ -5722,7 +5765,86 @@ function primoTentativo(pool){
   return {ok, tot};
 }
 
+
+// ---------- il calendario del piano ----------
+// Giornate passate: quante domande sono state fatte contro l'obiettivo di allora.
+// Giornate future: quante ne serviranno, ricalcolate su cio' che resta adesso.
+// Se un giorno salta, il lavoro si ridistribuisce sui rimanenti: il calendario
+// lo fa vedere il giorno dopo.
+function isoDelGiorno(n){
+  const d = new Date(n * 86400000);
+  return d.getUTCFullYear() + '-' + String(d.getUTCMonth()+1).padStart(2,'0') + '-' + String(d.getUTCDate()).padStart(2,'0');
+}
+function calendarioPiano(){
+  const P = piano();
+  const oggi = oggiNum();
+  const fineCop = Math.floor(new Date(isoCopertura()).getTime() / 86400000);
+  const fineEsame = Math.floor(new Date(DATA_ESAME).getTime() / 86400000);
+  // il primo giorno mostrato: l'inizio della settimana della prima giornata di studio
+  const giorniFatti = Object.keys(stato.giorni).sort();
+  const primo = giorniFatti.length
+    ? Math.floor(new Date(giorniFatti[0]).getTime() / 86400000) : oggi;
+  const daGg = Math.min(primo, oggi);
+  const celle = [];
+  for(let n = daGg; n <= fineEsame; n++){
+    const iso = isoDelGiorno(n);
+    const g = stato.giorni[iso];
+    const fatte = g ? (g.ok || 0) + (g.ko || 0) : 0;
+    const futuro = n > oggi;
+    const finale = n > fineCop;
+    // per il futuro l'obiettivo e' quello di adesso; per il passato, cio' che
+    // sarebbe servito allora non e' ricostruibile: si confronta con l'obiettivo
+    // di oggi, che e' la misura onesta di "quanto ci vuole"
+    const obiettivo = finale ? 0 : P.domandeAlGiorno;
+    let stt;
+    if(n === oggi) stt = 'oggi';
+    else if(futuro) stt = finale ? 'finale' : 'futuro';
+    else if(finale) stt = 'finale';
+    else if(!fatte) stt = 'saltato';
+    else if(fatte >= obiettivo * 0.85) stt = 'fatto';
+    else stt = 'parziale';
+    celle.push({n, iso, fatte, obiettivo, stato: stt, futuro, finale,
+                giorno: new Date(n*86400000).getUTCDate(),
+                dow: (new Date(n*86400000).getUTCDay() + 6) % 7});   // 0 = lunedì
+  }
+  return {celle, piano: P, fineCop, fineEsame, oggi};
+}
+function renderCalendario(){
+  const el = $('cal-griglia'); if(!el) return;
+  const C = calendarioPiano(), P = C.piano;
+  const DOW = ['L','M','M','G','V','S','D'];
+  let html = DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
+  for(let i = 0; i < C.celle[0].dow; i++) html += '<div class="cal-g vuoto"></div>';
+  C.celle.forEach(c => {
+    const val = c.finale ? '—' : (c.futuro || c.stato === 'oggi'
+      ? fmtN(c.obiettivo) : fmtN(c.fatte));
+    const sotto = c.finale ? 'consolidamento'
+      : c.futuro ? `${Math.max(1, Math.round(c.obiettivo / N_TEST))} test`
+      : c.stato === 'oggi' ? `fatte ${fmtN(c.fatte)}`
+      : (c.fatte ? `${Math.max(1, Math.round(c.fatte / N_TEST))} test` : 'niente');
+    html += `<div class="cal-g ${c.stato}" title="${c.iso}">
+      <div class="cal-n">${c.giorno}</div><div class="cal-v">${val}</div><div class="cal-s">${sotto}</div></div>`;
+  });
+  el.innerHTML = html;
+  const scad = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
+  $('cal-intro').innerHTML =
+    `Ogni casella dice quante domande servono quel giorno per arrivare con la banca dati coperta entro il <b>${scad}</b>. `
+    + `Sulle giornate passate c'è invece quello che è stato fatto davvero. `
+    + `Se un giorno salta il lavoro non sparisce: si ridistribuisce sui giorni rimasti, e il numero qui sopra sale.`;
+  const saltati = C.celle.filter(c => c.stato === 'saltato').length;
+  const fatti = C.celle.filter(c => c.stato === 'fatto').length;
+  const parziali = C.celle.filter(c => c.stato === 'parziale').length;
+  $('cal-riass').innerHTML =
+    `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni. Servono <b>${fmtN(P.domandeAlGiorno)}</b> domande al giorno `
+    + `(<b>${P.testAlGiorno}</b> test), e le domande mai viste si smettono di proporre `
+    + `<b>${CODA_GIORNI} giorni prima</b>, per lasciare il tempo di confermarle.<br>`
+    + `Finora: <b>${fatti}</b> ${fatti === 1 ? 'giornata piena' : 'giornate piene'}, `
+    + `<b>${parziali}</b> a mezzo servizio, <b>${saltati}</b> saltate.`
+    + (P.inLinea ? '' : ` <span class="cal-male">Al ritmo attuale (<b>${fmtN(P.ritmoAttuale)}</b> al giorno) si arriva a consolidarne circa il <b>${Math.round(P.copribile*100)}%</b>.</span>`);
+}
+
 function renderDashboard(){
+  renderCalendario();
   const sg = statiPool(QUESTIONS);
   const totOk = Object.values(stato.giorni).reduce((a,g) => a + g.ok, 0);
   const totKo = Object.values(stato.giorni).reduce((a,g) => a + g.ko, 0);
