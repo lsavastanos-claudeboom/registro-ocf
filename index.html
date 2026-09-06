@@ -5435,48 +5435,20 @@ function renderDomanda(){
   if(test.cambi[q.n] === undefined) test.cambi[q.n] = 0;
   const cont = $('q-opzioni');
   cont.innerHTML = '';
-  const ordine = ordineOpzioni(q);
-  'ABCD'.split('').forEach((lett, j) => {
-    const i = ordine[j];                       // posizione mostrata -> risposta originale
+  // Le risposte si mostrano nell'ordine della banca dati, sempre: A e' A.
+  'ABCD'.split('').forEach((lett, i) => {
     const b = document.createElement('button');
     b.className = 'opt';
     b.innerHTML = `<span class="lett">${lett}</span><span>${q.a[i].replace(/</g,'&lt;')}</span>`;
-    b.onclick = () => rispondi(i);             // si risponde sempre nell'indice originale
+    b.onclick = () => rispondi(i);
     cont.appendChild(b);
   });
 }
 
-// L'ordine in cui mostrare le quattro risposte. Al primo incontro resta quello
-// originale; da li' in poi si mescola, cosi' una domanda non si puo' ricordare
-// "per posizione". L'ordine e' stabile dentro lo stesso test: si estrae una
-// volta e si tiene, altrimenti cambierebbe a ogni ridisegno.
-function ordineOpzioni(q){
-  if(!test.ordine) test.ordine = {};
-  if(test.ordine[q.n]) return test.ordine[q.n];
-  const r = stato.risultati[q.n];
-  const primaVolta = !r;
-  let o = [0,1,2,3];
-  if(!primaVolta){
-    for(let i = o.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [o[i], o[j]] = [o[j], o[i]];
-    }
-  }
-  test.ordine[q.n] = o;
-  return o;
-}
-// Con le risposte mescolate, l'indice originale di una risposta e la posizione in
-// cui compare a schermo non coincidono piu'. Tutto cio' che tocca il DOM (quale
-// bottone evidenziare, quale segnare giusto o sbagliato) deve passare di qui:
-// altrimenti si illumina il bottone sbagliato.
-function posMostrata(q, i){
-  const o = (test && test.ordine && test.ordine[q.n]) || [0,1,2,3];
-  const j = o.indexOf(i);
-  return j < 0 ? i : j;
-}
-// la lettera con cui una risposta e' comparsa a schermo in questo test
+// Le risposte restano nell'ordine della banca dati: la lettera di una risposta
+// e' la sua posizione, e non cambia mai.
 function letteraMostrata(q, i){
-  return 'ABCD'[posMostrata(q, i)];
+  return 'ABCD'[i];
 }
 
 // tempo impiegato sulla domanda: registrato una sola volta, quando la si lascia
@@ -5536,8 +5508,7 @@ function rispondi(i){
   if(test.risposte[q.n] !== undefined && test.risposte[q.n] !== i) test.cambi[q.n] = (test.cambi[q.n] || 0) + 1;
   test.risposte[q.n] = i;
   const opts = [...$('q-opzioni').children];
-  const sel = posMostrata(q, i);
-  opts.forEach((o, j) => o.classList.toggle('sel', j === sel));
+  opts.forEach((o, j) => o.classList.toggle('sel', j === i));
   $('btn-prossima').disabled = false;
   $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
 }
@@ -5561,12 +5532,12 @@ function confermaRisposta(){
   test.conf[q.n] = true;
   const opts = [...$('q-opzioni').children];
   opts.forEach(o => { o.disabled = true; o.classList.remove('sel'); });
-  opts[posMostrata(q, q.e)].classList.add('giusta');
+  opts[q.e].classList.add('giusta');
   const fb = $('q-feedback');
   fb.classList.remove('nascosto','ok','ko');
   if(i === q.e){ fb.classList.add('ok'); fb.textContent = '✔ Esatto!'; }
   else {
-    opts[posMostrata(q, i)].classList.add('sbagliata'); fb.classList.add('ko');
+    opts[i].classList.add('sbagliata'); fb.classList.add('ko');
     fb.textContent = '✘ Sbagliato — la risposta esatta è la ' + letteraMostrata(q, q.e) + '.';
     if(SPIEG[q.n]){ $('q-spiega').innerHTML = spiegaHTML(q.n); $('q-spiega').classList.remove('nascosto'); }
     if(TRUCCHI[q.n]){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
@@ -6322,10 +6293,10 @@ document.addEventListener('keydown', e => {
   const q = test.domande[test.idx];
   if(k === 'enter'){ e.preventDefault(); prossima(); return; }
   if(!test.conf[q.n]){
-    let j = -1;                                  // posizione a schermo, non indice originale
+    let j = -1;
     if(['1','2','3','4'].includes(k)) j = +k - 1;
     if(['a','b','c','d'].includes(k)) j = 'abcd'.indexOf(k);
-    if(j >= 0){ e.preventDefault(); rispondi(ordineOpzioni(q)[j]); }
+    if(j >= 0){ e.preventDefault(); rispondi(j); }
   }
 });
 
