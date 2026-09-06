@@ -5465,11 +5465,18 @@ function ordineOpzioni(q){
   test.ordine[q.n] = o;
   return o;
 }
-// la lettera con cui una risposta e' comparsa a schermo in questo test
-function letteraMostrata(q, i){
+// Con le risposte mescolate, l'indice originale di una risposta e la posizione in
+// cui compare a schermo non coincidono piu'. Tutto cio' che tocca il DOM (quale
+// bottone evidenziare, quale segnare giusto o sbagliato) deve passare di qui:
+// altrimenti si illumina il bottone sbagliato.
+function posMostrata(q, i){
   const o = (test && test.ordine && test.ordine[q.n]) || [0,1,2,3];
   const j = o.indexOf(i);
-  return 'ABCD'[j < 0 ? i : j];
+  return j < 0 ? i : j;
+}
+// la lettera con cui una risposta e' comparsa a schermo in questo test
+function letteraMostrata(q, i){
+  return 'ABCD'[posMostrata(q, i)];
 }
 
 // tempo impiegato sulla domanda: registrato una sola volta, quando la si lascia
@@ -5529,7 +5536,8 @@ function rispondi(i){
   if(test.risposte[q.n] !== undefined && test.risposte[q.n] !== i) test.cambi[q.n] = (test.cambi[q.n] || 0) + 1;
   test.risposte[q.n] = i;
   const opts = [...$('q-opzioni').children];
-  opts.forEach((o, j) => o.classList.toggle('sel', j === i));
+  const sel = posMostrata(q, i);
+  opts.forEach((o, j) => o.classList.toggle('sel', j === sel));
   $('btn-prossima').disabled = false;
   $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
 }
@@ -5553,12 +5561,12 @@ function confermaRisposta(){
   test.conf[q.n] = true;
   const opts = [...$('q-opzioni').children];
   opts.forEach(o => { o.disabled = true; o.classList.remove('sel'); });
-  opts[q.e].classList.add('giusta');
+  opts[posMostrata(q, q.e)].classList.add('giusta');
   const fb = $('q-feedback');
   fb.classList.remove('nascosto','ok','ko');
   if(i === q.e){ fb.classList.add('ok'); fb.textContent = '✔ Esatto!'; }
   else {
-    opts[i].classList.add('sbagliata'); fb.classList.add('ko');
+    opts[posMostrata(q, i)].classList.add('sbagliata'); fb.classList.add('ko');
     fb.textContent = '✘ Sbagliato — la risposta esatta è la ' + letteraMostrata(q, q.e) + '.';
     if(SPIEG[q.n]){ $('q-spiega').innerHTML = spiegaHTML(q.n); $('q-spiega').classList.remove('nascosto'); }
     if(TRUCCHI[q.n]){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
