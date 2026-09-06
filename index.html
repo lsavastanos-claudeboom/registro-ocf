@@ -5239,25 +5239,43 @@ function renderTematiche(){
 
 // nuove bilanciate tra gli argomenti selezionati (quote proporzionali alle nuove rimanenti),
 // estratte CASUALMENTE dentro ciascun argomento (come le estrazioni d'esame)
+// Un argomento e' un gruppo; dove ci sono i sottoargomenti OCF, ogni
+// sottoargomento e' un gruppo a se'.
+function chiaveGruppo(q){
+  return (SOTTO[q.t] && SOTTO[q.t].map[q.n] !== undefined) ? q.t + '·' + SOTTO[q.t].map[q.n] : q.t;
+}
+// Le domande mai viste si distribuiscono pareggiando la COPERTURA dei gruppi,
+// non in proporzione a quante ne restano.
+// La proporzione sembra equa e non lo e': un gruppo che vale l'1% del rimasto
+// prende l'1% di ogni test, cioe' zero domande per volta, e resta indietro per
+// sempre — cosi' "Titoli di credito" e' rimasto a zero domande viste su venti
+// mentre altri sottoargomenti erano al 32%.
+// Qui invece ogni posto va al gruppo messo peggio in quel momento: i piu'
+// indietro recuperano da soli, e tutti i sottoargomenti arrivano insieme.
 function selezionaNuoveBilanciate(nuove, n, argsSel){
-  const tot = nuove.length;
-  if(!tot) return [];
-  n = Math.min(n, tot);
-  // gruppi: un argomento = un gruppo; la matematica si spacchetta nei sottoargomenti OCF attivi
-  const chiave = q => (SOTTO[q.t] && SOTTO[q.t].map[q.n] !== undefined) ? q.t + '·' + SOTTO[q.t].map[q.n] : q.t;
+  if(!nuove.length) return [];
+  n = Math.min(n, nuove.length);
   const gruppi = {};
-  nuove.forEach(q => { const k = chiave(q); (gruppi[k] = gruppi[k] || []).push(q); });
-  const perArg = Object.keys(gruppi).map(k => ({a: k, dom: gruppi[k]}));
-  // metodo dei resti maggiori
-  perArg.forEach(x => { x.exact = n * x.dom.length / tot; x.quota = Math.floor(x.exact); });
-  let assegnate = perArg.reduce((s, x) => s + x.quota, 0);
-  perArg.sort((x, y) => (y.exact - y.quota) - (x.exact - x.quota));
-  let giri = 0;
-  for(let i = 0; assegnate < n && giri < 1000; i = (i + 1) % perArg.length, giri++){
-    if(perArg[i].quota < perArg[i].dom.length){ perArg[i].quota++; assegnate++; }
-  }
+  nuove.forEach(q => { const k = chiaveGruppo(q); (gruppi[k] = gruppi[k] || []).push(q); });
+  // quante domande ha in tutto ogni gruppo dentro il campo scelto: serve per
+  // sapere a che punto di copertura sta
+  const totali = {};
+  QUESTIONS.forEach(q => { if(nelPool(q, argsSel)){ const k = chiaveGruppo(q); totali[k] = (totali[k] || 0) + 1; } });
+  const G = Object.keys(gruppi).map(k => {
+    const tot = totali[k] || gruppi[k].length;
+    return {dom: shuffle(gruppi[k].slice()), preso: 0, tot, viste: tot - gruppi[k].length};
+  });
   const out = [];
-  perArg.forEach(x => out.push(...shuffle(x.dom.slice()).slice(0, x.quota)));
+  for(let i = 0; i < n; i++){
+    let scelto = null, peggio = Infinity;
+    for(const g of G){
+      if(g.preso >= g.dom.length) continue;
+      const copertura = (g.viste + g.preso) / g.tot;
+      if(copertura < peggio){ peggio = copertura; scelto = g; }
+    }
+    if(!scelto) break;
+    out.push(scelto.dom[scelto.preso++]);
+  }
   return out;
 }
 
