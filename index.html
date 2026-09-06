@@ -3163,7 +3163,7 @@ function proponibile(r){
 
 // ---------- home ----------
 function statiPool(pool){
-  let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0, dubbie=0, daRiconf=0, ricEleg=0;
+  let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0, dubbie=0, daRiconf=0, ricEleg=0, sonde=0;
   pool.forEach(q => {
     const r = stato.risultati[q.n];
     if(!r) nuove++;
@@ -3176,8 +3176,10 @@ function statiPool(pool){
       else if(vintaProponibile(r)) okEleg++;
     }
     else { ko++; if(proponibile(r)) koEleg++; }
+    // candidata a sonda: gia' incontrata e ferma da almeno una settimana
+    if(r){ const g = giorniDa(r); if(g !== null && g >= FASCIA_G7) sonde++; }
   });
-  return {ok, ko, nuove, koEleg, okEleg, dubbie, daRiconf, ricEleg, tot: pool.length};
+  return {ok, ko, nuove, koEleg, okEleg, dubbie, daRiconf, ricEleg, sonde, tot: pool.length};
 }
 
 function renderHome(){
@@ -4986,15 +4988,26 @@ function piano(){
 // Quote fisse di ogni test: meta' domande mai viste, un quarto di riconferme,
 // un quarto di ripassi. Prima si copre la banca dati, i ripassi vengono dietro:
 // e' una scelta esplicita, non il risultato di un calcolo di costi.
-const QUOTA_NUOVE = 0.50, QUOTA_RIC = 0.25, QUOTA_RIP = 0.25;
+// Due fasi, non una.
+// Finche' restano domande mai viste: 80% copertura, 20% errori, zero riconferme.
+// Ogni riconferma fatta adesso e' una domanda mai aperta, e una domanda mai
+// aperta vale la resa a freddo — molto meno di una gia' incontrata.
+// Negli ultimi dieci giorni si ribalta: niente piu' domande nuove, 60% riconferme
+// e 40% errori. E' l'assicurazione contro il dimenticare: quello che ha imparato
+// a settembre va riportato a galla prima dell'esame.
+const QUOTA_NUOVE = 0.80, QUOTA_RIC = 0.00, QUOTA_RIP = 0.20;
+const CODA_RIC = 0.60, CODA_RIP = 0.40;
+// Una fetta di ogni test va a domande lasciate ferme a lungo. Servono a misurare
+// quanto dimentica: senza queste, le fasce a 3 e 7 giorni restano vuote e la
+// tenuta a settimane resta un'ipotesi invece di un dato.
+const SONDE = 4;
 function composizionePiano(s){
   const P = piano();
   const q = f => Math.round(N_TEST * f);
-  // Negli ultimi dieci giorni le mai viste si smettono di proporre: quello che
-  // resta e' confermare cio' che si sa e recuperare gli errori.
-  let nNew = P.immissioneChiusa ? 0 : Math.min(s.nuove, q(QUOTA_NUOVE));
-  let nRic = Math.min(s.ricEleg || 0, q(QUOTA_RIC));
-  let nRip = Math.min(s.koEleg || 0, q(QUOTA_RIP));
+  const finale = P.immissioneChiusa;
+  let nNew = finale ? 0 : Math.min(s.nuove, q(QUOTA_NUOVE));
+  let nRic = Math.min(s.ricEleg || 0, q(finale ? CODA_RIC : QUOTA_RIC));
+  let nRip = Math.min(s.koEleg || 0, q(finale ? CODA_RIP : QUOTA_RIP));
   // Se una coda e' a secco i posti liberi si riassegnano in ordine di priorita':
   // prima la copertura, poi gli errori da recuperare, poi le riconferme.
   let vuoti = N_TEST - nNew - nRic - nRip;
@@ -5002,7 +5015,7 @@ function composizionePiano(s){
     const n = Math.max(0, Math.min(vuoti, disponibili));
     vuoti -= n; return avanti + n;
   };
-  if(!P.immissioneChiusa) nNew = versa(nNew, s.nuove - nNew);
+  if(!finale) nNew = versa(nNew, s.nuove - nNew);
   nRip = versa(nRip, (s.koEleg || 0) - nRip);
   nRic = versa(nRic, (s.ricEleg || 0) - nRic);
   // Il mantenimento aspetta: finche' restano domande mai viste, da confermare o
@@ -5012,7 +5025,16 @@ function composizionePiano(s){
   // Negli ultimi dieci giorni il ripasso di cio' che e' gia' chiuso e' solo un
   // rischio: se si rompe qualcosa non c'e' piu' tempo per rimetterlo a posto.
   const nVin = (terrenoScoperto || inFaseFinale()) ? 0 : Math.min(s.okEleg || 0, vuoti);
-  return {nRip, nNew, nVin, nRic};
+  // Le sonde escono SOLO dalla quota di copertura: costano quattro domande su
+  // sessanta e in cambio dicono se quello che ha imparato regge a settimane.
+  // Non toccano mai gli errori ne' le riconferme, e nella coda finale non
+  // servono piu': li' si sta gia' ripassando tutto quello che e' aperto.
+  let nSonda = 0;
+  if(!finale && !inFaseFinale()){
+    nSonda = Math.min(SONDE, s.sonde || 0, nNew);
+    nNew -= nSonda;
+  }
+  return {nRip, nNew, nVin, nRic, nSonda};
 }
 function pianoAttivo(){ return stato.pianoAuto !== false; }
 
@@ -5308,6 +5330,21 @@ function avviaTest(){
     const ric = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && (r.k || r.p) && vintaProponibile(r); });
     ric.sort((a,b) => ((stato.nTest||0)-(stato.risultati[b.n].u||0)) - ((stato.nTest||0)-(stato.risultati[a.n].u||0)));
     domande.push(...ric.slice(0, c.nRic));
+  }
+  if(c.nSonda){
+    // Sonde: domande gia' incontrate e lasciate ferme piu' a lungo di tutte.
+    // Vanno proposte anche se il calendario non le darebbe per scadute: sono
+    // l'unico modo di sapere quanto regge quello che ha imparato settimane fa.
+    const dentro = new Set(domande.map(q => q.n));
+    const sonde = pool.filter(q => {
+      if(dentro.has(q.n)) return false;
+      const r = stato.risultati[q.n];
+      if(!r) return false;
+      const g = giorniDa(r);
+      return g !== null && g >= FASCIA_G7;
+    });
+    sonde.sort((a, b) => (giorniDa(stato.risultati[b.n]) || 0) - (giorniDa(stato.risultati[a.n]) || 0));
+    domande.push(...sonde.slice(0, c.nSonda));
   }
   if(c.nVin){
     // priorità nelle vinte: prima le ex-sbagliate poi le più "vecchie" (con un po' di caso)
