@@ -5092,7 +5092,10 @@ function prospettoPiano(){
   } else {
     messaggi.push({cls: 'bene', txt:
       `Sei in linea: al ritmo di questi giorni (<b>${fmtN(P.ritmoAttuale)}</b> domande al giorno, di cui <b>${fmtN(P.ritmoNuove)}</b> mai viste) `
-      + `finisci la banca dati il <b>${quando}</b>, con ${Math.max(0, P.giorni - P.ggAllaCopertura)} giorni di margine sul ${scad}.`});
+      + `finisci la banca dati il <b>${quando}</b>`
+      + ((P.giorni - P.ggAllaCopertura) > 0
+          ? `, con ${P.giorni - P.ggAllaCopertura} giorni di margine sul ${scad}.`
+          : `, giusto in tempo per il ${scad}: non c'è margine, se salti un giorno lo perdi.`)});
   }
   // nel caso d'allarme la data al tetto e' gia' stata detta sopra: ripeterla confonde
   if(semaforo !== 'allarme') messaggi.push({cls: '', txt:
