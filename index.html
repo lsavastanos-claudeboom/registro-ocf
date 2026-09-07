@@ -5007,10 +5007,8 @@ function argFiltrati(sel){
 // ============ IL PIANO ============
 // Quanto costa, in risposte, portare una domanda fino a consolidata. Non e' un
 // numero fisso: dipende dalle rese misurate su chi studia, quindi si ricalcola.
-// Giorni che servono a una domanda nuova per arrivare in fondo: se la indovina
-// basta il giorno dopo, se la sbaglia servono due giuste distanziate. Dieci
-// giorni coprono quasi tutti i casi.
-const CODA_GIORNI = 10;
+// I giorni di sola conferma sono GG_CONSOLIDAMENTO, e sono gia' scontati dentro
+// isoCopertura(): non vanno tolti una seconda volta al piano.
 function costiConsolidamento(){
   const r = reseMisurate();
   const pN = Math.max(.2, Math.min(.95, r.nuove.p));
@@ -5056,7 +5054,11 @@ function piano(){
     ? Math.round(recenti.reduce((a,g) => a + g.ok + g.ko, 0) / recenti.length) : 0;
   const testRimasti = Math.max(1, Math.round(gg * Math.max(testGiorno, ritmo/N_TEST)));
   // i giorni in cui ha ancora senso proporre domande mai viste
-  const ggImmissione = Math.max(0, gg - CODA_GIORNI);
+  // Le domande mai viste si propongono fino alla scadenza della copertura, che e'
+  // gia' dieci giorni prima dell'esame. Prima qui si toglievano altri dieci giorni
+  // a una scadenza che li aveva gia' scontati: l'immissione si chiudeva venti giorni
+  // prima dell'esame, e restavano centinaia di domande mai aperte.
+  const ggImmissione = gg;
   const testAlGiornoEff = Math.max(testGiorno, ritmo/N_TEST, 1);
   return {...L, giorni: gg, domandeAlGiorno: dom, testAlGiorno: Math.ceil(testGiorno*10)/10,
           ritmoAttuale: ritmo, testRimasti,
@@ -6034,8 +6036,8 @@ function renderCalendario(){
   const parziali = C.celle.filter(c => c.stato === 'parziale').length;
   $('cal-riass').innerHTML =
     `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni. Servono <b>${fmtN(P.domandeAlGiorno)}</b> domande al giorno `
-    + `(<b>${P.testAlGiorno}</b> test), e le domande mai viste si smettono di proporre `
-    + `<b>${CODA_GIORNI} giorni prima</b>, per lasciare il tempo di confermarle.<br>`
+    + `(<b>${P.testAlGiorno}</b> test). Le domande mai viste si propongono fino al <b>${scad}</b>: `
+    + `i <b>${GG_CONSOLIDAMENTO} giorni</b> che restano poi servono a confermarle, non ad aprirne altre.<br>`
     + `Finora: <b>${fatti}</b> ${fatti === 1 ? 'giornata piena' : 'giornate piene'}, `
     + `<b>${parziali}</b> a mezzo servizio, <b>${saltati}</b> saltate.`
     + (P.inLinea ? '' : ` <span class="cal-male">Al ritmo attuale (<b>${fmtN(P.ritmoAttuale)}</b> al giorno) si arriva a consolidarne circa il <b>${Math.round(P.copribile*100)}%</b>.</span>`);
