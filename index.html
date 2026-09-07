@@ -882,6 +882,16 @@ details.dett-card>summary{font-size:1.12rem; color:var(--testo);}
 .card-prog details.dett{border-top:1px solid rgba(var(--velo),.16); margin-top:12px;}
 .card-azione details.dett{border-top:1px solid rgba(var(--ombra),.08);}
 .storico-scroll{max-height:360px; overflow:auto; border-radius:var(--r-int);}
+table.riep thead th{position:sticky; top:0; z-index:1;}
+/* dettaglio per materia dentro la riga del test */
+.st-mats{display:flex; flex-wrap:wrap; gap:4px; margin-top:5px;}
+.st-mat{font-size:.72rem; line-height:1.5; padding:1px 6px; border-radius:var(--r-min);
+  white-space:nowrap; border:1px solid var(--filo); color:var(--nebbia);}
+.st-mat b{font-variant-numeric:tabular-nums; color:var(--testo);}
+.st-mat.st-su{background:var(--vidibg); border-color:transparent;}
+.st-mat.st-su b{color:var(--vidimato-t);}
+.st-mat.st-giu{background:var(--laccabg); border-color:transparent;}
+.st-mat.st-giu b{color:var(--lacca-t);}
 /* striscia obiettivo del giorno */
 .ob-hero{margin:14px 0 2px; padding:14px 16px; border-radius:13px;
   background:rgba(var(--ombra),.35); border:1px solid rgba(var(--velo),.12);}
@@ -914,9 +924,9 @@ details.dett-card>summary{font-size:1.12rem; color:var(--testo);}
 /* andamento */
 .and-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .and-head h2{margin:0;}
-.and-switch{display:flex; gap:4px; background:rgba(var(--velo),.07); padding:3px; border-radius:var(--r-int);}
+.and-switch{display:flex; flex-wrap:wrap; gap:4px; background:rgba(var(--velo),.07); padding:3px; border-radius:var(--r-int);}
 .and-switch button{border:0; background:transparent; font:inherit; font-size:.79rem; color:var(--nebbia);
-  padding:5px 10px; border-radius:var(--r-min); cursor:pointer;}
+  padding:5px 9px; border-radius:var(--r-min); cursor:pointer; font-variant-numeric:tabular-nums;}
 .and-switch button.attivo{background:var(--foglio); color:var(--testo); font-weight:600; box-shadow:0 1px 2px rgba(var(--ombra),.10);}
 .and-testa{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:14px;}
 .and-num b{font-family:var(--f-display); font-size:2.5rem; font-weight:800; color:var(--testo); font-variant-numeric:tabular-nums; line-height:1;}
@@ -1342,9 +1352,13 @@ b.dubbia{color:var(--ottone-t);}
       <div class="and-head">
         <h2><svg class="ic ic-g"><use href="#i-diagnosi"/></svg> Dove intervenire</h2>
         <div class="and-switch" id="and-switch">
-          <button data-gg="3">3 giorni</button>
-          <button data-gg="7" class="attivo">7 giorni</button>
-          <button data-gg="14">14 giorni</button>
+          <button data-gg="1">1g</button>
+          <button data-gg="2">2g</button>
+          <button data-gg="3">3g</button>
+          <button data-gg="5">5g</button>
+          <button data-gg="7" class="attivo">7g</button>
+          <button data-gg="10">10g</button>
+          <button data-gg="14">14g</button>
         </div>
       </div>
       <div id="andamento-corpo"></div>
@@ -3318,12 +3332,14 @@ function renderHome(){
       return `<span class="ut-pill ${sup ? 'ut-sup' : ''}" title="${h.data} — ${h.argomenti}${sup ? ' — superato!' : ''}">${sup ? '<svg class="ic"><use href="#i-coppa"/></svg> ' : ''}${p}%<span class="ut-score">${h.punti}/${h.tot}</span></span>`;
     }).join('') + '<span class="ut-lab">← più recente</span>';
 
+  // Lo storico completo, dal primo test all'ultimo, dentro il riquadro scorrevole.
   const tb = $('tab-storico').querySelector('tbody');
   tb.innerHTML = '';
-  stato.storico.slice(-15).reverse().forEach((h, i) => {
+  stato.storico.forEach((h, i) => {
     const tr = document.createElement('tr');
     const pct = Math.round(100*h.punti/h.tot);
-    tr.innerHTML = `<td>${stato.storico.length - i}</td><td>${h.data}</td><td>${h.argomenti}</td>` +
+    tr.innerHTML = `<td>${i + 1}</td><td>${h.data}</td>` +
+      `<td>${h.argomenti}${dettaglioMaterie(h)}</td>` +
       `<td><b>${h.punti}/${h.tot}</b> (${pct}%)</td>` +
       `<td><button class="btn-canc" data-chiave="${chiaveTest(h).replace(/"/g, '&quot;')}" ` +
       `title="Togli questo test dallo storico">` +
@@ -3461,6 +3477,20 @@ function trendPerAmbito(w1, w2, minRisposte){
 }
 
 // nome corto per i pulsanti-ambito (lo spazio è poco, soprattutto su telefono)
+// Il dettaglio per materia di un singolo test: giuste su domande date, materia per
+// materia. I test svolti prima che questo dato venisse registrato non ce l'hanno,
+// e in quel caso la riga resta com'era.
+function dettaglioMaterie(h){
+  if(!h.mat) return '';
+  const voci = ARGOMENTI.map((a, i) => {
+    const m = h.mat[i]; if(!m) return '';
+    const n = m.ok + m.ko; if(!n) return '';
+    const cls = m.ok / n >= 0.8 ? 'st-su' : (m.ok / n >= 0.6 ? 'st-medio' : 'st-giu');
+    return `<span class="st-mat ${cls}" title="${a}: ${m.ok} giuste su ${n}">`
+         + `${nomeBreve(a)} <b>${m.ok}/${n}</b></span>`;
+  }).filter(Boolean).join('');
+  return voci ? `<div class="st-mats">${voci}</div>` : '';
+}
 function nomeBreve(a){
   return a.replace('Diritto ', '')
           .replace('Matematica ed economia finanziaria', 'Matematica')
@@ -5790,8 +5820,19 @@ function fineTest(){
     else { r.e++; r.c = 0; r.s = 'ko'; r.u = stato.nTest; r.gg = oggiNum(); r.t = stato.nTest + intervalloErrore(r.e); delete r.v; delete r.d; }   // sbagliata: torna prima se recidiva
   });
   if(risposte.length){
+    // Giuste e sbagliate materia per materia, dentro il singolo test: e' il dettaglio
+    // che nello storico dice dove il punteggio si e' formato. Il registro giornaliero
+    // somma piu' test insieme e non lo puo' dire.
+    const mat = {};
+    const contaMat = (q, campo) => {
+      const i = ARGOMENTI.indexOf(q.t); if(i < 0) return;
+      const a = mat[i] || {ok:0, ko:0}; a[campo]++; mat[i] = a;
+    };
+    giuste.forEach(q => contaMat(q, 'ok'));
+    errori.forEach(q => contaMat(q, 'ko'));
     stato.storico.push({ data: new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
-                         iso: oggiISO(), argomenti: test.argomenti, punti: giuste.length, tot: test.sim ? test.domande.length : risposte.length });
+                         iso: oggiISO(), argomenti: test.argomenti, punti: giuste.length,
+                         tot: test.sim ? test.domande.length : risposte.length, mat });
     const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
     g.test++; g.ok += giuste.length; g.ko += errori.length;
     g.nuove = (g.nuove || 0) + nuoveViste;   // copertura: domande viste per la prima volta
