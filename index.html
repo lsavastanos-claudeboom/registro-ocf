@@ -1239,8 +1239,9 @@ b.dubbia{color:var(--ottone-t);}
    di profondita' diverso e il tutto ruota davvero nello spazio, cosi' il
    movimento si legge come volume e non come disegno che scivola. */
 .pier-scena{
-  --nero:#15161A; --nero-c:#2C2E36; --bianco:#F4F1E8; --bianco-o:#D6D2C4;
-  --ruggine:#A8531C; --ruggine-c:#C86A29; --lingua:#E4879A; --naso:#0E0F12;
+  --nero:#14151A; --nero-c:#33343E; --nero-caldo:#2A2620; --bianco:#F6F3EA; --bianco-o:#CFCABA;
+  --ruggine:#9C4A16; --ruggine-c:#C4671F; --ruggine-s:#7A3810;
+  --lingua:#E08195; --naso:#0B0C0F;
   width:150px; height:150px; position:relative;
   perspective:620px; perspective-origin:50% 42%;
   transform-style:preserve-3d;
@@ -1263,9 +1264,12 @@ b.dubbia{color:var(--ottone-t);}
 .p-corpo{left:26px; bottom:26px; width:98px; height:86px;
   border-radius:52% 48% 44% 56% / 58% 56% 44% 42%;
   background:
-    radial-gradient(52% 62% at 32% 24%, var(--nero-c) 0%, var(--nero) 62%),
+    radial-gradient(38% 30% at 26% 16%, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 70%),
+    radial-gradient(30% 46% at 92% 52%, rgba(190,160,120,.13) 0%, rgba(0,0,0,0) 72%),
+    radial-gradient(56% 66% at 34% 26%, var(--nero-c) 0%, var(--nero-caldo) 44%, var(--nero) 74%),
     var(--nero);
-  box-shadow: inset -10px -8px 18px rgba(0,0,0,.75), inset 7px 6px 14px rgba(255,255,255,.07);
+  box-shadow: inset -12px -10px 22px rgba(0,0,0,.8), inset 8px 7px 16px rgba(255,255,255,.08),
+    0 0 0 1px rgba(46,44,40,.35);
   transform:translateZ(0);}
 /* la groppa dietro, piu' in fondo: da' spessore al tronco */
 .p-groppa{left:16px; bottom:30px; width:74px; height:74px; border-radius:50%;
@@ -1277,17 +1281,42 @@ b.dubbia{color:var(--ottone-t);}
   background:radial-gradient(60% 60% at 40% 30%, var(--ruggine-c), var(--ruggine) 75%);
   opacity:.95; transform:translateZ(9px);}
 
+/* ---- il collare di pelo lungo fra testa e corpo ---- */
+.p-collo{left:44px; bottom:64px; width:70px; height:34px;
+  border-radius:52% 48% 50% 50% / 60% 60% 40% 40%;
+  background:radial-gradient(58% 60% at 36% 26%, #34363F, var(--nero-caldo) 52%, var(--nero) 84%);
+  box-shadow: inset -6px -5px 12px rgba(0,0,0,.6);
+  transform:translateZ(16px);}
+.p-collo::after{content:''; position:absolute; left:6px; right:6px; bottom:-5px; height:12px;
+  background:
+    radial-gradient(50% 100% at 16% 0, rgba(255,255,255,.09) 0 60%, transparent 62%),
+    radial-gradient(50% 100% at 50% 0, rgba(255,255,255,.07) 0 66%, transparent 68%),
+    radial-gradient(50% 100% at 84% 0, rgba(255,255,255,.09) 0 58%, transparent 60%);
+  filter:blur(.6px);}
+
 /* ---- petto bianco: la macchia grande che si vede subito ---- */
 .p-petto{left:52px; bottom:20px; width:52px; height:74px;
   border-radius:48% 52% 46% 54% / 40% 40% 60% 60%;
-  background:linear-gradient(160deg, var(--bianco) 30%, var(--bianco-o) 100%);
-  box-shadow: inset -5px -4px 10px rgba(0,0,0,.22);
+  background:
+    repeating-linear-gradient(97deg, rgba(120,105,85,.028) 0 1px, rgba(0,0,0,0) 1px 13px),
+    radial-gradient(64% 54% at 36% 20%, #FFFEF8 0%, var(--bianco) 46%, var(--bianco-o) 100%);
+  box-shadow: inset -6px -5px 12px rgba(0,0,0,.24), inset 3px 3px 8px rgba(255,255,255,.5);
   transform:translateZ(22px);}
+/* le ciocche che scendono dal petto: appena accennate, sotto al pelo lungo */
+.p-petto::after{content:''; position:absolute; left:6px; right:6px; bottom:-4px; height:10px;
+  background:
+    radial-gradient(46% 100% at 18% 0, rgba(207,202,186,.75) 0 54%, transparent 58%),
+    radial-gradient(46% 100% at 52% 0, rgba(246,243,234,.75) 0 62%, transparent 66%),
+    radial-gradient(46% 100% at 84% 0, rgba(207,202,186,.7) 0 50%, transparent 54%);
+  filter:blur(1.4px); opacity:.7;}
 
 /* ---- zampe ---- */
 .p-zampa{border-radius:44% 44% 40% 40% / 30% 30% 70% 70%;
-  background:linear-gradient(180deg, var(--nero) 0%, var(--nero) 46%, var(--ruggine) 62%, var(--ruggine-c) 78%, var(--bianco) 84%);
-  box-shadow: inset -3px -3px 7px rgba(0,0,0,.5);}
+  background:
+    linear-gradient(100deg, rgba(255,255,255,.10) 0 22%, rgba(0,0,0,0) 46%),
+    linear-gradient(180deg, var(--nero) 0%, var(--nero-caldo) 40%, var(--ruggine-s) 56%,
+      var(--ruggine) 66%, var(--ruggine-c) 76%, var(--bianco-o) 83%, var(--bianco) 88%);
+  box-shadow: inset -3px -3px 8px rgba(0,0,0,.55), inset 2px 2px 5px rgba(255,255,255,.10);}
 .p-za-sx{left:56px; bottom:12px; width:23px; height:60px; transform:translateZ(30px); transform-origin:50% 8%;}
 .p-za-dx{left:84px; bottom:12px; width:23px; height:58px; transform:translateZ(14px); transform-origin:50% 8%;}
 .p-zp-sx{left:30px; bottom:12px; width:30px; height:44px; transform:translateZ(-10px); transform-origin:50% 10%;
@@ -1296,13 +1325,19 @@ b.dubbia{color:var(--ottone-t);}
   border-radius:52% 48% 40% 40% / 46% 46% 54% 54%;}
 
 /* ---- coda: nera con la punta bianca, sta dietro a tutto ---- */
-.p-coda{left:-6px; bottom:40px; width:56px; height:15px;
-  border-radius:70% 30% 30% 70% / 60% 40% 60% 40%;
-  background:linear-gradient(90deg, var(--bianco) 0 11%, var(--bianco-o) 14%, var(--nero-c) 30%, var(--nero) 55%);
+.p-coda{left:2px; bottom:42px; width:52px; height:19px;
+  border-radius:58% 30% 30% 58% / 50% 40% 60% 50%;
+  background:linear-gradient(90deg, var(--bianco) 0 13%, var(--bianco-o) 17%, #3A3B44 26%, var(--nero-caldo) 40%, var(--nero) 62%);
   box-shadow: inset -2px -3px 7px rgba(0,0,0,.5);
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));
   transform-origin:100% 60%; transform:translateZ(-34px) rotate(-16deg);
   animation:p-coda-ferma 3.4s ease-in-out infinite;}
 @keyframes p-coda-ferma{0%,100%{transform:translateZ(-34px) rotate(-14deg);} 50%{transform:translateZ(-34px) rotate(-24deg);}}
+/* la punta bianca: piu' morbida ai bordi, come pelo e non come plastica */
+.p-coda::after{content:''; position:absolute; left:-1px; top:-3px; width:23px; height:25px;
+  border-radius:62% 38% 46% 54% / 52% 48% 52% 48%;
+  background:radial-gradient(58% 58% at 40% 30%, #FFFDF5 0 34%, var(--bianco) 60%, var(--bianco-o) 100%);
+  box-shadow: inset -3px -4px 7px rgba(0,0,0,.2);}
 
 /* ---- testa ---- */
 .p-testa{left:50px; bottom:76px; width:76px; height:70px; transform:translateZ(40px);
@@ -1310,8 +1345,11 @@ b.dubbia{color:var(--ottone-t);}
 .p-testa > *{position:absolute; transform-style:preserve-3d;}
 .p-cranio{left:6px; top:0; width:64px; height:58px;
   border-radius:50% 50% 44% 44% / 54% 54% 46% 46%;
-  background:radial-gradient(56% 58% at 34% 22%, #2A2C34 0%, var(--nero) 66%);
-  box-shadow: inset -8px -6px 14px rgba(0,0,0,.7), inset 6px 5px 12px rgba(255,255,255,.07);}
+  background:
+    radial-gradient(34% 26% at 28% 14%, rgba(255,255,255,.13), rgba(255,255,255,0) 72%),
+    radial-gradient(26% 40% at 92% 46%, rgba(190,160,120,.14), rgba(0,0,0,0) 74%),
+    radial-gradient(58% 60% at 34% 22%, #32343D 0%, var(--nero-caldo) 46%, var(--nero) 76%);
+  box-shadow: inset -9px -7px 16px rgba(0,0,0,.75), inset 7px 6px 13px rgba(255,255,255,.08);}
 /* orecchie: larghe, cadono lungo le guance fino alla mascella */
 .p-orecchio{width:24px; height:46px; top:6px;
   background:linear-gradient(160deg, #26282F, #0D0E12);
@@ -1330,31 +1368,55 @@ b.dubbia{color:var(--ottone-t);}
   background:linear-gradient(180deg, var(--bianco-o) 0 18%, var(--bianco));
   transform:translateZ(6px);}
 /* focature sopra gli occhi: sono il segno del bernese */
-.p-sopr{width:13px; height:8px; top:18px; border-radius:50% 50% 45% 45%;
-  background:radial-gradient(60% 60% at 40% 30%, var(--ruggine-c), var(--ruggine));
+.p-sopr{width:14px; height:8px; top:16px; border-radius:56% 44% 46% 54% / 60% 60% 40% 40%;
+  background:radial-gradient(70% 74% at 38% 28%, var(--ruggine-c) 0%, var(--ruggine) 52%, rgba(122,56,16,.55) 88%, rgba(122,56,16,0) 100%);
   transform:translateZ(7px);}
 .p-sopr-sx{left:15px; rotate:-7deg;} .p-sopr-dx{left:47px; rotate:7deg;}
 /* focature ai lati del muso, strette: non guance tonde */
-.p-guancia{width:11px; height:19px; top:32px; border-radius:50% 50% 60% 60% / 40% 40% 60% 60%;
-  background:radial-gradient(60% 60% at 40% 26%, var(--ruggine-c), var(--ruggine));
+.p-guancia{width:12px; height:21px; top:31px; border-radius:52% 48% 62% 38% / 38% 38% 62% 62%;
+  background:radial-gradient(70% 68% at 40% 24%, var(--ruggine-c) 0%, var(--ruggine) 54%, rgba(122,56,16,.5) 90%, rgba(122,56,16,0) 100%);
   transform:translateZ(8px); opacity:.97;}
 .p-gu-sx{left:13px; rotate:6deg;} .p-gu-dx{left:51px; rotate:-6deg;}
 /* muso bianco, spinto in avanti */
 .p-muso{left:21px; top:31px; width:34px; height:30px;
   border-radius:44% 44% 50% 50% / 38% 38% 62% 62%;
-  background:radial-gradient(62% 58% at 42% 24%, #FFFDF6, var(--bianco-o));
-  box-shadow: inset -3px -3px 8px rgba(0,0,0,.18);
+  background:radial-gradient(62% 54% at 42% 22%, #FFFEF8 0%, var(--bianco) 52%, var(--bianco-o) 100%);
+  box-shadow: inset -4px -4px 9px rgba(0,0,0,.2), inset 2px 2px 6px rgba(255,255,255,.55);
   transform:translateZ(18px);}
+/* la piega della bocca sotto al naso */
+.p-muso::after{content:''; position:absolute; left:50%; top:14px; width:1.4px; height:5px;
+  margin-left:-.7px; border-radius:1px; background:rgba(95,75,58,.32);}
+/* i puntini dei baffi */
+.p-baffi{left:22px; top:44px; width:32px; height:9px; transform:translateZ(24px);
+  background:
+    radial-gradient(1.4px 1.4px at 3px 2px, rgba(88,70,58,.4), transparent 72%),
+    radial-gradient(1.4px 1.4px at 9px 5px, rgba(88,70,58,.34), transparent 72%),
+    radial-gradient(1.4px 1.4px at 23px 2px, rgba(88,70,58,.4), transparent 72%),
+    radial-gradient(1.4px 1.4px at 29px 5px, rgba(88,70,58,.34), transparent 72%);
+  filter:blur(.25px);}
 .p-naso{left:30px; top:36px; width:15px; height:11px;
   border-radius:46% 46% 56% 56% / 40% 40% 60% 60%;
-  background:radial-gradient(50% 46% at 34% 26%, #43444C, var(--naso) 66%);
+  background:
+    radial-gradient(22% 30% at 30% 22%, rgba(255,255,255,.55), rgba(255,255,255,0) 70%),
+    radial-gradient(54% 50% at 38% 30%, #4A4B54, var(--naso) 68%);
+  box-shadow: inset -1.5px -1.5px 3px rgba(0,0,0,.6);
   transform:translateZ(27px);}
-.p-occhio{width:10px; height:11px; top:27px; border-radius:50%;
-  background:radial-gradient(46% 46% at 34% 28%, #7A5436, #120E0A 66%);
-  box-shadow:0 0 0 1.5px rgba(0,0,0,.5); transform:translateZ(10px);}
+.p-naso::before, .p-naso::after{content:''; position:absolute; top:5px; width:3.4px; height:4.4px;
+  border-radius:60% 40% 50% 50%; background:rgba(0,0,0,.72);}
+.p-naso::before{left:2.2px; transform:rotate(-16deg);}
+.p-naso::after{right:2.2px; transform:rotate(16deg);}
+.p-occhio{width:11px; height:10px; top:27px;
+  border-radius:56% 44% 50% 50% / 62% 62% 38% 38%;
+  background:radial-gradient(52% 56% at 36% 30%, #B07C4C 0%, #6A452A 34%, #241609 62%, #0D0906 86%);
+  box-shadow:0 0 0 1.2px rgba(0,0,0,.5), inset 0 -1.2px 2px rgba(0,0,0,.45);
+  transform:translateZ(10px); overflow:hidden;}
+/* la palpebra superiore taglia l'occhio: senza, resta una biglia */
+.p-occhio::before{content:''; position:absolute; left:-2px; right:-2px; top:-3px; height:3.6px;
+  background:var(--nero); border-radius:0 0 60% 60%;}
 .p-oc-sx{left:16px;} .p-oc-dx{left:49px;}
-.p-luce{position:absolute; width:3.2px; height:3.2px; border-radius:50%; background:#fff; opacity:.92;
-  left:1.6px; top:1.8px;}
+.p-luce{position:absolute; width:3.4px; height:3.4px; border-radius:50%; opacity:.92;
+  background:radial-gradient(50% 50% at 42% 38%, #fff 0 42%, rgba(255,255,255,.35) 78%, rgba(255,255,255,0) 100%);
+  left:2px; top:3px; z-index:2;}
 .p-lingua{left:32px; top:54px; width:12px; height:15px;
   border-radius:40% 40% 55% 55% / 25% 25% 75% 75%;
   background:linear-gradient(180deg, var(--lingua), #CE6C80);
@@ -1579,26 +1641,56 @@ b.dubbia{color:var(--ottone-t);}
   100%{transform:translateY(22px) scale(.86) rotate(0);}}
 .a-rotola .p-za-sx, .a-rotola .p-za-dx, .a-rotola .p-zp-sx{animation:p-zampetta .45s ease-in-out infinite;}
 
-@media (prefers-reduced-motion: reduce){
-  .pier-scena *{animation:none !important;}
+
+/* ---- quello che Pier fa SEMPRE, in qualunque posa ----
+   Un cane fermo non e' un cane: respira, sbatte le palpebre, muove le orecchie.
+   Sono movimenti piccoli e continui, e stanno sotto a tutte le pose. */
+.pier-scena:not(.a-dorme) .p-occhio{animation:p-batte 4.6s ease-in-out infinite;}
+.pier-scena:not(.a-dorme) .p-oc-dx{animation-delay:.04s;}
+@keyframes p-batte{
+  0%, 92%, 100%{scale:1 1;}
+  95%{scale:1 .08;}
+  97.5%{scale:1 1;}
+}
+.p-corpo{animation:p-respira 3.6s ease-in-out infinite;}
+@keyframes p-respira{0%,100%{scale:1 1;} 50%{scale:1.015 1.025;}}
+.p-petto{animation:p-respira 3.6s ease-in-out infinite;}
+.p-collo{animation:p-respira-collo 3.6s ease-in-out infinite;}
+@keyframes p-respira-collo{0%,100%{translate:0 0;} 50%{translate:0 -1.5px;}}
+/* il cambio di posa si vede: un piccolo scatto, come quando un cane si rialza */
+.pier-scena.p-cambio{animation:p-scatto .46s cubic-bezier(.3,.8,.4,1);}
+@keyframes p-scatto{
+  0%{translate:0 0; rotate:0deg;}
+  30%{translate:0 -7px; rotate:-2.5deg;}
+  60%{translate:0 2px; rotate:1.5deg;}
+  100%{translate:0 0; rotate:0deg;}
 }
 
+@media (prefers-reduced-motion: reduce){
+  .pier-scena *, .pier-scena{animation:none !important;}
+}
 /* ---- Pier nell'app: sta in basso a destra, sopra la barra delle schede ---- */
-#pier-angolo{position:fixed; right:6px; z-index:35; pointer-events:none;
-  bottom:calc(72px + var(--safe-b)); display:flex; flex-direction:column; align-items:flex-end; gap:6px;}
-@media (min-width:900px){ #pier-angolo{bottom:18px; right:20px;} }
-#pier-angolo .pier-scena{transform:scale(.62); transform-origin:100% 100%; margin:0 0 -57px 0;
+#pier-angolo{position:fixed; right:8px; z-index:35; pointer-events:none;
+  bottom:calc(80px + var(--safe-b)); display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
+@media (min-width:900px){ #pier-angolo{bottom:26px; right:22px;} }
+/* il riquadro e' 150px ma il cane, rimpicciolito e ancorato in basso a destra, ne
+   occupa solo l'angolo: il margine negativo chiude il vuoto SOPRA, non spinge giu'
+   il cane — prima lo spingeva, e sotto veniva tagliato dal bordo dello schermo. */
+#pier-angolo .pier-scena{transform:scale(.58); transform-origin:100% 100%; margin:-63px 0 0 0;
   pointer-events:none; cursor:pointer;}
-/* si tocca solo il cane, non il riquadro vuoto intorno: sotto ci sono i pulsanti */
-#pier-angolo .p-corpo, #pier-angolo .p-testa, #pier-angolo .p-petto{pointer-events:auto;}
-#pier-angolo.p-piccolo .pier-scena{transform:scale(.42); margin:0 0 -87px 0;}
+/* Pier non intercetta NESSUN tocco: galleggia sopra i pulsanti, e un pulsante che
+   non risponde perche' c'e' un cane davanti sarebbe un difetto, non una simpatia.
+   Le coccole si prendono lo stesso: il tocco viene riconosciuto dal codice
+   guardando dove e' finito, e solo se non era diretto a un comando. */
+#pier-angolo.p-piccolo .pier-scena{transform:scale(.42); margin:-87px 0 0 0;}
 #pier-angolo.p-piccolo .pier-fumetto{display:none;}
 #pier-angolo.p-via{opacity:0; pointer-events:none;}
 #pier-angolo{transition:opacity .35s;}
 .pier-fumetto{max-width:min(210px, 58vw); padding:9px 12px; border-radius:14px 14px 4px 14px;
   background:var(--foglio); color:var(--testo); border:1px solid var(--bordo);
   box-shadow:0 6px 20px rgba(var(--ombra),.35); font-size:.83rem; line-height:1.45;
-  pointer-events:auto; opacity:0; transform:translateY(6px) scale(.96);
+  /* il fumetto non prende i tocchi: sparisce da solo, e sotto ci sono i pulsanti */
+  pointer-events:none; opacity:0; transform:translateY(6px) scale(.96);
   transition:opacity .3s, transform .3s; transform-origin:100% 100%;}
 .pier-fumetto.visibile{opacity:1; transform:none;}
 .pier-fumetto b{color:var(--azione);}
@@ -3382,6 +3474,7 @@ b.dubbia{color:var(--ottone-t);}
     <div class="p-groppa"></div>
     <div class="p-zp-sx p-zampa"></div>
     <div class="p-corpo"></div>
+    <div class="p-collo"></div>
     <div class="p-fuoco"></div>
     <div class="p-petto"></div>
     <div class="p-za-dx p-zampa"></div>
@@ -3398,6 +3491,7 @@ b.dubbia{color:var(--ottone-t);}
       <div class="p-muso"></div>
       <div class="p-lingua"></div>
       <div class="p-naso"></div>
+      <div class="p-baffi"></div>
       <div class="p-occhio p-oc-sx"><i class="p-luce"></i></div>
       <div class="p-occhio p-oc-dx"><i class="p-luce"></i></div>
     </div>
@@ -7438,6 +7532,12 @@ const Pier = (() => {
     if(!scena || POSE.indexOf(nome) < 0) return;
     POSE.forEach(c => scena.classList.remove(c));
     scena.classList.add(nome);
+    // lo scatto del cambio: senza, la posa nuova compare di colpo e sembra
+    // che qualcuno abbia cambiato immagine invece che il cane essersi mosso
+    scena.classList.remove('p-cambio');
+    void scena.offsetWidth;
+    scena.classList.add('p-cambio');
+    setTimeout(() => scena.classList.remove('p-cambio'), 500);
     ultima = nome;
   }
   // se c'e' un messaggio a schermo intero, Pier aspetta il suo turno invece di
@@ -7467,7 +7567,7 @@ const Pier = (() => {
     clearTimeout(timer);
     if(calmo()) return;                       // chi ha chiesto meno movimento non lo subisce
     const lista = modo === 'gioco' ? GIOCO : OZIO;
-    const attesa = (modo === 'gioco' ? 11000 : 9000) + Math.random() * 7000;
+    const attesa = (modo === 'gioco' ? 5000 : 4500) + Math.random() * 4000;
     timer = setTimeout(() => { posa(pesca(lista, ultima)); riparti(); }, attesa);
   }
 
@@ -7496,12 +7596,17 @@ const Pier = (() => {
   function avvia(){
     scena = $$('pier-scena'); fumetto = $$('pier-dice'); angolo = $$('pier-angolo');
     if(!scena) return;
-    scena.addEventListener('click', () => {
+    // le coccole: un tocco che cade sul cane e non su un comando
+    document.addEventListener('click', ev => {
+      if(!scena || ev.target.closest('button, a, input, select, textarea, label, [role="button"], .opt, .tab')) return;
+      const r = scena.getBoundingClientRect();
+      // solo il quadrante in basso a destra del riquadro: li' c'e' davvero il cane
+      const x = ev.clientX, y = ev.clientY;
+      if(x < r.left + r.width*0.18 || x > r.right || y < r.top + r.height*0.22 || y > r.bottom) return;
       posa(pesca(modo === 'gioco' ? GIOCO : OZIO, ultima));
       dice(pesca(CLIC), 5000);
       riparti();
     });
-    if(fumetto) fumetto.addEventListener('click', zitto);
     posa('a-seduto');
     setTimeout(() => dice(pesca(SALUTI), 7000), 1400);
     riparti();
