@@ -1276,7 +1276,6 @@ b.dubbia{color:var(--ottone-t);}
     <button class="tab" id="tab-ripasso"><span class="t-ico"><svg class="ic"><use href="#i-libro"/></svg></span><span>Ripasso</span></button>
     <button class="tab" id="tab-cerca"><span class="t-ico"><svg class="ic"><use href="#i-lente"/></svg></span><span>Cerca</span></button>
     <button class="tab" id="tab-dispensa"><span class="t-ico"><svg class="ic"><use href="#i-dispensa"/></svg></span><span>Dispensa</span></button>
-    <button class="tab" id="tab-schema"><span class="t-ico"><svg class="ic"><use href="#i-chiave"/></svg></span><span>Schema</span></button>
   </div>
 
   <!-- ==================== HOME ==================== -->
@@ -1470,21 +1469,12 @@ b.dubbia{color:var(--ottone-t);}
   </div>
 
   <!-- ==================== DISPENSA MATEMATICA ==================== -->
-  <!-- ==================== SCHEMA ==================== -->
-  <div id="vista-schema" class="nascosto">
-    <div class="card">
-      <h2><svg class="ic ic-g"><use href="#i-chiave"/></svg> Lo schema</h2>
-      <p class="sch-intro" id="sch-intro"></p>
-      <div class="sch-nav" id="sch-nav"></div>
-    </div>
-    <div id="sch-corpo"></div>
-  </div>
-
   <div id="vista-dispensa" class="nascosto">
     <div class="card no-print" style="padding-bottom:14px">
       <div class="disp-tabs">
         <button class="disp-tab attiva" data-pan="corso"><svg class="ic"><use href="#i-libro"/></svg> Dal corso — capire la finanza</button>
         <button class="disp-tab" data-pan="errori"><svg class="ic"><use href="#i-calcolo"/></svg> Matematica sui tuoi errori</button>
+        <button class="disp-tab" data-pan="schema"><svg class="ic"><use href="#i-chiave"/></svg> Lo schema degli appunti</button>
       </div>
     </div>
 
@@ -2844,6 +2834,13 @@ b.dubbia{color:var(--ottone-t);}
       </div>
     </div>
 
+
+    <div class="card nascosto" id="disp-pan-schema">
+      <h2><svg class="ic ic-g"><use href="#i-chiave"/></svg> Lo schema degli appunti</h2>
+      <p class="sch-intro" id="sch-intro"></p>
+      <div class="sch-nav" id="sch-nav"></div>
+      <div id="sch-corpo"></div>
+    </div>
     <div class="card nascosto" id="disp-pan-errori">
       <div class="arg-head no-print">
         <h2><svg class="ic ic-g"><use href="#i-calcolo"/></svg> Dispensa di Matematica — costruita sui tuoi errori</h2>
@@ -3133,17 +3130,16 @@ function conferma(testo, cb){
 }
 
 function mostra(vista){
-  ['vista-home','vista-quiz','vista-risultati','vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa','vista-schema'].forEach(v => $(v).classList.add('nascosto'));
+  ['vista-home','vista-quiz','vista-risultati','vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa'].forEach(v => $(v).classList.add('nascosto'));
   $(vista).classList.remove('nascosto');
   $('barra-tab').classList.toggle('nascosto', vista === 'vista-quiz');
   const fascia = $('campo-fascia');
   if(fascia) fascia.classList.toggle('nascosto', vista === 'vista-quiz');
-  $('tab-allenamento').classList.toggle('attiva', !['vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa','vista-schema'].includes(vista));
+  $('tab-allenamento').classList.toggle('attiva', !['vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa'].includes(vista));
   $('tab-dashboard').classList.toggle('attiva', vista === 'vista-dashboard');
   $('tab-ripasso').classList.toggle('attiva', vista === 'vista-ripasso');
   $('tab-cerca').classList.toggle('attiva', vista === 'vista-cerca');
   $('tab-dispensa').classList.toggle('attiva', vista === 'vista-dispensa');
-  $('tab-schema').classList.toggle('attiva', vista === 'vista-schema');
   window.scrollTo(0,0);
 }
 
@@ -6179,9 +6175,11 @@ function costruisciIndiceDispensa(){
 function pannelloDispensa(quale){
   $('disp-pan-corso').classList.toggle('nascosto', quale !== 'corso');
   $('disp-pan-errori').classList.toggle('nascosto', quale !== 'errori');
+  $('disp-pan-schema').classList.toggle('nascosto', quale !== 'schema');
   document.querySelectorAll('.disp-tab').forEach(b => b.classList.toggle('attiva', b.dataset.pan === quale));
   try{ localStorage.setItem('ocf_disp_pan', quale); }catch(e){}
   if(quale === 'corso') costruisciIndiceDispensa();
+  if(quale === 'schema') renderSchema();
 }
 
 function renderDispensa(){
@@ -6454,10 +6452,9 @@ function renderSchema(){
   }
   $('sch-corpo').innerHTML = h;
 }
-$('tab-schema').onclick = () => { renderSchema(); mostra('vista-schema'); };
 document.addEventListener('click', e => {
   if(e.target.classList && e.target.classList.contains('lnk-schema')){
-    e.preventDefault(); renderSchema(); mostra('vista-schema');
+    e.preventDefault(); renderDispensa(); pannelloDispensa('schema'); mostra('vista-dispensa');
   }
 });
 
