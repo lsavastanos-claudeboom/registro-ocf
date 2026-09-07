@@ -6253,8 +6253,10 @@ function renderCalendario(){
       ? `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni e la banca dati è tutta vista almeno una volta. `
         + `Servono <b>${fmtN(P.domandeAlGiorno)}</b> domande al giorno (<b>${P.testAlGiorno}</b> test) per consolidarla.`
       : `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni e <b>${fmtN(P.U)}</b> domande mai viste. `
-        + `Per vederle tutte servono <b>${fmtN(P.domCopAlGiorno)}</b> domande al giorno (<b>${P.testCopAlGiorno}</b> test), `
-        + `perché ogni test da ${N_TEST} ne porta <b>${P.nuovePerTest}</b> di nuove e ${N_TEST - P.nuovePerTest} di recupero.`)
+        + `Il passo è di <b>${fmtN(P.domObiettivo)}</b> domande al giorno (<b>${P.testObiettivo}</b> test), `
+        + `perché ogni test da ${N_TEST} ne porta <b>${P.nuovePerTest}</b> di nuove e ${N_TEST - P.nuovePerTest} di recupero: `
+        + `tenendolo, la banca dati si chiude il <b>${new Date(P.isoFineAlTetto).toLocaleDateString('it-IT',{day:'numeric',month:'long'})}</b>. `
+        + `Il minimo per non sforare sarebbe ${fmtN(P.domCopAlGiorno)} al giorno.`)
     + ` Dopo il ${scad} non si aprono più domande nuove: i <b>${GG_CONSOLIDAMENTO} giorni</b> fino all'esame servono a confermare quelle già incontrate.<br>`
     + `Finora: <b>${fatti}</b> ${fatti === 1 ? 'giornata piena' : 'giornate piene'}, `
     + `<b>${parziali}</b> a mezzo servizio, <b>${saltati}</b> saltate.`
