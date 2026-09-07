@@ -4381,7 +4381,7 @@ function testNecessari(pr){
 function fineCopertura(pr){
   if(!pr.ritmoNuove || pr.nuoveRimaste <= 0) return null;
   const gg = Math.ceil(pr.nuoveRimaste / pr.ritmoNuove);
-  const iso = oggiPiuISO(gg);
+  const iso = oggiPiuISO(gg - 1);         // oggi e' gia' il primo dei giorni contati
   const d = new Date(iso);
   const scarto = Math.round((d - new Date(isoCopertura())) / 86400000);
   return {gg, data: d.toLocaleDateString('it-IT', {day:'numeric', month:'short'}), iso, scarto};
@@ -5096,9 +5096,11 @@ function piano(){
     ? Math.round(conNuove.reduce((a, g) => a + (g.nuove || 0), 0) / conNuove.length)
     : Math.round(ritmo * QUOTA_NUOVE);
   // il giorno in cui la copertura finisce, al ritmo di adesso
+  // giorni di studio che servono, oggi compreso: se ne servono 28 e oggi e' il primo,
+  // l'ultimo e' fra 27 giorni, non fra 28. Senza il -1 la data usciva sballata di uno.
   const ggAllaCopertura = (L.U > 0 && ritmoNuove > 0) ? Math.ceil(L.U / ritmoNuove) : 0;
   const isoFineCopertura = L.U === 0 ? oggiISO()
-                         : (ritmoNuove > 0 ? oggiPiuISO(ggAllaCopertura) : null);
+                         : (ritmoNuove > 0 ? oggiPiuISO(ggAllaCopertura - 1) : null);
   const coperturaInTempo = L.U === 0 || (ritmoNuove > 0 && ggAllaCopertura <= gg);
 
   return {...L, giorni: gg, domandeAlGiorno: dom, testAlGiorno: Math.ceil(testGiorno*10)/10,
