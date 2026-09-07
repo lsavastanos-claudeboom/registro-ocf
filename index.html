@@ -981,6 +981,33 @@ b.dubbia{color:var(--ottone-t);}
 @media(max-width:640px){ .so-tab .so-nome{font-size:.78rem;} }
 .avviso-fase{margin:12px 0 2px; padding:11px 13px; border-radius:14px; font-size:.88rem; line-height:1.55;
   background:rgba(156,122,45,.12); border:1px solid rgba(156,122,45,.3);}
+
+/* ---------- prospetto del piano ----------
+   Una card sola che dice: in che fase sei, quanto ti chiede oggi, quando finisci,
+   e se qualcosa non torna. Il bordo colorato e' il semaforo. */
+.card-prospetto{border-left:4px solid var(--vidimato);}
+.card-prospetto.pr-allarme{border-left-color:var(--lacca);}
+.card-prospetto.pr-attenzione{border-left-color:var(--ottone);}
+.prs-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.prs-testa h2{margin:0; font-size:1.12rem;}
+.prs-fase{font-size:.76rem; font-weight:700; padding:3px 10px; border-radius:99px;
+  background:var(--vidibg); color:var(--vidimato-t); white-space:nowrap;}
+.card-prospetto.pr-allarme .prs-fase{background:var(--laccabg); color:var(--lacca-t);}
+.card-prospetto.pr-attenzione .prs-fase{background:var(--ottonebg); color:var(--ottone-t);}
+.prs-griglia{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px; margin-top:14px;}
+.prs-voce{background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.12);
+  border-radius:12px; padding:11px 13px;}
+.prs-voce b{display:block; font-family:var(--f-display); font-size:1.5rem; font-weight:800;
+  line-height:1.1; font-variant-numeric:tabular-nums; color:var(--testo);}
+.prs-voce span{display:block; margin-top:3px; font-size:.78rem; color:var(--nebbia); line-height:1.4;}
+.prs-msg{margin-top:14px; font-size:.9rem; line-height:1.6;}
+.prs-msg + .prs-msg{margin-top:8px;}
+.prs-msg.bene{color:var(--vidimato-t);}
+.prs-msg.attenzione{color:var(--ottone-t);}
+.prs-msg.allarme{padding:11px 13px; border-radius:12px; background:var(--laccabg);
+  border:1px solid var(--lacca); color:var(--lacca-t);}
+.prs-msg b{color:inherit;}
+.prs-nota{margin-top:12px; font-size:.83rem; color:var(--nebbia); line-height:1.55;}
 #q-passo{font-size:.82rem; font-weight:600; padding:2px 8px; border-radius:99px;}
 #q-passo.bene{color:var(--vidimato-t); background:rgba(39,107,78,.12);}
 #q-passo.male{color:var(--lacca-t); background:rgba(179,58,43,.12);}
@@ -1344,6 +1371,9 @@ b.dubbia{color:var(--ottone-t);}
       </details>
       <div class="nota" id="nota-pool"></div>
     </div>
+
+    <!-- 1a-bis · PROSPETTO DEL PIANO -->
+    <div class="card card-prospetto nascosto" id="card-prospetto"></div>
 
     <!-- 1a · A CHE PUNTO SEI -->
     <div class="card card-stato" id="card-stato"></div>
@@ -3311,6 +3341,7 @@ function renderHome(){
   aggiornaNota();
   renderOggi();
   renderObiettivo();
+  renderProspetto();
   applicaFase();
   renderStato();
   renderAndamento();
@@ -4949,7 +4980,7 @@ function renderObiettivo(){
   // passa comunque da targetOggi: l'obiettivo si fissa una volta al giorno e non
   // deve ballare mentre lei risponde
   const alGiorno = pianoAttivo()
-    ? targetOggi(Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno))
+    ? targetOggi(Math.min(TETTO_GIORNO, Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno)))
     : targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
   const nTestGiorno = Math.max(1, Math.round(alGiorno / N_TEST));
   const fmt = fmtN;
@@ -5001,6 +5032,88 @@ function renderObiettivo(){
     </div>
     <div class="obh-bar ${fatto ? 'ok' : ''}"><i style="width:${pctOb}%"></i></div>
     ${rigaPiano}`;
+}
+
+// ---------- il prospetto del piano ----------
+// Una sola card che dice in che fase e', quanto le chiede oggi, quando finisce
+// la banca dati, e — se i conti non tornano piu' — che bisogna intervenire.
+// Serve perche' i numeri sparsi nelle altre card non dicono da soli se si sta
+// andando bene o male.
+function prospettoPiano(){
+  const P = piano();
+  const dataIt = iso => iso ? new Date(iso).toLocaleDateString('it-IT', {day:'numeric', month:'long'}) : null;
+  const scad = dataIt(isoCopertura());
+  const s = statiPool(QUESTIONS);
+  if(inFaseFinale()){
+    return {fase: 'Consolidamento', semaforo: 'ok',
+      titolo: 'Ultimi giorni: si conferma, non si apre',
+      voci: [
+        {n: fmtN(giorniAllEsame()), t: 'giorni all\'esame'},
+        {n: fmtN(s.daRiconf), t: 'da riconfermare'},
+        {n: fmtN(s.ko), t: 'ancora da recuperare'}],
+      messaggi: [{cls: 'bene', txt: `Le domande nuove sono chiuse dal ${scad}. Ogni test è fatto di <b>60% riconferme</b> e <b>40% recuperi</b>.`}]};
+  }
+  if(P.U === 0){
+    // copertura finita: le nuove hanno lasciato il posto alle riconferme
+    return {fase: 'Riconferme', semaforo: 'ok',
+      titolo: 'Banca dati finita: ora si riconferma',
+      voci: [
+        {n: fmtN(QUESTIONS.length), t: 'domande viste almeno una volta'},
+        {n: fmtN(s.daRiconf), t: 'da riconfermare'},
+        {n: fmtN(s.ko), t: 'da recuperare'}],
+      messaggi: [
+        {cls: 'bene', txt: `Hai incontrato <b>tutte</b> le ${fmtN(QUESTIONS.length)} domande. Da adesso il posto delle domande nuove lo prendono le <b>riconferme</b>: ogni test è <b>70% da riconfermare · 30% da recuperare</b>.`},
+        {cls: '', txt: `Il tetto resta di <b>${TETTO_GIORNO}</b> domande al giorno. Dal ${scad} si passa alla fase finale, ${GG_CONSOLIDAMENTO} giorni di sole conferme.`}]};
+  }
+  // fase di copertura
+  const quando = dataIt(P.isoFineCopertura);
+  const alTetto = dataIt(P.isoFineAlTetto);
+  const voci = [
+    {n: fmtN(P.U), t: 'domande mai viste'},
+    {n: fmtN(P.domCopAlGiorno), t: `al giorno${P.domCopAlGiorno >= TETTO_GIORNO ? ' (il tetto)' : ''} · ${P.testCopAlGiorno} test`},
+    {n: fmtN(P.giorni), t: `giorni fino al ${scad}`}];
+  const messaggi = [];
+  let semaforo = 'ok';
+  if(P.oltreIlTetto){
+    semaforo = 'allarme';
+    messaggi.push({cls: 'allarme', txt:
+      `<b>Bisogna intervenire.</b> Per finire la banca dati entro il ${scad} servirebbero <b>${fmtN(P.domCopNecessarie)}</b> domande al giorno, `
+      + `sopra il tetto di ${TETTO_GIORNO}. Anche facendo ${TETTO_GIORNO} domande tutti i giorni la copertura si chiuderebbe il <b>${alTetto}</b>. `
+      + `Le strade sono due: alzare il tetto, oppure accettare di non vedere tutta la banca dati e scegliere su cosa concentrarsi.`});
+  } else if(!P.ritmoAttuale){
+    messaggi.push({cls: '', txt: `Nessun test negli ultimi giorni. Con <b>${fmtN(P.domCopAlGiorno)}</b> domande al giorno arrivi coperta entro il ${scad}.`});
+  } else if(!P.coperturaInTempo){
+    semaforo = 'attenzione';
+    const recupero = Math.min(TETTO_GIORNO, P.domCopNecessarie);
+    messaggi.push({cls: 'attenzione', txt:
+      `<b>Attenzione: sei in ritardo.</b> Al ritmo di questi giorni (<b>${fmtN(P.ritmoAttuale)}</b> domande al giorno, di cui <b>${fmtN(P.ritmoNuove)}</b> mai viste) `
+      + `finiresti la banca dati il <b>${quando}</b>, dopo il ${scad}. `
+      + `Per rientrare servono <b>${fmtN(recupero)}</b> domande al giorno da oggi.`});
+  } else {
+    messaggi.push({cls: 'bene', txt:
+      `Sei in linea: al ritmo di questi giorni (<b>${fmtN(P.ritmoAttuale)}</b> domande al giorno, di cui <b>${fmtN(P.ritmoNuove)}</b> mai viste) `
+      + `finisci la banca dati il <b>${quando}</b>, con ${Math.max(0, P.giorni - P.ggAllaCopertura)} giorni di margine sul ${scad}.`});
+  }
+  // nel caso d'allarme la data al tetto e' gia' stata detta sopra: ripeterla confonde
+  if(semaforo !== 'allarme') messaggi.push({cls: '', txt:
+    `Quando le domande nuove finiscono, il loro posto passa alle <b>riconferme</b> e te lo scrivo qui. `
+    + `Tenendo il tetto di ${TETTO_GIORNO} al giorno succederebbe intorno al <b>${alTetto}</b>.`});
+  return {fase: 'Copertura', semaforo,
+    titolo: `Ogni test: ${P.nuovePerTest} domande nuove e ${N_TEST - P.nuovePerTest} di recupero`,
+    voci, messaggi};
+}
+function renderProspetto(){
+  const el = $('card-prospetto'); if(!el) return;
+  if(!pianoAttivo() || oggiISO() > DATA_ESAME){ el.classList.add('nascosto'); return; }
+  const p = prospettoPiano();
+  el.classList.remove('nascosto');
+  el.classList.toggle('pr-allarme', p.semaforo === 'allarme');
+  el.classList.toggle('pr-attenzione', p.semaforo === 'attenzione');
+  el.innerHTML =
+    `<div class="prs-testa"><h2><svg class="ic ic-g"><use href="#i-mirino"/></svg> ${p.titolo}</h2>`
+    + `<span class="prs-fase">${p.fase}</span></div>`
+    + `<div class="prs-griglia">${p.voci.map(v => `<div class="prs-voce"><b>${v.n}</b><span>${v.t}</span></div>`).join('')}</div>`
+    + p.messaggi.map(m => `<div class="prs-msg ${m.cls}">${m.txt}</div>`).join('');
 }
 
 function argomentiSelezionati(){
@@ -5063,6 +5176,9 @@ function lavoroResiduo(){
   return {U, K, R, C, costi: c,
           risposte: Math.round(U*c.eU + K*c.eK + R*c.eR)};
 }
+// Il tetto giornaliero: cinque test. Oltre non si chiede, anche quando il conto
+// direbbe di piu': un obiettivo irraggiungibile smette di guidare e basta.
+const TETTO_GIORNO = 300;
 // il piano di oggi: quanto serve, quanto sta facendo, e se basta
 function piano(){
   const L = lavoroResiduo();
@@ -5089,7 +5205,17 @@ function piano(){
   const nuovePerTest = Math.max(1, Math.round(N_TEST * QUOTA_NUOVE));
   const testCopertura = Math.ceil(L.U / nuovePerTest);           // test che mancano per finire il giro
   const testCopAlGiorno = L.U > 0 ? testCopertura / gg : 0;
-  const domCopAlGiorno = L.U > 0 ? Math.ceil(testCopAlGiorno * N_TEST) : 0;
+  // Il fabbisogno vero, e quello che si chiede davvero: sopra il tetto giornaliero
+  // non si va, perche' un obiettivo che non si puo' fare non e' un obiettivo. Se il
+  // fabbisogno supera il tetto vuol dire che il piano non regge piu' da solo, e
+  // l'app lo deve dire invece di alzare in silenzio l'asticella.
+  const domCopNecessarie = L.U > 0 ? Math.ceil(testCopAlGiorno * N_TEST) : 0;
+  const domCopAlGiorno = Math.min(TETTO_GIORNO, domCopNecessarie);
+  const oltreIlTetto = domCopNecessarie > TETTO_GIORNO;
+  // tenendo il tetto ogni giorno, quando finirebbe la copertura
+  const nuoveAlTetto = Math.max(1, Math.round(TETTO_GIORNO * QUOTA_NUOVE));
+  const ggAlTetto = L.U > 0 ? Math.ceil(L.U / nuoveAlTetto) : 0;
+  const isoFineAlTetto = L.U > 0 ? oggiPiuISO(ggAlTetto - 1) : oggiISO();
   // quante domande mai viste incontra davvero in un giorno, misurate
   const conNuove = recenti.filter(g => g.nuove !== undefined);
   const ritmoNuove = conNuove.length
@@ -5109,7 +5235,9 @@ function piano(){
           testPerImmissione: Math.max(1, Math.round(ggImmissione * testAlGiornoEff)),
           nuovePerTest, testCopertura,
           testCopAlGiorno: Math.ceil(testCopAlGiorno * 10) / 10,
-          domCopAlGiorno, ritmoNuove, ggAllaCopertura, isoFineCopertura, coperturaInTempo,
+          domCopAlGiorno, domCopNecessarie, oltreIlTetto, tetto: TETTO_GIORNO,
+          nuoveAlTetto, ggAlTetto, isoFineAlTetto,
+          ritmoNuove, ggAllaCopertura, isoFineCopertura, coperturaInTempo,
           inLinea: ritmo >= dom,
           copribile: Math.min(1, (L.C + (QUESTIONS.length - L.C) *
                        Math.min(1, ritmo * gg / Math.max(1, L.risposte))) / QUESTIONS.length),
@@ -5154,8 +5282,12 @@ function composizionePiano(s, quante){
   const P = piano();
   const q = f => Math.round(N * f);
   const finale = P.immissioneChiusa;
-  let nNew = finale ? 0 : Math.min(s.nuove, q(QUOTA_NUOVE));
-  let nRic = Math.min(s.ricEleg || 0, q(finale ? CODA_RIC : QUOTA_RIC));
+  // Quando la banca dati e' tutta vista almeno una volta, il posto della copertura
+  // passa alle riconferme: la proporzione resta 70/30, ma il 70 non e' piu' materiale
+  // nuovo, e' quello che ha incontrato una volta sola e va riportato a galla.
+  const coperturaFinita = !finale && s.nuove === 0;
+  let nNew = (finale || coperturaFinita) ? 0 : Math.min(s.nuove, q(QUOTA_NUOVE));
+  let nRic = Math.min(s.ricEleg || 0, q(finale ? CODA_RIC : (coperturaFinita ? QUOTA_NUOVE : QUOTA_RIC)));
   let nRip = Math.min(s.koEleg || 0, q(finale ? CODA_RIP : QUOTA_RIP));
   // Se una coda e' a secco i posti liberi si riassegnano in ordine di priorita':
   // prima la copertura, poi gli errori da recuperare, poi le riconferme.
@@ -5165,8 +5297,15 @@ function composizionePiano(s, quante){
     vuoti -= n; return avanti + n;
   };
   if(!finale) nNew = versa(nNew, s.nuove - nNew);
-  nRip = versa(nRip, (s.koEleg || 0) - nRip);
-  nRic = versa(nRic, (s.ricEleg || 0) - nRic);
+  if(coperturaFinita){
+    // finita la copertura, i posti liberi vanno prima alle riconferme: sono loro
+    // che hanno preso il posto delle domande nuove
+    nRic = versa(nRic, (s.ricEleg || 0) - nRic);
+    nRip = versa(nRip, (s.koEleg || 0) - nRip);
+  } else {
+    nRip = versa(nRip, (s.koEleg || 0) - nRip);
+    nRic = versa(nRic, (s.ricEleg || 0) - nRic);
+  }
   // Il mantenimento aspetta: finche' restano domande mai viste, da confermare o
   // da recuperare, ogni posto speso su una gia' consolidata e' un posto tolto
   // alla copertura — e una probabilita' in piu' di rimandarla a zero.
@@ -6042,7 +6181,8 @@ function calendarioPiano(){
     // di oggi, che e' la misura onesta di "quanto ci vuole"
     // L'obiettivo di una casella e' quello della copertura, lo stesso numero che
     // compare in cima alla schermata: le due cose devono dire la stessa cosa.
-    const obiettivo = finale ? 0 : Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno);
+    const obiettivo = finale ? 0
+      : Math.min(TETTO_GIORNO, Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno));
     let stt;
     if(n === oggi) stt = 'oggi';
     else if(futuro) stt = finale ? 'finale' : 'futuro';
