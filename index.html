@@ -5044,22 +5044,39 @@ function piano(){
 // Negli ultimi dieci giorni si ribalta: niente piu' domande nuove, 60% riconferme
 // e 40% errori. E' l'assicurazione contro il dimenticare: quello che ha imparato
 // a settembre va riportato a galla prima dell'esame.
+// Le quote per argomento sono quelle della prova vera. Se il test e' piu' corto
+// di 60 domande, o se sono selezionati solo alcuni argomenti, si riscalano
+// mantenendo le proporzioni (metodo dei resti maggiori).
+function quoteArgomento(sel, quante){
+  const base = STRUTTURA_ESAME.filter(([a]) => sel.includes(a));
+  const tot = base.reduce((s, x) => s + x[1], 0);
+  const out = {};
+  if(!tot || quante <= 0){ sel.forEach(a => out[a] = 0); return out; }
+  const esatte = base.map(x => ({a: x[0], x: quante * x[1] / tot}));
+  let dati = 0;
+  esatte.forEach(e => { out[e.a] = Math.floor(e.x); dati += out[e.a]; });
+  esatte.sort((p, q) => (q.x - Math.floor(q.x)) - (p.x - Math.floor(p.x)));
+  for(let i = 0; dati < quante && esatte.length; i = (i + 1) % esatte.length, dati++) out[esatte[i].a]++;
+  sel.forEach(a => { if(out[a] === undefined) out[a] = 0; });
+  return out;
+}
 const QUOTA_NUOVE = 0.80, QUOTA_RIC = 0.00, QUOTA_RIP = 0.20;
 const CODA_RIC = 0.60, CODA_RIP = 0.40;
 // Una fetta di ogni test va a domande lasciate ferme a lungo. Servono a misurare
 // quanto dimentica: senza queste, le fasce a 3 e 7 giorni restano vuote e la
 // tenuta a settimane resta un'ipotesi invece di un dato.
 const SONDE = 4;
-function composizionePiano(s){
+function composizionePiano(s, quante){
+  const N = quante || N_TEST;
   const P = piano();
-  const q = f => Math.round(N_TEST * f);
+  const q = f => Math.round(N * f);
   const finale = P.immissioneChiusa;
   let nNew = finale ? 0 : Math.min(s.nuove, q(QUOTA_NUOVE));
   let nRic = Math.min(s.ricEleg || 0, q(finale ? CODA_RIC : QUOTA_RIC));
   let nRip = Math.min(s.koEleg || 0, q(finale ? CODA_RIP : QUOTA_RIP));
   // Se una coda e' a secco i posti liberi si riassegnano in ordine di priorita':
   // prima la copertura, poi gli errori da recuperare, poi le riconferme.
-  let vuoti = N_TEST - nNew - nRic - nRip;
+  let vuoti = N - nNew - nRic - nRip;
   const versa = (avanti, disponibili) => {
     const n = Math.max(0, Math.min(vuoti, disponibili));
     vuoti -= n; return avanti + n;
@@ -5080,7 +5097,9 @@ function composizionePiano(s){
   // servono piu': li' si sta gia' ripassando tutto quello che e' aperto.
   let nSonda = 0;
   if(!finale && !inFaseFinale()){
-    nSonda = Math.min(SONDE, s.sonde || 0, nNew);
+    // le sonde in proporzione alla dimensione del blocco
+    const q_s = Math.max(1, Math.round(SONDE * N / N_TEST));
+    nSonda = Math.min(q_s, s.sonde || 0, nNew);
     nNew -= nSonda;
   }
   return {nRip, nNew, nVin, nRic, nSonda};
@@ -5112,11 +5131,12 @@ function vintaProponibile(r){
 // vista una volta sola non si può considerare acquisita, e questa quota lo garantisce
 // senza togliere spazio alle quote scelte con i cursori.
 const QUOTA_RICONFERME = 0.25;
-function composizione(s, soloErr){
-  if(soloErr) return {nRip: Math.min(N_TEST, s.ko), nNew: 0, nVin: 0, nRic: 0};
-  if(pianoAttivo()) return composizionePiano(s);
-  const nRic = Math.min(s.ricEleg || 0, Math.round(N_TEST * QUOTA_RICONFERME));
-  const resto = N_TEST - nRic;
+function composizione(s, soloErr, quante){
+  const N = quante === undefined ? N_TEST : quante;
+  if(soloErr) return {nRip: Math.min(N, s.ko), nNew: 0, nVin: 0, nRic: 0};
+  if(pianoAttivo()) return composizionePiano(s, N);
+  const nRic = Math.min(s.ricEleg || 0, Math.round(N * QUOTA_RICONFERME));
+  const resto = N - nRic;
   let nVin = Math.min(s.okEleg || 0, Math.round(resto * mixVinte() / 100));
   let nRip = Math.min(s.koEleg, Math.round(resto * mixKo() / 100));
   let nNew = Math.min(s.nuove, resto - nRip - nVin);
@@ -5372,81 +5392,102 @@ function avviaTest(){
   const sel = argomentiSelezionati();
   const pool = QUESTIONS.filter(q => nelPool(q, sel));
   const soloErr = $('chk-solo-errori').checked;
-  // priorità nel ripasso: prima chi ha più errori accumulati, poi chi aspetta da più tempo (con un po' di caso)
+  // ---------------------------------------------------------------------
+  // Il test ha la forma dell'esame: le domande si dividono fra gli argomenti
+  // con le stesse quote della prova vera (24 diritto del mercato finanziario,
+  // 19 matematica, 6 privato, 6 tributario, 5 previdenziale su 60). Il recupero
+  // di chi e' rimasto indietro avviene DENTRO l'argomento, fra i sottoargomenti,
+  // non fra un argomento e l'altro.
+  // ---------------------------------------------------------------------
   const prioritaKo = q => {
     const r = stato.risultati[q.n];
     return r.e + ((stato.nTest || 0) - (r.u || 0)) / 50 + Math.random() * 0.9;
   };
-  let ripasso;
-  if(soloErr){
-    // con "solo errori" ignora il distanziamento, ma metti prima le proponibili (e a parità le più sbagliate)
-    ripasso = shuffle(pool.filter(q => stato.risultati[q.n] && stato.risultati[q.n].s === 'ko'));
-    ripasso.sort((a, b) => ((proponibile(stato.risultati[a.n]) ? 0 : 1) - (proponibile(stato.risultati[b.n]) ? 0 : 1)) || (prioritaKo(b) - prioritaKo(a)));
-  } else {
-    ripasso = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko' && proponibile(r); });
-    ripasso.sort((a, b) => prioritaKo(b) - prioritaKo(a));
+  function selezionaDa(sotto, quante, gia){
+    if(quante <= 0 || !sotto.length) return [];
+    let ripasso;
+    if(soloErr){
+      ripasso = shuffle(sotto.filter(q => stato.risultati[q.n] && stato.risultati[q.n].s === 'ko'));
+      ripasso.sort((a, b) => ((proponibile(stato.risultati[a.n]) ? 0 : 1) - (proponibile(stato.risultati[b.n]) ? 0 : 1)) || (prioritaKo(b) - prioritaKo(a)));
+    } else {
+      ripasso = sotto.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko' && proponibile(r); });
+      ripasso.sort((a, b) => prioritaKo(b) - prioritaKo(a));
+    }
+    const c = composizione(statiPool(sotto), soloErr, quante);
+    const scelte = ripasso.slice(0, c.nRip);
+    if(c.nNew) scelte.push(...selezionaNuoveBilanciate(sotto.filter(q => !stato.risultati[q.n]), c.nNew, sel));
+    if(c.nRic){
+      const ric = sotto.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && (r.k || r.p) && vintaProponibile(r); });
+      ric.sort((a,b) => ((stato.nTest||0)-(stato.risultati[b.n].u||0)) - ((stato.nTest||0)-(stato.risultati[a.n].u||0)));
+      scelte.push(...ric.slice(0, c.nRic));
+    }
+    if(c.nSonda){
+      // Sonde: domande gia' incontrate e lasciate ferme piu' a lungo di tutte.
+      // Servono a misurare quanto si dimentica a settimane di distanza.
+      const dentro = new Set(scelte.map(q => q.n));
+      const sonde = sotto.filter(q => {
+        if(dentro.has(q.n)) return false;
+        const r = stato.risultati[q.n]; if(!r) return false;
+        const g = giorniDa(r); return g !== null && g >= FASCIA_G7;
+      });
+      sonde.sort((a, b) => (giorniDa(stato.risultati[b.n]) || 0) - (giorniDa(stato.risultati[a.n]) || 0));
+      scelte.push(...sonde.slice(0, c.nSonda));
+    }
+    if(c.nVin){
+      const vinte = sotto.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && !r.k && !r.p && vintaProponibile(r); });
+      const prioVin = q => {
+        const r = stato.risultati[q.n];
+        return (r.e > 0 ? 1.2 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 40 + Math.random() * 0.8;
+      };
+      vinte.sort((a, b) => prioVin(b) - prioVin(a));
+      scelte.push(...vinte.slice(0, c.nVin));
+    }
+    // Ripiego dentro l'argomento: se non c'e' abbastanza materiale scaduto si
+    // anticipa, meglio un ripasso un giorno prima che un buco nel test.
+    if(scelte.length < quante){
+      const dentro = new Set(scelte.map(q => q.n));
+      const resto = sotto.filter(q => {
+        if(dentro.has(q.n)) return false;
+        const r = stato.risultati[q.n];
+        if(!r) return !soloErr;
+        if(inFaseFinale() && r.s === 'ok' && !r.k && !r.p) return false;
+        return true;
+      });
+      const manca = q => {
+        const r = stato.risultati[q.n];
+        if(!r) return 50;                       // una mai vista prima di una consolidata
+        const g = giorniDa(r);
+        const base = g === null ? 99 : attesaGiorni(r) - g;
+        return base + ((r.s === 'ok' && !r.k && !r.p) ? 1000 : 0);
+      };
+      resto.sort((a, b) => manca(a) - manca(b));
+      scelte.push(...resto.slice(0, quante - scelte.length));
+    }
+    const visti = gia || new Set();
+    return scelte.filter(q => !visti.has(q.n)).slice(0, quante);
   }
-  const s = statiPool(pool);
-  const c = composizione(s, soloErr);
-  const domande = ripasso.slice(0, c.nRip);
-  if(c.nNew){
-    domande.push(...selezionaNuoveBilanciate(pool.filter(q => !stato.risultati[q.n]), c.nNew, sel));
-  }
-  if(c.nRic){
-    // riconferme dovute: prima quelle in attesa da più tempo
-    const ric = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && (r.k || r.p) && vintaProponibile(r); });
-    ric.sort((a,b) => ((stato.nTest||0)-(stato.risultati[b.n].u||0)) - ((stato.nTest||0)-(stato.risultati[a.n].u||0)));
-    domande.push(...ric.slice(0, c.nRic));
-  }
-  if(c.nSonda){
-    // Sonde: domande gia' incontrate e lasciate ferme piu' a lungo di tutte.
-    // Vanno proposte anche se il calendario non le darebbe per scadute: sono
-    // l'unico modo di sapere quanto regge quello che ha imparato settimane fa.
-    const dentro = new Set(domande.map(q => q.n));
-    const sonde = pool.filter(q => {
-      if(dentro.has(q.n)) return false;
-      const r = stato.risultati[q.n];
-      if(!r) return false;
-      const g = giorniDa(r);
-      return g !== null && g >= FASCIA_G7;
-    });
-    sonde.sort((a, b) => (giorniDa(stato.risultati[b.n]) || 0) - (giorniDa(stato.risultati[a.n]) || 0));
-    domande.push(...sonde.slice(0, c.nSonda));
-  }
-  if(c.nVin){
-    // priorità nelle vinte: prima le ex-sbagliate poi le più "vecchie" (con un po' di caso)
-    const vinte = pool.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && !r.k && !r.p && vintaProponibile(r); });
-    const prioVin = q => {
-      const r = stato.risultati[q.n];
-      return (r.e > 0 ? 1.2 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 40 + Math.random() * 0.8;
-    };
-    vinte.sort((a, b) => prioVin(b) - prioVin(a));
-    domande.push(...vinte.slice(0, c.nVin));
-  }
-  // Ripiego: se non c'e' abbastanza materiale scaduto, si anticipa. Meglio un
-  // ripasso un giorno prima del dovuto che un test a metà.
-  if(domande.length < N_TEST){
-    const dentro = new Set(domande.map(q => q.n));
-    const resto = pool.filter(q => {
-      if(dentro.has(q.n)) return false;
-      const r = stato.risultati[q.n];
-      if(!r) return false;
-      // nella fase finale il ripiego non tocca le consolidate: meglio un test
-      // corto che rimettere in gioco una domanda gia' chiusa
-      if(inFaseFinale() && r.s === 'ok' && !r.k && !r.p) return false;
-      return true;
-    });
-    // quanto manca alla scadenza: negativo = gia' scaduta, si prende prima.
-    // Le gia' consolidate vanno in fondo: si ripescano solo se non c'e' altro.
-    const manca = q => {
-      const r = stato.risultati[q.n];
-      const g = giorniDa(r);
-      const base = g === null ? 99 : attesaGiorni(r) - g;
-      const consolidata = r.s === 'ok' && !r.k && !r.p;
-      return base + (consolidata ? 1000 : 0);
-    };
-    resto.sort((a, b) => manca(a) - manca(b));
-    domande.push(...resto.slice(0, N_TEST - domande.length));
+  const quote = quoteArgomento(sel, N_TEST);
+  const domande = [];
+  const presi = new Set();
+  const resa = {};
+  sel.forEach(a => {
+    const sotto = pool.filter(q => q.t === a);
+    const scelte = selezionaDa(sotto, quote[a] || 0, presi);
+    scelte.forEach(q => { domande.push(q); presi.add(q.n); });
+    resa[a] = scelte.length;
+  });
+  // Se un argomento non riesce a riempire la sua quota (finito il materiale),
+  // i posti avanzati vanno agli altri, in ordine di quota d'esame.
+  let vuoti = N_TEST - domande.length;
+  if(vuoti > 0){
+    const ordine = sel.slice().sort((x, y) => (quote[y] || 0) - (quote[x] || 0));
+    for(const a of ordine){
+      if(vuoti <= 0) break;
+      const sotto = pool.filter(q => q.t === a && !presi.has(q.n));
+      const extra = selezionaDa(sotto, vuoti, presi);
+      extra.forEach(q => { domande.push(q); presi.add(q.n); });
+      vuoti -= extra.length;
+    }
   }
   shuffle(domande);
   let tag = sel.length === ARGOMENTI.length ? 'Tutti' : sel.map(a => a.split(' ')[0] + ' ' + (a.split(' ')[1]||'')).join(', ');
