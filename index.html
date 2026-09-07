@@ -1162,6 +1162,35 @@ b.dubbia{color:var(--ottone-t);}
 @media(max-width:640px){ .obh-num b{font-size:1.65rem;} .obh-stato{font-size:.8rem;} }
 @media(max-width:640px){ .azione-alt{flex-direction:column;} button.modo{width:100%;} }
 
+
+/* ---------- schema ---------- */
+.sch-intro{color:var(--nebbia); line-height:1.55; margin:0 0 14px;}
+.sch-nav{display:flex; flex-wrap:wrap; gap:6px;}
+.sch-nav button{background:var(--superficie2); color:var(--testo); border:1px solid rgba(var(--ombra),.10);
+  border-radius:999px; padding:6px 13px; font:inherit; font-size:13px; cursor:pointer;}
+.sch-nav button:hover{border-color:var(--azione);}
+.sch-nav button.on{background:var(--azione); color:var(--su-accento); border-color:var(--azione);}
+.sch-sez{margin-bottom:12px;}
+.sch-sez h3{margin:0 0 4px; font-size:16px;}
+.sch-occhio{color:var(--nebbia); font-size:13px; margin:0 0 12px;}
+.sch-riga{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 14px;
+  align-items:baseline; padding:11px 0; border-top:1px solid rgba(var(--ombra),.09);}
+.sch-riga:first-of-type{border-top:0;}
+.sch-par{font-weight:600;}
+.sch-val{font-variant-numeric:tabular-nums; font-size:13px; white-space:nowrap;}
+.sch-val b{font-size:16px;}
+.sch-ko .sch-val{color:var(--lacca-t);} .sch-ok .sch-val{color:var(--vidimato-t);}
+.sch-nota{grid-column:1/-1; color:var(--nebbia); font-size:13px; line-height:1.5;}
+.sch-quante{color:var(--nebbia); font-size:12px; font-variant-numeric:tabular-nums;}
+.sch-voce{padding:10px 0; border-top:1px solid rgba(var(--ombra),.09); line-height:1.55;}
+.sch-voce:first-of-type{border-top:0;}
+.sch-aut{padding:12px 0; border-top:1px solid rgba(var(--ombra),.09);}
+.sch-aut:first-of-type{border-top:0;}
+.sch-aut .a-tit{font-weight:600; margin-bottom:5px;}
+.sch-aut .a-ok, .sch-aut .a-ko{display:flex; gap:8px; line-height:1.5; margin-top:4px; font-size:14px;}
+.sch-aut .a-ok i, .sch-aut .a-ko i{font-style:normal; font-weight:700; flex:0 0 auto;}
+.sch-aut .a-ok i{color:var(--vidimato-t);} .sch-aut .a-ko i{color:var(--lacca-t);}
+@media(max-width:560px){ .sch-riga{grid-template-columns:1fr;} }
 </style>
 <script>
 (function(){
@@ -1242,6 +1271,7 @@ b.dubbia{color:var(--ottone-t);}
     <button class="tab" id="tab-ripasso"><span class="t-ico"><svg class="ic"><use href="#i-libro"/></svg></span><span>Ripasso</span></button>
     <button class="tab" id="tab-cerca"><span class="t-ico"><svg class="ic"><use href="#i-lente"/></svg></span><span>Cerca</span></button>
     <button class="tab" id="tab-dispensa"><span class="t-ico"><svg class="ic"><use href="#i-dispensa"/></svg></span><span>Dispensa</span></button>
+    <button class="tab" id="tab-schema"><span class="t-ico"><svg class="ic"><use href="#i-chiave"/></svg></span><span>Schema</span></button>
   </div>
 
   <!-- ==================== HOME ==================== -->
@@ -1435,6 +1465,16 @@ b.dubbia{color:var(--ottone-t);}
   </div>
 
   <!-- ==================== DISPENSA MATEMATICA ==================== -->
+  <!-- ==================== SCHEMA ==================== -->
+  <div id="vista-schema" class="nascosto">
+    <div class="card">
+      <h2><svg class="ic ic-g"><use href="#i-chiave"/></svg> Lo schema</h2>
+      <p class="sch-intro" id="sch-intro"></p>
+      <div class="sch-nav" id="sch-nav"></div>
+    </div>
+    <div id="sch-corpo"></div>
+  </div>
+
   <div id="vista-dispensa" class="nascosto">
     <div class="card no-print" style="padding-bottom:14px">
       <div class="disp-tabs">
@@ -2921,6 +2961,7 @@ b.dubbia{color:var(--ottone-t);}
 const QUESTIONS = window.OCF_DATA.QUESTIONS;
 const SPIEG = window.OCF_DATA.SPIEG || {};   // spiegazioni (tutti gli argomenti)
 const TRUCCHI = window.OCF_DATA.TRUCCHI || {};   // trucchi per scegliere tra le opzioni (tutti gli argomenti)
+const REGOLE  = window.OCF_DATA.REGOLE  || {};   // trucchi ricavati dallo schema degli appunti
 const N_TEST = 60;
 
 // ---------- stato ----------
@@ -3087,16 +3128,17 @@ function conferma(testo, cb){
 }
 
 function mostra(vista){
-  ['vista-home','vista-quiz','vista-risultati','vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa'].forEach(v => $(v).classList.add('nascosto'));
+  ['vista-home','vista-quiz','vista-risultati','vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa','vista-schema'].forEach(v => $(v).classList.add('nascosto'));
   $(vista).classList.remove('nascosto');
   $('barra-tab').classList.toggle('nascosto', vista === 'vista-quiz');
   const fascia = $('campo-fascia');
   if(fascia) fascia.classList.toggle('nascosto', vista === 'vista-quiz');
-  $('tab-allenamento').classList.toggle('attiva', !['vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa'].includes(vista));
+  $('tab-allenamento').classList.toggle('attiva', !['vista-dashboard','vista-ripasso','vista-cerca','vista-dispensa','vista-schema'].includes(vista));
   $('tab-dashboard').classList.toggle('attiva', vista === 'vista-dashboard');
   $('tab-ripasso').classList.toggle('attiva', vista === 'vista-ripasso');
   $('tab-cerca').classList.toggle('attiva', vista === 'vista-cerca');
   $('tab-dispensa').classList.toggle('attiva', vista === 'vista-dispensa');
+  $('tab-schema').classList.toggle('attiva', vista === 'vista-schema');
   window.scrollTo(0,0);
 }
 
@@ -5577,7 +5619,14 @@ function rispondi(i){
   $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
 }
 
+// Sotto una risposta sbagliata si mostra la regola degli appunti quando ce n'e'
+// una che su QUESTA domanda funziona davvero; altrimenti resta il vecchio
+// suggerimento di merito. Le due cose hanno provenienza diversa e si vedono.
+function haTrucco(n){ return !!(REGOLE[n] || TRUCCHI[n]); }
 function truccoHTML(n){
+  const r = REGOLE[n];
+  if(r) return `<svg class="ic"><use href="#i-chiave"/></svg> <b>La regola:</b> ${r.replace(/</g,'&lt;')}`
+              + ` <span class="sp-tag">· dagli appunti · <a href="#" class="lnk-schema">vedi lo schema</a></span>`;
   const t = TRUCCHI[n];
   if(!t) return '';
   return `<svg class="ic"><use href="#i-chiave"/></svg> <b>Il trucco:</b> ${t.replace(/</g,'&lt;')} <span class="sp-tag">· generato con AI, verifica sempre</span>`;
@@ -5604,7 +5653,7 @@ function confermaRisposta(){
     opts[i].classList.add('sbagliata'); fb.classList.add('ko');
     fb.textContent = '✘ Sbagliato — la risposta esatta è la ' + letteraMostrata(q, q.e) + '.';
     if(SPIEG[q.n]){ $('q-spiega').innerHTML = spiegaHTML(q.n); $('q-spiega').classList.remove('nascosto'); }
-    if(TRUCCHI[q.n]){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
+    if(haTrucco(q.n)){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
     const ind = indizioSegnali(q, i);
     if(ind){ $('q-segnali').innerHTML = ind; $('q-segnali').classList.remove('nascosto'); }
   }
@@ -5756,7 +5805,7 @@ function fineTest(){
       <div class="tua">✘ La tua risposta: ${letteraMostrata(q, test.risposte[q.n])}) ${q.a[test.risposte[q.n]].replace(/</g,'&lt;')}</div>
       <div class="r">✔ Risposta esatta: ${letteraMostrata(q, q.e)}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
       ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
-      ${TRUCCHI[q.n] ? `<div class="trucco" style="margin-top:8px">${truccoHTML(q.n)}</div>` : ''}
+      ${haTrucco(q.n) ? `<div class="trucco" style="margin-top:8px">${truccoHTML(q.n)}</div>` : ''}
     </div>`).join('');
   test = null;
   renderHome();
@@ -6361,6 +6410,74 @@ document.addEventListener('keydown', e => {
     if(['1','2','3','4'].includes(k)) j = +k - 1;
     if(['a','b','c','d'].includes(k)) j = 'abcd'.indexOf(k);
     if(j >= 0){ e.preventDefault(); rispondi(j); }
+  }
+});
+
+
+// ==================== SCHEMA ====================
+// Le regole degli appunti, con accanto la percentuale ricontata sulla banca dati.
+const SCHEMA = {"forma":{"titolo":"Le parole","occhiello":"valgono su tutti gli argomenti","intro":"Sono le regole più redditizie perché non chiedono di sapere la materia: guardano come è scritta la risposta. Le percentuali qui sotto sono ricontate sulle 19.980 risposte della banca dati, non copiate dagli appunti.","ko":[{"p":"solo · solamente · soltanto · esclusivamente · limitatamente","pct":94,"n":1658,"nota":"La regola più produttiva di tutte: compare in 1.658 risposte e ne sbaglia il 94%."},{"p":"ma non","pct":94,"n":240,"nota":"In previdenza e assicurazioni sbaglia 52 volte su 52. Eccezione nota: il rappresentante degli azionisti di risparmio può presenziare l'assemblea MA NON votare."},{"p":"sempre · mai","pct":86,"n":658,"nota":"Sale al 97% in diritto privato e commerciale e in tributario, al 90% in matematica."},{"p":"in ogni caso · in nessun caso","pct":87,"n":319,"nota":""},{"p":"sicuramente · certamente","pct":81,"n":63,"nota":"In matematica arriva all'89%."}],"ok":[{"p":"sia … sia","pct":51,"n":63,"nota":"La doppia congiunzione: la risposta che tiene insieme due cose invece di sceglierne una."},{"p":"e/o","pct":56,"n":32,"nota":""},{"p":"ovvero · nonché","pct":50,"n":112,"nota":"In diritto del mercato finanziario sale al 54%."},{"p":"salvo · salva","pct":38,"n":171,"nota":"Vale davvero solo in diritto privato e commerciale (51%) e in previdenza (50%). Altrove non discrimina."}]},"argomenti":[{"arg":"Diritto privato e commerciale","voci":[{"p":"anche","tipo":"ko","pct":94,"n":85,"nota":"Controintuitivo: in privato e commerciale «anche» sbaglia nel 94% dei casi, mentre altrove è neutra o buona."},{"p":"salvo · salva","tipo":"ok","pct":51,"n":65,"nota":""}]},{"arg":"Diritto tributario","voci":[{"p":"deve · devono","tipo":"ko","pct":84,"n":38,"nota":""}]},{"arg":"Matematica ed economia finanziaria","voci":[{"p":"deve · devono","tipo":"ko","pct":81,"n":113,"nota":""},{"p":"differenza · differenziale","tipo":"ok","pct":35,"n":52,"nota":"Sui derivati il rendimento è sempre una differenza fra prezzo a pronti e prezzo a termine."}]},{"arg":"Diritto previdenziale e assicurativo","voci":[{"p":"salvo","tipo":"ok","pct":50,"n":26,"nota":""},{"p":"anche","tipo":"ok","pct":42,"n":84,"nota":""}]},{"arg":"Diritto mercato finanziario","voci":[{"p":"tempestivamente","tipo":"ok","pct":40,"n":30,"nota":""}]}],"numeri":{"titolo":"I numeri","voci":[{"p":"giorni","verso":"la più bassa","pct":64,"nota":"Quando le quattro risposte sono giorni, la più bassa è giusta nel 64% dei casi (63% in diritto del mercato finanziario). Eccezioni note negli appunti: durata di un'OPA obbligatoria 15-25 giorni; sospensione Consob fino a 90 giorni; informazioni supplementari entro 20 giorni; OPA concorrente almeno 5 giorni prima; preavviso assemblea ordinaria 8 giorni; opposizione del creditore a una fusione 60 giorni."},{"p":"percentuali","verso":"la più alta","pct":57,"nota":"Vale in diritto del mercato finanziario (57%). In matematica invece non funziona: li' le percentuali sono calcoli, non soglie di legge."}],"no":[{"p":"mesi e anni","nota":"Gli appunti dicono «la più alta». Sulla banca dati non regge: 36% la più bassa contro 32% la più alta. Su mesi e anni conviene ragionare sul merito."},{"p":"importi in euro","nota":"Nemmeno questa regge da sola (22% la più bassa, 16% la più alta)."}]},"autorita":[{"ambito":"Emittenti · appello al pubblico risparmio · abusi di mercato","ok":"CONSOB, sempre. Sono la terza parte del TUF.","ko":"Banca d'Italia · MEF · Borsa Italiana · qualsiasi «Autorita'» generica"},{"ambito":"Gestione collettiva · fondi · SICAV · SGR","ok":"Banca d'Italia, o Banca d'Italia sentita la Consob.","ko":"Consob — con tre eccezioni: le SIM, la sospensione del CDA con nomina di un commissario, la parità di trattamento fra investitori e la commercializzazione."},{"ambito":"Antiriciclaggio","ok":"MEF (riceve le segnalazioni, applica le sanzioni) e UIF (vigila). «All'uopo» è giusta al 100%.","ko":"Consob · CICR · IVASS · Ufficio italiano cambi · Banca d'Italia (un'eccezione: i collaboratori esterni identificano la clientela secondo le procedure indicate da Banca d'Italia)"},{"ambito":"Consulente finanziario · offerta fuori sede","ok":"L'Organismo: tiene l'albo unico, il suo collegio sindacale e il suo sito internet. Sopra l'Organismo c'e' la Consob.","ko":"deroga · autorizzazione · Banca d'Italia · sito internet della Consob"},{"ambito":"Previdenza complementare · fondi pensione","ok":"COVIP, che riferisce al Ministro del Lavoro.","ko":"SICAV (mai) · precluso"},{"ambito":"Assicurazioni · rami vita e danni","ok":"IVASS. Nella vigilanza, la risposta più lunga.","ko":""},{"ambito":"Mercati","ok":"Consob e Borsa Italiana. Euronext Star, in mancanza Euronext Milan; per i FIA Euronext MIV.","ko":"Nei mercati: giorni, mesi e anni la più bassa — al contrario del resto."}],"merito":[{"t":"Derivati: i quattro comandamenti","v":["Comandamento 1: in ogni derivato chi compra (lungo) è RIALZISTA sul sottostante — l'unica eccezione è il compratore di put, che è ribassista perché ha comprato il diritto di vendere.","Comandamento 3: in ogni derivato chi vende (corto) è RIBASSISTA sul sottostante — eccetto il venditore di put, che è rialzista perché ha l'obbligo di comprare.","Il cambio è sempre dollaro su euro: quanti dollari servono per fare un euro. Se il numero SALE il dollaro SCENDE — è il contrario della matematica.","Chi deve INCASSARE valuta estera si copre VENDENDOLA a termine; chi deve PAGARLA si copre comprandola. Dove vendo merce vendo la valuta, dove compro merce compro la valuta. Il contrario è speculazione.","Chi COMPRA il future sul Bund è rialzista sul PREZZO del Bund, quindi RIBASSISTA sui tassi. Prezzo e tassi vanno sempre in direzioni opposte.","Nel plain vanilla: se la domanda prevede un RIBASSO dei tassi la risposta giusta paga il VARIABILE (floating rate payer); se prevede un RIALZO paga il FISSO. Se non ci sono aspettative, guarda cosa si paga: paga variabile = attesa di ribasso, paga fisso = attesa di rialzo.","Nello swap la parola giusta è FLUSSI: è uno scambio, mai una compravendita. Lungo = incasso (rialzista), corto = pago (ribassista).","Chi compra il FRA è rialzista sui tassi, quindi paga il fisso. FRA 3x9: lo scambio parte fra 3 mesi e l'operazione dura 9 mesi in tutto.","L'arbitraggio è profitto senza rischio da un disallineamento dei prezzi: esiste solo sui mercati NON regolamentati (OTC). Sui mercati regolamentati il valore corrente è nullo per entrambe le parti.","Il future non ha rischio di controparte (c'e' la cassa di compensazione) ne' rischio liquidità (marking to market giornaliero). Il margine è una garanzia, non un anticipo di prezzo. Per la leva, nei quiz il future non è mai lo strumento di copertura."]},{"t":"Opzioni","v":["Compratore di call: massimo guadagno illimitato, massima perdita il premio. Venditore di call: massimo guadagno il premio, perdita illimitata. Break even = prezzo di esercizio + premio.","Compratore di put: ribassista, perdita massima il premio. Venditore di put: rialzista, obbligato a comprare. Break even = prezzo di esercizio − premio.","Out of the money e at the money non si esercitano mai a scadenza: si perde tutto il premio. In the money si esercita sempre, ma si può comunque perdere se il premio era alto. Per «conviene esercitare?» il premio NON si considera; per «quanto guadagna?» si'.","Il delta è la variazione del premio al variare del sottostante, e la probabilità di scadere in the money: fortemente out of the money → delta vicino a 0, come il premio.","Premio = valore intrinseco + valore temporale. Non è mai negativo: al minimo vale 0.","Il CAP è una call sui tassi ed è la cedola massima; il FLOOR è una put sui tassi ed è la cedola minima; il COLLAR è i due insieme. Chi teme il rialzo dei tassi compra un cap."]},{"t":"Obbligazioni","v":["Le esotiche stanno solo sull'OTC. L'opzione è l'unico derivato scambiato sia in borsa sia OTC, ed è l'unico derivato asimmetrico: facoltà del compratore contro obbligo del venditore.","La duration è un tempo: quando rientri del capitale. La duration MODIFICATA è volatilità: di quanto si muove il prezzo. Duration più alta = zero coupon; se non c'e', scadenza più lontana con la cedola più bassa. Non guardare il TRES.","Variazione del prezzo = − duration modificata × variazione del TRES. Se il TRES SALE la risposta ha il segno MENO davanti; se scende, il più. Prezzo e rendimento sono sempre inversi.","Sopra la pari: cedola maggiore del rendimento di mercato. Alla pari: uguali. Sotto la pari: cedola minore.","Corso secco = quotazione senza rateo. Tel quel = corso secco + rateo della cedola. Gli zero coupon (BOT) quotano tel quel.","Da AAA a BBB− è investment grade; da BB a D è junk bond. Il rating ESG riguarda la società, non la singola emissione, e non è correlato al rating creditizio.","La subordinata è l'obbligazione più rischiosa: rimborsata dopo tutte le altre, prima solo degli azionisti.","Tassi giu': rischio di reinvestimento si', rischio prezzo no. Tassi su': il contrario. Uno è sempre l'opposto dell'altro.","Le strutturate sono un'obbligazione (spesso zero coupon) più un'opzione. Se il sottoscrittore COMPRA l'opzione (index linked) il capitale è garantito e al massimo perde il premio. Se VENDE una put (reverse convertible) non ha garanzia di rimborso ma incassa una cedola più alta. Cedola massima = cap; cedola minima = floor."]},{"t":"Scenario e macroeconomia","v":["Covered warrant: numero × multiplo = azioni. Con multiplo 0,2 servono 5 warrant per un'azione; con multiplo 0,5 ne servono 2.","In recessione: BCE compra titoli di Stato, abbassa i tassi, alza la liquidità; lo Stato abbassa le tasse. Con i tassi in discesa conviene il BTP a tasso fisso, non il CCT.","Con inflazione alta: BCE vende titoli di Stato, alza i tassi e la riserva obbligatoria. Con i tassi in salita conviene il CCT a tasso variabile, non il BTP. L'obiettivo BCE è il 2%: in Italia l'indice è il NIC, in Europa lo IAPC.","Parita' coperta: la valuta del paese col tasso di interesse PIU' ALTO si deprezza a termine. Tassi e valute sono inversamente proporzionali.","Il PIL somma tutta la ricchezza prodotta in uno Stato, da soggetti autoctoni SIA da esterni, e conta solo i beni finiti, non gli intermedi. Saldo commerciale = esportazioni − importazioni.","M1 = circolante e conti correnti. M2 = M1 + conti vincolati. M3 = M2 + strumenti del mercato monetario. Sono tutti liquidità, uno dentro l'altro."]},{"t":"Portafoglio e indicatori","v":["La curva è normalmente inclinata in positivo (BTP rende più del BOT) per premio al rischio e preferenza per la liquidità. In recessione diventa negativa.","Markowitz: parole giuste frontiera efficiente e correlazione fra i titoli. Parole sbagliate beta, risk free, correlazione col mercato — quelle sono del CAPM. La frontiera è crescente e concava; sopra non c'e' niente, sotto ci sono i portafogli dominati.","CAPM: rendimento atteso = risk free + premio al rischio, e il premio dipende dal BETA. Il beta è la correlazione fra il titolo e il MERCATO, mai fra i titoli. Parole sbagliate nel CAPM: frontiera efficiente, correlazione fra i titoli.","Beta > 1: growth, amplifica guadagni e perdite, meglio al rialzo. Beta = 1: gestione passiva, ETF. Beta < 1: value, attutisce, meglio al ribasso. Il beta misura il rischio di mercato (sistematico).","La deviazione standard misura la dispersione dei rendimenti attorno alla media: rischio TOTALE. La semideviazione guarda solo la volatilità negativa. Entrambe sono sempre positive, perché si eleva al quadrato.","La correlazione va da −1 a +1. A −1 i titoli si muovono all'opposto e il rischio si annulla; a +1 si muovono uguali e non c'e' beneficio di diversificazione.","Sharpe = (rendimento − risk free) / deviazione standard: a parità di excess return vince chi ha deviazione minore. Treynor usa il beta al posto della deviazione. L'alfa di Jensen è lo scostamento dalla security market line del CAPM: misura il rischio specifico, cioè la bravura nello stock picking.","Rendimento atteso = somma di ogni rendimento moltiplicato per la sua probabilità.","TWRR: non risente dei versamenti del singolo, misura il gestore. MWRR: tiene conto di versamenti e rimborsi, misura il consulente. Su un PIC coincidono, su un PAC divergono. I GIPS raccomandano il TWRR.","Prezzo/utile alto = titolo growth, rischia di essere sopravvalutato. Basso = value, potenzialmente sottovalutato. Indica in quanti anni l'utile ripaga il prezzo.","Dividend yield = ultimo dividendo / prezzo corrente: meglio il più alto. Payout = dividendo / utile: a 1 distribuisce tutto, a 0 si autofinanzia."]},{"t":"Fondi e gestione collettiva","v":["DDM: prezzo = dividendo / (rendimento richiesto − crescita). Se sale il rendimento richiesto il prezzo teorico scende.","L'analisi tecnica e la finanza comportamentale stanno insieme: mercati inefficienti, investitori irrazionali, mercati in parte prevedibili. L'analisi fondamentale studia i bilanci e i multipli — mai statistica, mai grafici.","Una SICAV non può mai: emettere obbligazioni, emettere azioni di risparmio, comprare azioni proprie, prevedere il diritto di opzione, accettare conferimenti in natura.","Capitale minimo: SGR un milione, ridotto a 500.000 se gestisce solo FIA. SICAV un milione, ridotta a 500.000 se è riservata a clienti professionali.","Supervisione strategica: cerca il verbo AVVIA — Approva, Valuta, Verifica, Individua, Assicura. Gestione: cerca PICARD — Presiede, Cura, Attua, Riferisce, Definisce. Revisione interna: PAV — Presenta, Adotta, Verifica."]},{"t":"Tributario","v":["Il benchmark deve essere trasparente, replicabile, rappresentativo e oggettivo. Tracking error alto = gestione attiva.","L'ETF è un fondo indicizzato quotato: gestione passiva, beta pari a 1.","Il constant mix mantiene costanti i PESI: si ribilancia vendendo cio' che sale e comprando cio' che scende. Rende meglio nei mercati che oscillano senza direzione.","26% quasi sempre. 12,5% per i titoli di Stato, le obbligazioni della Cassa depositi e prestiti e i titoli di solidarieta'. I dividendi in regime d'impresa sono imponibili al 58,14%."]},{"t":"Diritto privato","v":["Nettisti: ricevono tutto al netto, l'intermediario fa da sostituto d'imposta. Sono persone fisiche non in esercizio d'impresa, società semplici, ONLUS, enti non commerciali. Lordisti: nessuna ritenuta o solo d'acconto — imprese, società, fondi, SICAV e gestioni patrimoniali.","Tassazione per cassa, al realizzo — tranne le gestioni patrimoniali, che sono per competenza sul maturato. Risparmio gestito vuol dire solo gestioni di portafoglio: fondi e SICAV sono amministrato."]},{"t":"Previdenza e assicurazioni","v":["Redditi di capitale: impiego statico, producono interessi (cedole, dividendi, zero coupon, polizze vita, previdenza). Redditi diversi: impiego dinamico, compravendita che genera plus o minusvalenze — tranne la vendita di fondi e SICAV, che resta reddito di capitale.","La nullità è il venir meno di un elemento essenziale: Forma, Oggetto, Causa, Accordo. È imprescrittibile, la fa valere chiunque, vale anche contro i terzi in buona fede, non è sanabile.","L'annullabilità nasce da incapacità legale o naturale o da vizio del consenso (errore, dolo, violenza morale). Si prescrive in 5 anni, la fa valere solo la parte debole, non si oppone ai terzi in buona fede, ed è sanabile. Nelle assicurazioni, se leggi dolo o colpa grave è annullabilità.","Deducibilita' fino a 5.164,57 euro. Prestazione: eta' pensionabile e almeno 5 anni di adesione, almeno il 50% in rendita. Anticipi: 75% per spese sanitarie gravi; dopo 8 anni 75% per la prima casa o 30% per qualsiasi motivo. Portabilita' dopo 2 anni."]},{"t":"Appello al pubblico risparmio e abusi di mercato","v":["Scelta espressa: il TFR va in previdenza dal mese successivo. Silenzio assenso: solo il maturando, dal settimo mese, sulla linea più prudente. Sotto i 50 dipendenti il TFR resta in azienda, sopra va al fondo di tesoreria INPS. Se finisce in previdenza la scelta è irreversibile.","Nei rami danni vale il principio indennitario: si risarcisce il danno, mai un guadagno. La sovrassicurazione è inutile, la sottoassicurazione porta alla regola proporzionale — salvo la polizza a primo rischio assoluto."]},{"t":"Antiriciclaggio","v":["LTC: detraibile al 19% fino a 1.291,14 euro di premio, la detrazione più alta. Le altre polizze di rischio: 19% ma fino a 530 euro.","OPA obbligatoria: chi supera il 30% (o il 25% se la società non è una PMI) deve offrire sul 100% delle azioni. L'offerente non può revocare l'OPA e i rilanci devono essere migliorativi; oltre il 90% deve comprare le residue al prezzo dell'OPA.","Il prospetto lo predispone l'emittente e lo mostra l'offerente. Va depositato in formato elettronico ricercabile, mai cartaceo. Risarcimento entro 5 anni dalla pubblicazione, o 2 anni dalla scoperta del vizio."]},{"t":"Mercati","v":["L'informazione privilegiata è specifica, non pubblica, riguarda emittenti e ha effetto significativo sui prezzi. La condanna comporta confisca del prodotto o di somma equivalente e pubblicazione della sentenza su almeno due quotidiani, di cui uno economico. Le operazioni della BCE e quelle sul debito pubblico di uno Stato UE non sono reato."]},{"t":"Altre regole degli appunti","v":["Il consulente segnala all'intermediario, che segnala alla UIF, che riporta al MEF. Oppure il consulente segnala direttamente entro 30 giorni — o alla banca o al MEF, mai a entrambi.","Limite al contante e ai titoli al portatore: 5.000 euro. Restano a 1.000: trasferibilita' degli assegni, rimesse di denaro, vaglia postale e cambiario. Opere d'arte: 10.000 euro.","I documenti dell'adeguata verifica si conservano 10 anni. In tutti gli altri quiz sono 5.","Prezzo di riferimento = chiusura giornaliera. Prezzo ufficiale = medio ponderato dell'intera quantita' negoziata. Prezzo dinamico = ultimo contratto della seduta.","Le operazioni della BCE: rifinanziamento principale e a più lungo termine sono di mercato aperto; rifinanziamento marginale e deposito overnight sono su iniziativa delle controparti. Quando c'e' crisi la BCE compra titoli e abbassa i tassi.","In Italia l'indice dell'inflazione è il NIC (rilevato dall'ISTAT); in Europa lo IAPC. L'obiettivo BCE è un'inflazione intorno al 2% nel medio-lungo periodo.","Terza parte del TUF, emittenti: la competenza è SEMPRE la Consob. Scarta Banca d'Italia, MEF, Borsa Italiana e ogni «Autorita'» generica. Le operazioni della BCE e quelle sul debito pubblico di uno Stato UE non costituiscono reato — ma solo se lo Stato è dell'Unione europea.","Euronext Star se compare; se il titolo esce dal segmento Star, o se Star non c'e', Euronext Milan. Per i FIA, Euronext MIV. Nei mercati la risposta giusta spesso ripete una parola della domanda.","L'Organismo tiene l'albo unico: il suo collegio sindacale, il suo sito internet, a prescindere, 10%. Scarta deroga, autorizzazione e Banca d'Italia. Sopra l'Organismo c'e' la Consob.","Sanzioni del consulente: «da uno a quattro mesi» è sempre giusta. Se non c'e', o la massima (radiazione) o la minima (richiamo scritto). Sospensione cautelare: fino a 180 giorni se l'Organismo presume una violazione, fino a un anno se il consulente è imputato.","L'esperienza va maturata nel decennio precedente, almeno la metà nei 3 anni prima dell'inizio dell'attività. Fra le durate incrociate nelle risposte, prendi la più breve. Mai «iscrizione all'albo più almeno 6 mesi».","Le ABS sono garantite non dal patrimonio dell'emittente ma da un pacchetto di crediti ceduti a una società veicolo. Si emettono con asta a rubinetto, come le obbligazioni bancarie.","Cedola del CCT: rendimento annuo del BOT diviso 2 (la cedola è semestrale), più lo spread. Con BOT al 4,40% e spread 0,15: 2,35%.","Tasso di rendimento immediato = cedola / corso secco. Mai sul tel quel.","I BTP Green sono titoli di Stato a medio-lungo termine, rimborsati alla pari come un BTP normale. Un'obbligazione verde può destinare al massimo il 15% dei proventi ad altre attività.","Le rivalutabili investono in una gestione separata in obbligazioni di Stati UE, valutate al costo storico e non al valore di mercato. Le linked (index e unit) coprono un'esigenza di investimento. Su rami vita e danni vigila l'IVASS: nella vigilanza, la risposta più lunga.","In tributario l'orizzonte temporale è sempre l'anno. «Non è possibile rispondere» è giusta 8 volte su 9. Vigilanza prudenziale, a determinate condizioni, con adeguato scambio di informazioni, non subira' e lordista sono risposte giuste al 100%.","In privato e commerciale sono giuste oltre il 90%: registro delle imprese, atto costitutivo, statuto, tribunale. Le risposte secche «al tribunale», «al collegio sindacale», «all'assemblea convocata per approvare il bilancio» sono giuste al 100%."]}],"copertura":2877};
+let schSez = 'forma';
+function renderSchema(){
+  const S = SCHEMA;
+  $('sch-intro').innerHTML =
+    'Le regole ricavate dagli appunti, con accanto <b>la percentuale ricontata sulle 19.980 risposte '
+    + 'della banca dati</b> — non quella scritta a mano. Una risposta presa a caso è giusta nel 25% dei '
+    + 'casi: è quello il metro. Sotto le risposte sbagliate compare la regola che avrebbe funzionato '
+    + 'su quella domanda, quando ce n\'è una: succede in <b>' + fmtN(S.copertura) + '</b> domande.';
+  const sezioni = [['forma','Le parole'],['argomenti','Parole per argomento'],['numeri','I numeri'],
+                   ['autorita','Chi fa cosa'],['merito','Le regole di merito']];
+  $('sch-nav').innerHTML = sezioni.map(([k,n]) =>
+    `<button data-s="${k}" class="${k===schSez?'on':''}">${n}</button>`).join('');
+  [...$('sch-nav').children].forEach(b => b.onclick = () => { schSez = b.dataset.s; renderSchema(); });
+  const riga = (v, cls) => `<div class="sch-riga ${cls}">
+      <div><span class="sch-par">${v.p}</span>
+        ${v.n ? `<div class="sch-quante">su ${fmtN(v.n)} risposte della banca dati</div>` : ''}</div>
+      <div class="sch-val"><b>${v.pct}%</b> ${cls==='sch-ko'?'sbagliate':'giuste'}</div>
+      ${v.nota ? `<div class="sch-nota">${v.nota}</div>` : ''}</div>`;
+  let h = '';
+  if(schSez === 'forma'){
+    h += `<div class="card sch-sez"><h3>Parole da scartare</h3>
+      <p class="sch-occhio">${S.forma.intro}</p>` + S.forma.ko.map(v => riga(v,'sch-ko')).join('') + '</div>';
+    h += `<div class="card sch-sez"><h3>Parole da preferire</h3>
+      <p class="sch-occhio">Qui il metro è il 25%: tutto quello che sta sopra è un segnale.</p>`
+      + S.forma.ok.map(v => riga(v,'sch-ok')).join('') + '</div>';
+  }
+  if(schSez === 'argomenti'){
+    h += `<div class="card sch-sez"><h3>Parole che valgono solo dentro un argomento</h3>
+      <p class="sch-occhio">Alcune parole cambiano segno da una materia all\'altra: qui ci sono quelle
+      che si comportano diversamente dalla regola generale.</p></div>`;
+    h += S.argomenti.map(a => `<div class="card sch-sez"><h3>${a.arg}</h3>`
+      + a.voci.map(v => riga(v, v.tipo==='ko'?'sch-ko':'sch-ok')).join('') + '</div>').join('');
+  }
+  if(schSez === 'numeri'){
+    h += `<div class="card sch-sez"><h3>Quando le quattro risposte sono numeri</h3>`
+      + S.numeri.voci.map(v => `<div class="sch-riga sch-ok">
+          <div><span class="sch-par">${v.p}</span><div class="sch-quante">prendi ${v.verso}</div></div>
+          <div class="sch-val"><b>${v.pct}%</b> giuste</div>
+          ${v.nota?`<div class="sch-nota">${v.nota}</div>`:''}</div>`).join('') + '</div>';
+    h += `<div class="card sch-sez"><h3>Regole che non hanno retto alla verifica</h3>
+      <p class="sch-occhio">Sono negli appunti, ma sulla banca dati non funzionano. Meglio saperlo.</p>`
+      + S.numeri.no.map(v => `<div class="sch-voce"><b>${v.p}</b> — ${v.nota}</div>`).join('') + '</div>';
+  }
+  if(schSez === 'autorita'){
+    h += `<div class="card sch-sez"><h3>Chi fa cosa</h3>
+      <p class="sch-occhio">Nei quiz di normativa buona parte delle risposte sbagliate mette l\'autorità
+      sbagliata. Sapere di chi è la competenza ne elimina due su quattro.</p>`
+      + S.autorita.map(a => `<div class="sch-aut"><div class="a-tit">${a.ambito}</div>
+          <div class="a-ok"><i>&#10003;</i><span>${a.ok}</span></div>
+          ${a.ko?`<div class="a-ko"><i>&#10007;</i><span>${a.ko}</span></div>`:''}</div>`).join('') + '</div>';
+  }
+  if(schSez === 'merito'){
+    h += S.merito.map(g => `<div class="card sch-sez"><h3>${g.t}</h3>`
+      + g.v.map(t => `<div class="sch-voce">${t}</div>`).join('') + '</div>').join('');
+  }
+  $('sch-corpo').innerHTML = h;
+}
+$('tab-schema').onclick = () => { renderSchema(); mostra('vista-schema'); };
+document.addEventListener('click', e => {
+  if(e.target.classList && e.target.classList.contains('lnk-schema')){
+    e.preventDefault(); renderSchema(); mostra('vista-schema');
   }
 });
 
