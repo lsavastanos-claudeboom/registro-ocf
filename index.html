@@ -4927,12 +4927,18 @@ function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 // è l'unica quantità che dipende da chi studia. Con l'obiettivo in esatte, una giornata
 // storta ne chiederebbe di più proprio quando conviene fermarsi prima.
 // Resta fisso per tutta la giornata e si ricalcola domani sul residuo.
+// Cambia quando cambia il MODO di calcolare l'obiettivo. L'obiettivo resta fermo
+// per tutta la giornata — deve, altrimenti balla mentre si risponde — ma se esce
+// una versione con un calcolo diverso quello di oggi va rifatto subito, non domani.
+const VERSIONE_PIANO = 4;
 function targetOggi(domandeAlGiorno){
   const oggi = oggiISO();
   if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)
      || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== (pianoAttivo() ? 'copertura' : 'domande')
+     || stato.piano.v !== VERSIONE_PIANO
      || stato.piano.traguardo !== traguardo()){        // cambiare traguardo deve cambiare l'obiettivo, subito
     stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: pianoAttivo() ? 'copertura' : 'domande',
+                   v: VERSIONE_PIANO,
                    traguardo: traguardo(), target: Math.max(1, domandeAlGiorno)};
     salvaLocale();
   }
@@ -4980,7 +4986,7 @@ function renderObiettivo(){
   // passa comunque da targetOggi: l'obiettivo si fissa una volta al giorno e non
   // deve ballare mentre lei risponde
   const alGiorno = pianoAttivo()
-    ? targetOggi(Math.min(TETTO_GIORNO, Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno)))
+    ? targetOggi(P.domObiettivo)
     : targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
   const nTestGiorno = Math.max(1, Math.round(alGiorno / N_TEST));
   const fmt = fmtN;
@@ -5070,7 +5076,7 @@ function prospettoPiano(){
   const alTetto = dataIt(P.isoFineAlTetto);
   const voci = [
     {n: fmtN(P.U), t: 'domande mai viste'},
-    {n: fmtN(P.domCopAlGiorno), t: `al giorno${P.domCopAlGiorno >= TETTO_GIORNO ? ' (il tetto)' : ''} · ${P.testCopAlGiorno} test`},
+    {n: fmtN(P.domObiettivo), t: `da fare oggi · ${P.testObiettivo} test`},
     {n: fmtN(P.giorni), t: `giorni fino al ${scad}`}];
   const messaggi = [];
   let semaforo = 'ok';
@@ -5099,8 +5105,9 @@ function prospettoPiano(){
   }
   // nel caso d'allarme la data al tetto e' gia' stata detta sopra: ripeterla confonde
   if(semaforo !== 'allarme') messaggi.push({cls: '', txt:
-    `Quando le domande nuove finiscono, il loro posto passa alle <b>riconferme</b> e te lo scrivo qui. `
-    + `Tenendo il tetto di ${TETTO_GIORNO} al giorno succederebbe intorno al <b>${alTetto}</b>.`});
+    `Il passo è di <b>${TETTO_GIORNO} domande al giorno</b> (${Math.round(TETTO_GIORNO/N_TEST*10)/10} test): tenendolo, la banca dati finisce il <b>${alTetto}</b> `
+    + `e da lì il posto delle domande nuove passa alle <b>riconferme</b> — te lo scrivo qui quando succede. `
+    + `Il minimo per non sforare il ${scad} sarebbe <b>${fmtN(P.domCopAlGiorno)}</b> al giorno.`});
   return {fase: 'Copertura', semaforo,
     titolo: `Ogni test: ${P.nuovePerTest} domande nuove e ${N_TEST - P.nuovePerTest} di recupero`,
     voci, messaggi};
@@ -5219,6 +5226,14 @@ function piano(){
   const nuoveAlTetto = Math.max(1, Math.round(TETTO_GIORNO * QUOTA_NUOVE));
   const ggAlTetto = L.U > 0 ? Math.ceil(L.U / nuoveAlTetto) : 0;
   const isoFineAlTetto = L.U > 0 ? oggiPiuISO(ggAlTetto - 1) : oggiISO();
+
+  // L'OBIETTIVO DI OGGI. Non e' il minimo che basterebbe per arrivare in tempo:
+  // e' il ritmo scelto, 300 domande al giorno, tutti i giorni finche' c'e' da
+  // coprire. Si abbassa solo quando quello che resta e' meno di una giornata.
+  const domObiettivo = L.U > 0
+    ? Math.min(TETTO_GIORNO, Math.max(N_TEST, Math.ceil(L.U / QUOTA_NUOVE)))
+    : Math.min(TETTO_GIORNO, Math.max(N_TEST, dom));
+  const testObiettivo = Math.round(domObiettivo / N_TEST * 10) / 10;
   // quante domande mai viste incontra davvero in un giorno, misurate
   const conNuove = recenti.filter(g => g.nuove !== undefined);
   const ritmoNuove = conNuove.length
@@ -5239,6 +5254,7 @@ function piano(){
           nuovePerTest, testCopertura,
           testCopAlGiorno: Math.ceil(testCopAlGiorno * 10) / 10,
           domCopAlGiorno, domCopNecessarie, oltreIlTetto, tetto: TETTO_GIORNO,
+          domObiettivo, testObiettivo,
           nuoveAlTetto, ggAlTetto, isoFineAlTetto,
           ritmoNuove, ggAllaCopertura, isoFineCopertura, coperturaInTempo,
           inLinea: ritmo >= dom,
@@ -6184,8 +6200,7 @@ function calendarioPiano(){
     // di oggi, che e' la misura onesta di "quanto ci vuole"
     // L'obiettivo di una casella e' quello della copertura, lo stesso numero che
     // compare in cima alla schermata: le due cose devono dire la stessa cosa.
-    const obiettivo = finale ? 0
-      : Math.min(TETTO_GIORNO, Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno));
+    const obiettivo = finale ? 0 : P.domObiettivo;
     let stt;
     if(n === oggi) stt = 'oggi';
     else if(futuro) stt = finale ? 'finale' : 'futuro';
@@ -6909,8 +6924,29 @@ $('btn-esci').onclick = () => conferma('Vuoi uscire dall\'account? I progressi r
   await sb.auth.signOut();
 });
 
+// Aggiornamento automatico. L'app installata resta aperta per giorni: senza questo,
+// una versione nuova la vedeva solo chi ricaricava a mano, e i numeri mostrati
+// restavano quelli vecchi senza che nulla lo dicesse.
+// Quando il service worker nuovo prende il controllo, la pagina si ricarica una volta
+// sola (il contrassegno in sessione evita il ciclo infinito).
 if('serviceWorker' in navigator && location.protocol === 'https:'){
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // controlla se c'e' una versione nuova adesso, e poi ogni mezz'ora
+    reg.update().catch(() => {});
+    setInterval(() => reg.update().catch(() => {}), 30*60*1000);
+  }).catch(() => {});
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    try {
+      if(sessionStorage.getItem('ocf_ricaricato') === '1') return;
+      sessionStorage.setItem('ocf_ricaricato', '1');
+    } catch(e){}
+    location.reload();
+  });
+  // e quando si torna sull'app dopo averla lasciata in secondo piano
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState !== 'visible') return;
+    navigator.serviceWorker.getRegistration().then(r => r && r.update().catch(() => {})).catch(() => {});
+  });
 }
 
 avvio();
