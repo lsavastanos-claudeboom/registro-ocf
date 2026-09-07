@@ -3021,7 +3021,13 @@ const CHIAVE_LAPIDI = 'ocf_test_cancellati';   // fuori dallo stato: la sincroni
 
 // La chiave di un test: i suoi stessi dati. Non serve un identificativo nuovo,
 // e funziona anche sui test salvati dalle versioni precedenti dell'app.
-const chiaveTest = h => [h.iso, h.data, h.punti, h.tot, h.argomenti].join('|');
+// La chiave di un test. Data, punteggio e argomenti non bastano: due test chiusi
+// nello stesso minuto con lo stesso risultato avevano la stessa chiave, e
+// cancellarne uno li cancellava tutti. Dai test nuovi in poi ogni test si porta
+// dietro un suo numero (h.k), unico per costruzione. I test gia' salvati non ce
+// l'hanno e tengono la vecchia chiave, cosi' le cancellazioni gia' fatte restano valide.
+const chiaveTest = h => h.k ? ('k:' + h.k)
+                            : [h.iso, h.data, h.punti, h.tot, h.argomenti].join('|');
 
 function lapidiLocali(){
   try{ const v = JSON.parse(localStorage.getItem(CHIAVE_LAPIDI) || '[]'); return Array.isArray(v) ? v : []; }
@@ -5832,7 +5838,8 @@ function fineTest(){
     errori.forEach(q => contaMat(q, 'ko'));
     stato.storico.push({ data: new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
                          iso: oggiISO(), argomenti: test.argomenti, punti: giuste.length,
-                         tot: test.sim ? test.domande.length : risposte.length, mat });
+                         tot: test.sim ? test.domande.length : risposte.length, mat,
+                         k: Date.now().toString(36) + Math.random().toString(36).slice(2, 8) });
     const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
     g.test++; g.ok += giuste.length; g.ko += errori.length;
     g.nuove = (g.nuove || 0) + nuoveViste;   // copertura: domande viste per la prima volta
