@@ -81,6 +81,7 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 .cal-riass{margin-top:14px; padding-top:12px; border-top:1px solid var(--filo); font-size:.9rem; line-height:1.55;}
 .cal-riass b{color:var(--testo);}
 .cal-male{color:var(--ottone-t);} .cal-male b{color:var(--ottone-t);}
+.cal-bene{color:var(--vidimato-t);} .cal-bene b{color:var(--vidimato-t);}
 @media(max-width:640px){ .cal-g{min-height:54px; padding:5px 2px;} .cal-v{font-size:.9rem;} .cal-s{font-size:.55rem;} }
 
 /* ============ IL CAMPO ============
@@ -4281,7 +4282,7 @@ function proiezioneEsame(){
   // se lo storico non ha ancora il dettaglio delle domande nuove, lo stimo dalla quota del mix
   const ritmoNuove = conNuove.length
     ? Math.round(conNuove.reduce((a,g) => a + (g.nuove||0), 0) / conNuove.length)
-    : Math.round(ritmo * mixNuove() / 100);
+    : Math.round(ritmo * (pianoAttivo() ? QUOTA_NUOVE : mixNuove() / 100));
   const ritmoNuoveStimato = conNuove.length === 0;
 
   const gg = giorniAllEsame();          // giorni totali
@@ -4370,15 +4371,18 @@ function mediePerTest(){
 function testNecessari(pr){
   if(inFaseFinale() || pr.ggCop <= 0 || pr.nuoveRimaste <= 0) return null;
   const nuoveAlG = Math.ceil(pr.nuoveRimaste / pr.ggCop);
-  const nuovePerTest = Math.max(1, composizione(statiPool(QUESTIONS), false).nNew);
+  // quante domande nuove porta davvero un test: con il piano attivo e' la quota
+  // del piano, con i cursori a mano e' quella scelta a mano
+  const s = statiPool(QUESTIONS);
+  const nuovePerTest = Math.max(1, pianoAttivo() ? composizionePiano(s).nNew : composizione(s, false).nNew);
   return {nuoveAlG, nuovePerTest, test: nuoveAlG / nuovePerTest};
 }
 
 function fineCopertura(pr){
   if(!pr.ritmoNuove || pr.nuoveRimaste <= 0) return null;
   const gg = Math.ceil(pr.nuoveRimaste / pr.ritmoNuove);
-  const d = new Date(); d.setDate(d.getDate() + gg);
-  const iso = d.toISOString().slice(0,10);
+  const iso = oggiPiuISO(gg);
+  const d = new Date(iso);
   const scarto = Math.round((d - new Date(isoCopertura())) / 86400000);
   return {gg, data: d.toLocaleDateString('it-IT', {day:'numeric', month:'short'}), iso, scarto};
 }
@@ -4895,9 +4899,9 @@ function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 function targetOggi(domandeAlGiorno){
   const oggi = oggiISO();
   if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)
-     || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== (pianoAttivo() ? 'piano' : 'domande')
+     || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== (pianoAttivo() ? 'copertura' : 'domande')
      || stato.piano.traguardo !== traguardo()){        // cambiare traguardo deve cambiare l'obiettivo, subito
-    stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: pianoAttivo() ? 'piano' : 'domande',
+    stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: pianoAttivo() ? 'copertura' : 'domande',
                    traguardo: traguardo(), target: Math.max(1, domandeAlGiorno)};
     salvaLocale();
   }
@@ -4936,18 +4940,25 @@ function renderObiettivo(){
   }
   const pr = proiezioneEsame();            // unica fonte del calcolo: obiettivo e proiezione non possono discordare
   const P = piano();
-  // L'obiettivo del giorno nasce dal piano: quante risposte servono ancora per
-  // portare tutta la banca dati a consolidamento, diviso i giorni che restano.
+  // L'obiettivo del giorno e' quello della COPERTURA: quante domande servono oggi
+  // per incontrare tutta la banca dati entro la scadenza. Il consolidamento di tutto
+  // costerebbe molto di piu' e nei giorni che restano non ci sta: metterlo come
+  // obiettivo darebbe un numero che non si puo' raggiungere, e quindi inutile.
+  // Quando la copertura e' finita l'obiettivo passa al consolidamento, che a quel
+  // punto e' l'unico lavoro rimasto.
   // passa comunque da targetOggi: l'obiettivo si fissa una volta al giorno e non
   // deve ballare mentre lei risponde
   const alGiorno = pianoAttivo()
-    ? targetOggi(Math.max(N_TEST, P.domandeAlGiorno))
+    ? targetOggi(Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno))
     : targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
   const nTestGiorno = Math.max(1, Math.round(alGiorno / N_TEST));
   const fmt = fmtN;
+  const scadCopBreve = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
   el.innerHTML =
-    tile('<svg class="ic"><use href="#i-calcolo"/></svg>', 'ico-blu', fmt(Math.max(0, pr.serveAcquisite - pr.acquisite)), 'domande ancora da consolidare',
-         `<div class="kd pari">${fmt(pr.acquisite)} già consolidate (superate e riconfermate) su ${fmt(pr.serveAcquisite)} per ${trgTesto(pr.traguardo)}</div>`) +
+    tile('<svg class="ic"><use href="#i-calcolo"/></svg>', 'ico-blu', fmt(P.U), 'domande ancora mai viste',
+         P.U === 0
+           ? `<div class="kd su">✔ banca dati coperta — restano ${fmt(Math.max(0, pr.serveAcquisite - pr.acquisite))} domande da consolidare</div>`
+           : `<div class="kd pari">da vedere tutte entro il ${scadCopBreve} · ${fmt(P.testCopertura)} test, ${P.nuovePerTest} domande nuove per test</div>`) +
     tile('<svg class="ic"><use href="#i-curva"/></svg>', 'ico-giallo', fmt(alGiorno), `domande da affrontare oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni all\'esame'})`,
          `<div class="kd pari">≈ ${nTestGiorno} test da ${N_TEST} · domani si ricalcola sul residuo</div>`) +
     tile('<svg class="ic"><use href="#i-bandiera"/></svg>', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'domande fatte oggi / obiettivo',
@@ -4962,13 +4973,22 @@ function renderObiettivo(){
     ? `<span class="obh-gg">ultimi ${gg} giorni · consolidamento</span>`
     : `<span class="obh-gg"><span class="gg-lungo">${giorniCopertura()} giorni per coprire tutto · esame tra ${gg}</span><span class="gg-corto">${giorniCopertura()} gg per coprire</span></span>`;
   // La riga del piano: cosa serve, cosa sta facendo, e dove si arriva davvero.
+  // La riga del piano parla di copertura: quanti test al giorno servono per
+  // incontrare tutte le domande entro la scadenza, quanti se ne stanno facendo,
+  // e in che giorno si finisce il giro al ritmo di adesso.
   const rigaPiano = (!pianoAttivo() || inFaseFinale()) ? '' : (() => {
-    const serve = Math.round(P.testAlGiorno * 10) / 10;
+    const scadC = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
+    if(P.U === 0) return `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Banca dati coperta: da qui in avanti si consolida.</div>`;
+    const serve = P.testCopAlGiorno;
     const fa = P.ritmoAttuale ? Math.round(P.ritmoAttuale / N_TEST * 10) / 10 : 0;
-    if(!P.ritmoAttuale) return `<div class="obh-piano">Servono <b>${serve}</b> test al giorno per arrivare coperta entro il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})}.</div>`;
-    return P.inLinea
-      ? `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Sei in linea: servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>.</div>`
-      : `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>: a questo ritmo ne consolidi circa il <b>${Math.round(P.copribile*100)}%</b>.</div>`;
+    if(!P.ritmoAttuale) return `<div class="obh-piano">Servono <b>${serve}</b> test al giorno per vedere tutte le <b>${fmt(P.U)}</b> domande che restano entro il ${scadC}.</div>`;
+    const quando = P.isoFineCopertura
+      ? new Date(P.isoFineCopertura).toLocaleDateString('it-IT', {day:'numeric', month:'long'}) : null;
+    return P.coperturaInTempo
+      ? `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>: di questo passo finisci la banca dati il <b>${quando}</b>.</div>`
+      : `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>: `
+        + (quando ? `di questo passo finisci il <b>${quando}</b>, cioè dopo il ${scadC}.` : `a questo ritmo la banca dati non si chiude entro il ${scadC}.`)
+        + `</div>`;
   })();
   $('ob-hero').innerHTML = `
     <div class="obh-top">
@@ -5060,10 +5080,34 @@ function piano(){
   // prima dell'esame, e restavano centinaia di domande mai aperte.
   const ggImmissione = gg;
   const testAlGiornoEff = Math.max(testGiorno, ritmo/N_TEST, 1);
+
+  // ---- il conto della COPERTURA, che e' un'altra cosa dal consolidamento ----
+  // Consolidare tutta la banca dati costa L.risposte risposte: e' il numero grande,
+  // e nei giorni che restano quasi mai ci sta. Coprirla — cioe' incontrare almeno
+  // una volta ogni domanda — costa molto meno, e ha una data di fine calcolabile.
+  // L'app deve dire tutte e due le cose senza confonderle.
+  const nuovePerTest = Math.max(1, Math.round(N_TEST * QUOTA_NUOVE));
+  const testCopertura = Math.ceil(L.U / nuovePerTest);           // test che mancano per finire il giro
+  const testCopAlGiorno = L.U > 0 ? testCopertura / gg : 0;
+  const domCopAlGiorno = L.U > 0 ? Math.ceil(testCopAlGiorno * N_TEST) : 0;
+  // quante domande mai viste incontra davvero in un giorno, misurate
+  const conNuove = recenti.filter(g => g.nuove !== undefined);
+  const ritmoNuove = conNuove.length
+    ? Math.round(conNuove.reduce((a, g) => a + (g.nuove || 0), 0) / conNuove.length)
+    : Math.round(ritmo * QUOTA_NUOVE);
+  // il giorno in cui la copertura finisce, al ritmo di adesso
+  const ggAllaCopertura = (L.U > 0 && ritmoNuove > 0) ? Math.ceil(L.U / ritmoNuove) : 0;
+  const isoFineCopertura = L.U === 0 ? oggiISO()
+                         : (ritmoNuove > 0 ? oggiPiuISO(ggAllaCopertura) : null);
+  const coperturaInTempo = L.U === 0 || (ritmoNuove > 0 && ggAllaCopertura <= gg);
+
   return {...L, giorni: gg, domandeAlGiorno: dom, testAlGiorno: Math.ceil(testGiorno*10)/10,
           ritmoAttuale: ritmo, testRimasti,
           giorniImmissione: ggImmissione,
           testPerImmissione: Math.max(1, Math.round(ggImmissione * testAlGiornoEff)),
+          nuovePerTest, testCopertura,
+          testCopAlGiorno: Math.ceil(testCopAlGiorno * 10) / 10,
+          domCopAlGiorno, ritmoNuove, ggAllaCopertura, isoFineCopertura, coperturaInTempo,
           inLinea: ritmo >= dom,
           copribile: Math.min(1, (L.C + (QUESTIONS.length - L.C) *
                        Math.min(1, ritmo * gg / Math.max(1, L.risposte))) / QUESTIONS.length),
@@ -5072,11 +5116,10 @@ function piano(){
 // La composizione secondo il piano: le nuove entrano al ritmo che le fa arrivare
 // tutte entro la chiusura dell'immissione, il resto va alle due code in
 // proporzione al lavoro che ciascuna ha ancora davanti.
-// Quote fisse di ogni test: meta' domande mai viste, un quarto di riconferme,
-// un quarto di ripassi. Prima si copre la banca dati, i ripassi vengono dietro:
-// e' una scelta esplicita, non il risultato di un calcolo di costi.
+// Prima si copre la banca dati, i ripassi vengono dietro: e' una scelta
+// esplicita, non il risultato di un calcolo di costi.
 // Due fasi, non una.
-// Finche' restano domande mai viste: 80% copertura, 20% errori, zero riconferme.
+// Finche' restano domande mai viste: 70% copertura, 30% errori, zero riconferme.
 // Ogni riconferma fatta adesso e' una domanda mai aperta, e una domanda mai
 // aperta vale la resa a freddo — molto meno di una gia' incontrata.
 // Negli ultimi dieci giorni si ribalta: niente piu' domande nuove, 60% riconferme
@@ -5098,7 +5141,7 @@ function quoteArgomento(sel, quante){
   sel.forEach(a => { if(out[a] === undefined) out[a] = 0; });
   return out;
 }
-const QUOTA_NUOVE = 0.80, QUOTA_RIC = 0.00, QUOTA_RIP = 0.20;
+const QUOTA_NUOVE = 0.70, QUOTA_RIC = 0.00, QUOTA_RIP = 0.30;
 const CODA_RIC = 0.60, CODA_RIP = 0.40;
 // Una fetta di ogni test va a domande lasciate ferme a lungo. Servono a misurare
 // quanto dimentica: senza queste, le fasce a 3 e 7 giorni restano vuote e la
@@ -5995,7 +6038,9 @@ function calendarioPiano(){
     // per il futuro l'obiettivo e' quello di adesso; per il passato, cio' che
     // sarebbe servito allora non e' ricostruibile: si confronta con l'obiettivo
     // di oggi, che e' la misura onesta di "quanto ci vuole"
-    const obiettivo = finale ? 0 : P.domandeAlGiorno;
+    // L'obiettivo di una casella e' quello della copertura, lo stesso numero che
+    // compare in cima alla schermata: le due cose devono dire la stessa cosa.
+    const obiettivo = finale ? 0 : Math.max(N_TEST, P.U > 0 ? P.domCopAlGiorno : P.domandeAlGiorno);
     let stt;
     if(n === oggi) stt = 'oggi';
     else if(futuro) stt = finale ? 'finale' : 'futuro';
@@ -6034,13 +6079,26 @@ function renderCalendario(){
   const saltati = C.celle.filter(c => c.stato === 'saltato').length;
   const fatti = C.celle.filter(c => c.stato === 'fatto').length;
   const parziali = C.celle.filter(c => c.stato === 'parziale').length;
+  const quandoFine = P.isoFineCopertura
+    ? new Date(P.isoFineCopertura).toLocaleDateString('it-IT', {day:'numeric', month:'long'}) : null;
+  const rigaRitmo = P.U === 0
+    ? ` <span class="cal-bene">Banca dati coperta: da qui in avanti si consolida.</span>`
+    : !P.ritmoAttuale ? ''
+    : P.coperturaInTempo
+      ? ` <span class="cal-bene">Al ritmo attuale (<b>${fmtN(P.ritmoAttuale)}</b> domande al giorno, di cui <b>${fmtN(P.ritmoNuove)}</b> mai viste) la banca dati si chiude il <b>${quandoFine}</b>.</span>`
+      : ` <span class="cal-male">Al ritmo attuale (<b>${fmtN(P.ritmoAttuale)}</b> domande al giorno, di cui <b>${fmtN(P.ritmoNuove)}</b> mai viste) la banca dati si chiuderebbe `
+        + (quandoFine ? `il <b>${quandoFine}</b>, dopo la scadenza.` : `dopo la scadenza.`) + `</span>`;
   $('cal-riass').innerHTML =
-    `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni. Servono <b>${fmtN(P.domandeAlGiorno)}</b> domande al giorno `
-    + `(<b>${P.testAlGiorno}</b> test). Le domande mai viste si propongono fino al <b>${scad}</b>: `
-    + `i <b>${GG_CONSOLIDAMENTO} giorni</b> che restano poi servono a confermarle, non ad aprirne altre.<br>`
+    (P.U === 0
+      ? `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni e la banca dati è tutta vista almeno una volta. `
+        + `Servono <b>${fmtN(P.domandeAlGiorno)}</b> domande al giorno (<b>${P.testAlGiorno}</b> test) per consolidarla.`
+      : `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni e <b>${fmtN(P.U)}</b> domande mai viste. `
+        + `Per vederle tutte servono <b>${fmtN(P.domCopAlGiorno)}</b> domande al giorno (<b>${P.testCopAlGiorno}</b> test), `
+        + `perché ogni test da ${N_TEST} ne porta <b>${P.nuovePerTest}</b> di nuove e ${N_TEST - P.nuovePerTest} di recupero.`)
+    + ` Dopo il ${scad} non si aprono più domande nuove: i <b>${GG_CONSOLIDAMENTO} giorni</b> fino all'esame servono a confermare quelle già incontrate.<br>`
     + `Finora: <b>${fatti}</b> ${fatti === 1 ? 'giornata piena' : 'giornate piene'}, `
     + `<b>${parziali}</b> a mezzo servizio, <b>${saltati}</b> saltate.`
-    + (P.inLinea ? '' : ` <span class="cal-male">Al ritmo attuale (<b>${fmtN(P.ritmoAttuale)}</b> al giorno) si arriva a consolidarne circa il <b>${Math.round(P.copribile*100)}%</b>.</span>`);
+    + rigaRitmo;
 }
 
 function renderDashboard(){
