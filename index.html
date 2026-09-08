@@ -1669,6 +1669,11 @@ b.dubbia{color:var(--ottone-t);}
 @media (prefers-reduced-motion: reduce){
   .pier-scena *, .pier-scena{animation:none !important;}
 }
+/* Quando il 3D parte davvero, il cane disegnato in CSS si toglie di mezzo. Resta
+   nella pagina come riserva: se il telefono non regge il 3D, riappare lui. */
+#pier-scena.tre > .pier{opacity:0; pointer-events:none;}
+#pier-scena > canvas{position:absolute; inset:0; width:100%; height:100%;}
+
 /* ---- Pier nell'app: sta in basso a destra, sopra la barra delle schede ---- */
 #pier-angolo{position:fixed; right:8px; z-index:35; pointer-events:none;
   bottom:calc(80px + var(--safe-b)); display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
@@ -3505,6 +3510,8 @@ b.dubbia{color:var(--ottone-t);}
   </div></div>
 </div>
 
+<script src="three-mini.js"></script>
+<script src="pier3d.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -7533,6 +7540,7 @@ const Pier = (() => {
       '<b>{p}%</b>: le {ko} sbagliate valgono più delle giuste, perché adesso le sai dove sono.',
       'Vieni qui. <b>{p}%</b> oggi non dice niente su ottobre. Facciamone un altro corto.']}];
 
+  const globale = window;
   const $$ = id => document.getElementById(id);
   let scena = null, fumetto = null, angolo = null;
   let timer = null, timerFrase = null, modo = 'ozio', ultima = '';
@@ -7543,10 +7551,12 @@ const Pier = (() => {
     return (c.length ? c : a)[Math.floor(Math.random() * (c.length ? c.length : a.length))];
   };
 
+  let tre = null;                 // il Pier in tre dimensioni, se il telefono lo regge
   function posa(nome){
     if(!scena || POSE.indexOf(nome) < 0) return;
     POSE.forEach(c => scena.classList.remove(c));
     scena.classList.add(nome);
+    if(tre) tre.posa(nome);
     // lo scatto del cambio: senza, la posa nuova compare di colpo e sembra
     // che qualcuno abbia cambiato immagine invece che il cane essersi mosso
     scena.classList.remove('p-cambio');
@@ -7611,6 +7621,15 @@ const Pier = (() => {
   function avvia(){
     scena = $$('pier-scena'); fumetto = $$('pier-dice'); angolo = $$('pier-angolo');
     if(!scena) return;
+    // Il 3D vero, se c'e'. Se qualcosa non va — niente WebGL, scheda video
+    // vecchia, libreria non caricata — resta il cane disegnato in CSS e non
+    // se ne accorge nessuno.
+    if(!calmo() && globale.Pier3D){
+      try {
+        tre = globale.Pier3D.crea(scena, {lato: 150});
+        if(tre) scena.classList.add('tre');
+      } catch(e){ tre = null; }
+    }
     // le coccole: un tocco che cade sul cane e non su un comando
     document.addEventListener('click', ev => {
       if(!scena || ev.target.closest('button, a, input, select, textarea, label, [role="button"], .opt, .tab')) return;
@@ -7627,7 +7646,8 @@ const Pier = (() => {
     riparti();
     // quando l'app resta in secondo piano il giro si ferma: niente lavoro inutile
     document.addEventListener('visibilitychange', () => {
-      if(document.visibilityState === 'visible') riparti(); else clearTimeout(timer);
+      if(document.visibilityState === 'visible'){ riparti(); if(tre) tre.avvia(); }
+      else { clearTimeout(timer); if(tre) tre.ferma(); }
     });
     // Mentre si scorre Pier si toglie di mezzo. E' una mascotte, non un ostacolo:
     // sotto di lui ci sono pulsanti e risposte da leggere.
@@ -7635,8 +7655,9 @@ const Pier = (() => {
     addEventListener('scroll', () => {
       if(!angolo) return;
       angolo.classList.add('p-via');
+      if(tre) tre.ferma();                 // mentre si scorre non e' visibile: non disegna
       clearTimeout(tScroll);
-      tScroll = setTimeout(() => angolo.classList.remove('p-via'), 800);
+      tScroll = setTimeout(() => { angolo.classList.remove('p-via'); if(tre) tre.avvia(); }, 800);
     }, {passive: true});
   }
 
