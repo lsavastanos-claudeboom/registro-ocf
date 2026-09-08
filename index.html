@@ -4969,11 +4969,19 @@ function renderMotori(pr){
       : '<span class="mot-manca">da misurare</span>',
     `Restano <b>${n(pr.aperteKo)}</b> domande da recuperare: ognuna richiede due risposte esatte per uscire dal giro.`));
 
+  // Il passo scelto, non il minimo: erano due numeri diversi che si contraddicevano
+  // in due punti dell'app ("ne servono 3,3" qui, "300 al giorno" nell'obiettivo).
+  const Pm = piano();
+  const passoTest = Pm.testObiettivo;
+  const passoTxt = Number.isInteger(passoTest) ? String(passoTest) : dec(passoTest);
   righe.push(riga(5, 'Test al giorno',
-    m ? `<b>${dec(m.testGiorno)}</b> fatti · ${tn ? `ne servono <b>${dec(tn.test)}</b>` : 'copertura completata'}`
+    m ? `<b>${dec(m.testGiorno)}</b> fatti · il passo è <b>${passoTxt}</b>`
       : 'nessun dato',
-    tn ? `Per vedere tutte le ${n(pr.nuoveRimaste)} domande mancanti entro il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})} servono ${n(tn.nuoveAlG)} domande nuove al giorno, e col mix attuale un test da ${N_TEST} ne contiene ${tn.nuovePerTest}.` : '',
-    m && tn && m.testGiorno < tn.test * 0.9 ? 'male' : ''));
+    tn ? `Tenendo il passo di ${passoTxt} test al giorno (${n(Pm.domObiettivo)} domande) le ${n(pr.nuoveRimaste)} mai viste finiscono il `
+         + `${new Date(Pm.isoFineAlTetto).toLocaleDateString('it-IT',{day:'numeric',month:'long'})}. `
+         + `Il minimo per non sforare il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})} sarebbe ${dec(tn.test)} test al giorno.`
+       : `Banca dati coperta: da qui in avanti i test servono a confermare, non a scoprire.`,
+    m && m.testGiorno < passoTest * 0.7 ? 'male' : ''));
 
   return `<div class="pj-motori"><div class="st-cop-tit">I cinque numeri che la determinano</div>${righe.join('')}</div>`;
 }
@@ -5523,15 +5531,20 @@ function renderObiettivo(){
   const rigaPiano = (!pianoAttivo() || inFaseFinale()) ? '' : (() => {
     const scadC = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
     if(P.U === 0) return `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Banca dati coperta: da qui in avanti si consolida.</div>`;
-    const serve = P.testCopAlGiorno;
+    // Il passo scelto e il ritmo vero sono due cose diverse e vanno chiamate con
+    // due nomi diversi: prima qui usciva "servono 3,3, ne stai facendo 3,3", che
+    // messo cosi' non dice niente a nessuno.
+    const passo = P.testObiettivo;                       // quello che l'app chiede
     const fa = P.ritmoAttuale ? Math.round(P.ritmoAttuale / N_TEST * 10) / 10 : 0;
-    if(!P.ritmoAttuale) return `<div class="obh-piano">Servono <b>${serve}</b> test al giorno per vedere tutte le <b>${fmt(P.U)}</b> domande che restano entro il ${scadC}.</div>`;
+    const alPasso = new Date(P.isoFineAlTetto).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
+    if(!P.ritmoAttuale) return `<div class="obh-piano">Il passo è di <b>${passo}</b> test al giorno: tenendolo, finisci le <b>${fmt(P.U)}</b> domande che restano il <b>${alPasso}</b>.</div>`;
     const quando = P.isoFineCopertura
       ? new Date(P.isoFineCopertura).toLocaleDateString('it-IT', {day:'numeric', month:'long'}) : null;
     return P.coperturaInTempo
-      ? `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>: di questo passo finisci la banca dati il <b>${quando}</b>.</div>`
-      : `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Servono <b>${serve}</b> test al giorno, ne stai facendo <b>${fa}</b>: `
-        + (quando ? `di questo passo finisci il <b>${quando}</b>, cioè dopo il ${scadC}.` : `a questo ritmo la banca dati non si chiude entro il ${scadC}.`)
+      ? `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Il passo è <b>${passo}</b> test al giorno, in questi giorni ne fai <b>${fa}</b>: `
+        + `anche così arrivi coperta, il <b>${quando}</b>. Tenendo il passo pieno finiresti il ${alPasso}.</div>`
+      : `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Il passo è <b>${passo}</b> test al giorno, in questi giorni ne fai <b>${fa}</b>: `
+        + (quando ? `così finiresti il <b>${quando}</b>, dopo il ${scadC}.` : `così la banca dati non si chiude entro il ${scadC}.`)
         + `</div>`;
   })();
   $('ob-hero').innerHTML = `
