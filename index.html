@@ -7498,11 +7498,15 @@ if('serviceWorker' in navigator && location.protocol === 'https:'){
 const Pier = (() => {
   const POSE = ['a-seduto','a-sdraiato','a-pancia','a-palla','a-farfalla','a-bastone',
     'a-dorme','a-stira','a-sbadiglia','a-gratta','a-scava','a-beve','a-corre',
-    'a-festa','a-curioso','a-rotola'];
+    'a-festa','a-curioso','a-rotola',
+    'a-zampa','a-supplica','a-salta','a-inseguipalla','a-scrolla','a-annusa',
+    'a-abbaia','a-ulula','a-inchino','a-cacciacoda'];
   // quello che fa mentre lei non sta facendo niente di preciso
-  const OZIO = ['a-seduto','a-sdraiato','a-curioso','a-stira','a-sbadiglia','a-gratta','a-pancia','a-dorme'];
+  const OZIO = ['a-seduto','a-sdraiato','a-curioso','a-stira','a-sbadiglia','a-gratta','a-pancia',
+    'a-dorme','a-zampa','a-supplica','a-scrolla','a-annusa','a-abbaia','a-ulula','a-inchino'];
   // quello che fa mentre lei risponde alle domande: e' contento, ma non disturba
-  const GIOCO = ['a-palla','a-farfalla','a-bastone','a-scava','a-beve','a-corre','a-rotola','a-seduto','a-sdraiato'];
+  const GIOCO = ['a-palla','a-farfalla','a-bastone','a-scava','a-beve','a-corre','a-rotola',
+    'a-salta','a-inseguipalla','a-cacciacoda','a-inchino','a-supplica','a-seduto','a-sdraiato'];
 
   const SALUTI = [
     'Sono Pier. Tu studia, al resto penso io.',
@@ -7558,10 +7562,19 @@ const Pier = (() => {
   };
 
   let tre = null;                 // il Pier in tre dimensioni, se il telefono lo regge
+  // Le pose nuove esistono solo nel modello a tre dimensioni. Se quello non parte,
+  // il cane disegnato le fa "come gli riesce": ognuna ha una controfigura fra
+  // quelle che sa gia' fare, cosi' continua a muoversi invece di restare fermo.
+  const CONTROFIGURA = {
+    'a-zampa': 'a-curioso', 'a-supplica': 'a-curioso', 'a-salta': 'a-festa',
+    'a-inseguipalla': 'a-corre', 'a-scrolla': 'a-gratta', 'a-annusa': 'a-scava',
+    'a-abbaia': 'a-curioso', 'a-ulula': 'a-sbadiglia', 'a-inchino': 'a-stira',
+    'a-cacciacoda': 'a-rotola'
+  };
   function posa(nome){
     if(!scena || POSE.indexOf(nome) < 0) return;
     POSE.forEach(c => scena.classList.remove(c));
-    scena.classList.add(nome);
+    scena.classList.add(tre ? nome : (CONTROFIGURA[nome] || nome));
     if(tre) tre.posa(nome);
     // lo scatto del cambio: senza, la posa nuova compare di colpo e sembra
     // che qualcuno abbia cambiato immagine invece che il cane essersi mosso

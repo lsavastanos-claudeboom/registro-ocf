@@ -212,12 +212,13 @@
   // Ogni posa dice DOVE stanno le articolazioni. Il movimento fra una posa e
   // l'altra lo fa il tempo: i valori ci arrivano piano, non di scatto.
   const RIPOSO = {
-    corpoY: 0, corpoZ: 0, corpoRotX: 0, corpoRotZ: 0, corpoScalaY: 1, scala: 1,
+    corpoX: 0, corpoY: 0, corpoZ: 0, corpoRotX: 0, corpoRotY: 0, corpoRotZ: 0,
+    corpoScalaY: 1, scala: 1,
     troncoRotX: 0, troncoRotZ: 0, colloRotX: 0, colloRotY: 0,
     testaRotX: 0, testaRotY: 0, testaRotZ: 0,
     codaRotX: 0, codaAmpiezza: 0.22, codaVelocita: 2.2,
     zaSxRotX: 0, zaDxRotX: 0, zpSxRotX: 0, zpDxRotX: 0,
-    zaSxY: 0, zampaSuSx: 0,
+    zaSxRotZ: 0, zaDxRotZ: 0, zampaSuSx: 0,
     palpebra: 0, lingua: 1, bocca: 0,
     prop: null, molleggio: 0, velocitaMolleggio: 1
   };
@@ -257,7 +258,40 @@
                       molleggio: 0.32, velocitaMolleggio: 2.6, lingua: 1.4 }),
     'a-rotola':   P({ corpoY: -0.10, scala: 0.74, troncoRotZ: 1.15, corpoScalaY: 0.96,
                       zaSxRotX: -1.3, zaDxRotX: -1.0, zpSxRotX: -1.05,
-                      testaRotZ: -0.55, codaAmpiezza: 0.4, codaVelocita: 6, lingua: 1.5 })
+                      testaRotZ: -0.55, codaAmpiezza: 0.4, codaVelocita: 6, lingua: 1.5 }),
+
+    // ---------- le mosse che chiede un cane quando vuole qualcosa ----------
+    // da' la zampa: una sola, tesa in avanti, e la testa che ti guarda
+    'a-zampa':    P({ zaDxRotX: -1.35, zaDxRotZ: -0.22, testaRotZ: -0.22, testaRotY: 0.18,
+                      colloRotX: -0.16, codaAmpiezza: 0.5, codaVelocita: 7 }),
+    // chiede attenzione: si alza sulle zampe di dietro e tiene su tutte e due le anteriori
+    'a-supplica': P({ troncoRotX: -0.42, corpoY: 0.16,
+                      zaSxRotX: -1.85, zaDxRotX: -1.85, zaSxRotZ: 0.26, zaDxRotZ: -0.26,
+                      colloRotX: 0.34, testaRotX: 0.10, lingua: 1.3,
+                      codaAmpiezza: 0.55, codaVelocita: 9, molleggio: 0.05, velocitaMolleggio: 1.6 }),
+    // salta per prendere la pallina al volo
+    'a-salta':    P({ prop: 'pallina', zaSxRotX: -1.2, zaDxRotX: -1.2, colloRotX: -0.28,
+                      lingua: 1.4, codaAmpiezza: 0.7, codaVelocita: 13,
+                      molleggio: 0.55, velocitaMolleggio: 1.5 }),
+    // corre dietro alla pallina che rotola via
+    'a-inseguipalla': P({ prop: 'pallina', corpoRotX: 0.20, colloRotX: -0.10, lingua: 1.5,
+                      codaAmpiezza: 0.5, codaVelocita: 13, molleggio: 0.16, velocitaMolleggio: 4.4 }),
+    // si scrolla tutto, dalla testa alla coda
+    'a-scrolla':  P({ lingua: 0.6, codaAmpiezza: 0.6, codaVelocita: 15 }),
+    // annusa per terra seguendo una pista
+    'a-annusa':   P({ colloRotX: 0.92, corpoRotX: 0.14, lingua: 0.4,
+                      codaAmpiezza: 0.35, codaVelocita: 5 }),
+    // abbaia: due colpi, le orecchie che scattano
+    'a-abbaia':   P({ colloRotX: -0.22, lingua: 0.7, codaAmpiezza: 0.6, codaVelocita: 10 }),
+    // ulula col muso all'insu
+    'a-ulula':    P({ colloRotX: -0.60, testaRotX: -0.14, bocca: 0.8, lingua: 0.5, palpebra: 0.75,
+                      codaAmpiezza: 0.12, codaVelocita: 1.6 }),
+    // l'inchino del gioco: davanti giu', sedere per aria
+    'a-inchino':  P({ troncoRotX: 0.62, corpoY: -0.20, zaSxRotX: 0.85, zaDxRotX: 0.85,
+                      colloRotX: -0.35, lingua: 1.4, codaAmpiezza: 0.8, codaVelocita: 13 }),
+    // si morde la coda girando su se stesso
+    'a-cacciacoda': P({ scala: 0.86, troncoRotZ: 0.30, testaRotZ: -0.75, colloRotY: 0.9,
+                      lingua: 1.2, codaAmpiezza: 0.3, codaVelocita: 9 })
   };
   const NOMI = Object.keys(POSE);
 
@@ -341,11 +375,13 @@
       const scatto = Math.sin(Math.min(1, 1 - ora.molleggioScatto) * Math.PI) * ora.molleggioScatto * 0.22;
       const molla = Math.abs(Math.sin(t * ora.velocitaMolleggio * 3.1)) * ora.molleggio;
 
+      cane.corpo.position.x = ora.corpoX;
       cane.corpo.position.y = ora.corpoY + molla + scatto;
       cane.corpo.position.z = ora.corpoZ;
       cane.corpo.rotation.x = ora.corpoRotX;
+      cane.corpo.rotation.y = ora.corpoRotY;
       cane.corpo.rotation.z = ora.corpoRotZ + Math.sin(t * 0.6) * 0.012;
-      cane.corpo.rotation.y = Math.sin(t * 0.42) * 0.16;      // si guarda intorno
+      cane.corpo.rotation.y += Math.sin(t * 0.42) * 0.16;     // si guarda intorno
       // sdraiato e rotolato e' piu' largo che alto: rimpicciolisco un po', altrimenti
       // esce dall'inquadratura
       const sc = ora.scala;
@@ -366,6 +402,8 @@
       // --- zampe ---
       cane.zaSx.rotation.x = ora.zaSxRotX;
       cane.zaDx.rotation.x = ora.zaDxRotX;
+      cane.zaSx.rotation.z = ora.zaSxRotZ;
+      cane.zaDx.rotation.z = ora.zaDxRotZ;
       cane.zpSx.rotation.x = ora.zpSxRotX;
       cane.zpDx.rotation.x = ora.zpDxRotX;
       // la zampa che si gratta l'orecchio
@@ -423,6 +461,80 @@
       }
       if (nomePosa === 'a-rotola') {
         cane.tronco.rotation.z = ora.troncoRotZ + Math.sin(t * 1.5) * 0.75;
+      }
+
+      // --- le mosse nuove ---
+      if (nomePosa === 'a-zampa') {
+        // la zampa oscilla piano, come quando aspetta che gliela stringi
+        cane.zaDx.rotation.x = ora.zaDxRotX + Math.sin(t * 3.4) * 0.14;
+      }
+      if (nomePosa === 'a-supplica') {
+        const f = Math.sin(t * 4.2);
+        cane.zaSx.rotation.x = ora.zaSxRotX + f * 0.16;
+        cane.zaDx.rotation.x = ora.zaDxRotX - f * 0.16;
+        cane.collo.rotation.y = ora.colloRotY + Math.sin(t * 1.3) * 0.22;
+      }
+      if (nomePosa === 'a-scrolla') {
+        // la scrollata parte dalla testa e arriva alla coda con un attimo di ritardo
+        const v = 26;
+        cane.collo.rotation.z = Math.sin(t * v) * 0.30;
+        cane.testa.rotation.z = ora.testaRotZ + Math.sin(t * v - 0.4) * 0.34;
+        cane.tronco.rotation.z = Math.sin(t * v - 0.9) * 0.16;
+        cane.orSx.rotation.z = 0.10 + Math.sin(t * v - 0.2) * 0.55;
+        cane.orDx.rotation.z = -0.10 + Math.sin(t * v - 0.2) * 0.55;
+      }
+      if (nomePosa === 'a-annusa') {
+        cane.collo.rotation.y = ora.colloRotY + Math.sin(t * 1.9) * 0.55;
+        cane.collo.rotation.x = ora.colloRotX + Math.sin(t * 7) * 0.05;
+        cane.corpo.position.x = ora.corpoX + Math.sin(t * 0.9) * 0.35;
+      }
+      if (nomePosa === 'a-abbaia') {
+        // due colpi vicini e poi una pausa: e' il ritmo di un cane che abbaia
+        const ciclo = (t * 0.75) % 1;
+        const colpo = ciclo < 0.12 ? Math.sin(ciclo / 0.12 * Math.PI)
+                    : (ciclo < 0.30 ? Math.sin((ciclo - 0.18) / 0.12 * Math.PI) : 0);
+        const c = Math.max(0, colpo);
+        cane.muso.scale.y = 1 + c * 0.75;
+        cane.collo.rotation.x = ora.colloRotX - c * 0.30;
+        cane.corpo.position.y = ora.corpoY + c * 0.10;
+        cane.orSx.rotation.z = 0.10 - c * 0.45;
+        cane.orDx.rotation.z = -0.10 + c * 0.45;
+      }
+      if (nomePosa === 'a-ulula') {
+        cane.collo.rotation.x = ora.colloRotX - Math.abs(Math.sin(t * 0.55)) * 0.16;
+        cane.muso.scale.y = 1 + 0.45 + Math.sin(t * 2.1) * 0.10;
+      }
+      if (nomePosa === 'a-inchino') {
+        cane.tronco.rotation.x = ora.troncoRotX + Math.sin(t * 2.6) * 0.06;
+        cane.zpSx.rotation.x = -0.25; cane.zpDx.rotation.x = -0.25;
+      }
+      if (nomePosa === 'a-cacciacoda') {
+        // gira su se stesso rincorrendo la coda, che scappa sempre
+        cane.corpo.rotation.y = t * 2.4;
+        cane.coda.rotation.y = Math.sin(t * 9) * 0.3 + 0.5;
+        cane.corpo.position.y = ora.corpoY + Math.abs(Math.sin(t * 4.8)) * 0.06;
+      }
+      if (nomePosa === 'a-salta') {
+        // l'arco del salto, con la pallina che passa in alto al momento giusto
+        const ciclo = (t * 0.8) % 1;
+        const su = Math.max(0, Math.sin(ciclo * Math.PI));
+        cane.corpo.position.y = ora.corpoY + su * 0.62;
+        cane.corpo.rotation.x = ora.corpoRotX - su * 0.10;
+        cane.zaSx.rotation.x = ora.zaSxRotX - su * 0.5;
+        cane.zaDx.rotation.x = ora.zaDxRotX - su * 0.5;
+        cane.prop.pallina.position.set(Math.cos(ciclo * 6.28) * 0.30, 2.30, 1.20);
+        cane.prop.pallina.rotation.z -= dt * 9;
+      }
+      if (nomePosa === 'a-inseguipalla') {
+        // la pallina scappa a destra e a sinistra, lui la insegue restando in scena
+        const x = Math.sin(t * 0.9);
+        cane.prop.pallina.position.set(x * 1.9, 0.3 + Math.abs(Math.sin(t * 4)) * 0.35, 1.35);
+        cane.prop.pallina.rotation.z -= dt * 12 * Math.sign(Math.cos(t * 0.9));
+        cane.corpo.position.x = ora.corpoX + Math.sin(t * 0.9 - 0.55) * 1.15;
+        cane.corpo.rotation.y = Math.cos(t * 0.9) * 0.55;
+        const f = Math.sin(t * 15);
+        cane.zaSx.rotation.x = f * 0.9; cane.zaDx.rotation.x = -f * 0.9;
+        cane.zpSx.rotation.x = -f * 0.65; cane.zpDx.rotation.x = f * 0.65;
       }
 
       // --- oggetti di scena ---
