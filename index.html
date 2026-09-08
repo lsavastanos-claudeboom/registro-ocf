@@ -1678,16 +1678,22 @@ b.dubbia{color:var(--ottone-t);}
 #pier-angolo{position:fixed; right:8px; z-index:35; pointer-events:none;
   bottom:calc(80px + var(--safe-b)); display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
 @media (min-width:900px){ #pier-angolo{bottom:26px; right:22px;} }
-/* il riquadro e' 150px ma il cane, rimpicciolito e ancorato in basso a destra, ne
-   occupa solo l'angolo: il margine negativo chiude il vuoto SOPRA, non spinge giu'
-   il cane — prima lo spingeva, e sotto veniva tagliato dal bordo dello schermo. */
-#pier-angolo .pier-scena{transform:scale(.58); transform-origin:100% 100%; margin:-63px 0 0 0;
+/* Il riquadro e' 150px e il cane e' ancorato in basso a destra: il margine
+   negativo chiude il vuoto SOPRA di lui, non lo spinge giu'. Il numero del
+   margine e' 150 meno la sua altezza vera, altrimenti resta un buco o esce
+   dal bordo dello schermo. */
+#pier-angolo .pier-scena{transform:scale(1); transform-origin:100% 100%; margin:0;
   pointer-events:none; cursor:pointer;}
 /* Pier non intercetta NESSUN tocco: galleggia sopra i pulsanti, e un pulsante che
    non risponde perche' c'e' un cane davanti sarebbe un difetto, non una simpatia.
    Le coccole si prendono lo stesso: il tocco viene riconosciuto dal codice
    guardando dove e' finito, e solo se non era diretto a un comando. */
-#pier-angolo.p-piccolo .pier-scena{transform:scale(.42); margin:-87px 0 0 0;}
+/* Durante il test resta piccolo e si fa trasparente: li' quello che conta e'
+   leggere le risposte, e qualunque cosa galleggi sopra un testo che scorre prima
+   o poi ne copre una riga. Cosi' c'e', ma il testo si legge attraverso. */
+#pier-angolo.p-piccolo .pier-scena{transform:scale(.52); margin:-72px 0 0 0; opacity:.45;}
+/* e sotto l'ultima risposta ci deve stare lo spazio per lui */
+#vista-quiz{padding-bottom:96px;}
 #pier-angolo.p-piccolo .pier-fumetto{display:none;}
 #pier-angolo.p-via{opacity:0; pointer-events:none;}
 #pier-angolo{transition:opacity .35s;}
