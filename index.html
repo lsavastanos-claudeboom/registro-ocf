@@ -5535,7 +5535,9 @@ function renderObiettivo(){
     // due nomi diversi: prima qui usciva "servono 3,3, ne stai facendo 3,3", che
     // messo cosi' non dice niente a nessuno.
     const passo = P.testObiettivo;                       // quello che l'app chiede
-    const fa = P.ritmoAttuale ? Math.round(P.ritmoAttuale / N_TEST * 10) / 10 : 0;
+    const fa = P.ritmoAttuale
+      ? (Math.round(P.ritmoAttuale / N_TEST * 10) / 10).toLocaleString('it-IT', {maximumFractionDigits:1})
+      : 0;
     const alPasso = new Date(P.isoFineAlTetto).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
     if(!P.ritmoAttuale) return `<div class="obh-piano">Il passo è di <b>${passo}</b> test al giorno: tenendolo, finisci le <b>${fmt(P.U)}</b> domande che restano il <b>${alPasso}</b>.</div>`;
     const quando = P.isoFineCopertura
