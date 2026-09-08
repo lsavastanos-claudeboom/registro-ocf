@@ -272,7 +272,9 @@
     if (!renderer) return null;
 
     const lato = opzioni.lato || 150;
-    renderer.setPixelRatio(Math.min(2, globale.devicePixelRatio || 1));
+    // Il riquadro e' piccolo: conviene disegnarlo sempre a doppia risoluzione,
+    // altrimenti su uno schermo con densita' bassa il cane esce sgranato.
+    renderer.setPixelRatio(Math.max(2, Math.min(3, globale.devicePixelRatio || 1)));
     renderer.setSize(lato, lato, false);
     renderer.outputColorSpace = T.SRGBColorSpace;
     renderer.toneMapping = T.ACESFilmicToneMapping;
