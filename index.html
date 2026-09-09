@@ -1990,9 +1990,13 @@ b.dubbia{color:var(--ottone-t);}
   <div id="vista-dispensa" class="nascosto">
     <div class="card no-print" style="padding-bottom:14px">
       <div class="disp-tabs">
-        <button class="disp-tab attiva" data-pan="corso"><svg class="ic"><use href="#i-libro"/></svg> Dal corso — capire la finanza</button>
-        <button class="disp-tab" data-pan="errori"><svg class="ic"><use href="#i-calcolo"/></svg> Matematica sui tuoi errori</button>
-        <button class="disp-tab" data-pan="schema"><svg class="ic"><use href="#i-chiave"/></svg> Lo schema degli appunti</button>
+        <button class="disp-tab attiva" data-pan="corso"><svg class="ic"><use href="#i-libro"/></svg> Matematica</button>
+        <button class="disp-tab" data-pan="mercato"><svg class="ic"><use href="#i-campo"/></svg> Mercato finanziario</button>
+        <button class="disp-tab" data-pan="tributario"><svg class="ic"><use href="#i-calcolo"/></svg> Tributario</button>
+        <button class="disp-tab" data-pan="previdenziale"><svg class="ic"><use href="#i-mirino"/></svg> Previdenziale</button>
+        <button class="disp-tab" data-pan="privato"><svg class="ic"><use href="#i-dispensa"/></svg> Privato e commerciale</button>
+        <button class="disp-tab" data-pan="errori"><svg class="ic"><use href="#i-fiamma"/></svg> I tuoi errori</button>
+        <button class="disp-tab" data-pan="schema"><svg class="ic"><use href="#i-chiave"/></svg> Schema degli appunti</button>
       </div>
     </div>
 
@@ -3353,6 +3357,51 @@ b.dubbia{color:var(--ottone-t);}
     </div>
 
 
+
+    <div class="card nascosto" id="disp-pan-mercato">
+      <div class="arg-head no-print">
+        <h2><svg class="ic ic-g"><use href="#i-campo"/></svg> Diritto del mercato finanziario</h2>
+        <button class="btn-s btn-stampa-mat" data-mat="mercato"><svg class="ic"><use href="#i-stampa"/></svg> Stampa</button>
+      </div>
+      <p class="nota no-print" style="margin-top:0">Costruita sulle domande vere della banca dati: ogni capitolo pesa quanto pesa all'esame.
+        Prima <b>perché</b> una cosa funziona così, poi lo <b>schema</b>, poi i <b>trucchi d'esame</b> (riquadro viola).</p>
+      <nav class="disp-indice no-print" id="disp-indice-mercato"></nav>
+      <div class="d-corpo" id="disp-corpo-mercato"></div>
+    </div>
+
+    <div class="card nascosto" id="disp-pan-tributario">
+      <div class="arg-head no-print">
+        <h2><svg class="ic ic-g"><use href="#i-calcolo"/></svg> Diritto tributario</h2>
+        <button class="btn-s btn-stampa-mat" data-mat="tributario"><svg class="ic"><use href="#i-stampa"/></svg> Stampa</button>
+      </div>
+      <p class="nota no-print" style="margin-top:0">Costruita sulle domande vere della banca dati: ogni capitolo pesa quanto pesa all'esame.
+        Prima <b>perché</b> una cosa funziona così, poi lo <b>schema</b>, poi i <b>trucchi d'esame</b> (riquadro viola).</p>
+      <nav class="disp-indice no-print" id="disp-indice-tributario"></nav>
+      <div class="d-corpo" id="disp-corpo-tributario"></div>
+    </div>
+
+    <div class="card nascosto" id="disp-pan-previdenziale">
+      <div class="arg-head no-print">
+        <h2><svg class="ic ic-g"><use href="#i-mirino"/></svg> Diritto previdenziale e assicurativo</h2>
+        <button class="btn-s btn-stampa-mat" data-mat="previdenziale"><svg class="ic"><use href="#i-stampa"/></svg> Stampa</button>
+      </div>
+      <p class="nota no-print" style="margin-top:0">Costruita sulle domande vere della banca dati: ogni capitolo pesa quanto pesa all'esame.
+        Prima <b>perché</b> una cosa funziona così, poi lo <b>schema</b>, poi i <b>trucchi d'esame</b> (riquadro viola).</p>
+      <nav class="disp-indice no-print" id="disp-indice-previdenziale"></nav>
+      <div class="d-corpo" id="disp-corpo-previdenziale"></div>
+    </div>
+
+    <div class="card nascosto" id="disp-pan-privato">
+      <div class="arg-head no-print">
+        <h2><svg class="ic ic-g"><use href="#i-dispensa"/></svg> Diritto privato e commerciale</h2>
+        <button class="btn-s btn-stampa-mat" data-mat="privato"><svg class="ic"><use href="#i-stampa"/></svg> Stampa</button>
+      </div>
+      <p class="nota no-print" style="margin-top:0">Costruita sulle domande vere della banca dati: ogni capitolo pesa quanto pesa all'esame.
+        Prima <b>perché</b> una cosa funziona così, poi lo <b>schema</b>, poi i <b>trucchi d'esame</b> (riquadro viola).</p>
+      <nav class="disp-indice no-print" id="disp-indice-privato"></nav>
+      <div class="d-corpo" id="disp-corpo-privato"></div>
+    </div>
+
     <div class="card nascosto" id="disp-pan-schema">
       <h2><svg class="ic ic-g"><use href="#i-chiave"/></svg> Lo schema degli appunti</h2>
       <p class="sch-intro" id="sch-intro"></p>
@@ -3520,6 +3569,7 @@ b.dubbia{color:var(--ottone-t);}
 <script src="pier3d.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
+<script src="dispense.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const QUESTIONS = window.OCF_DATA.QUESTIONS;
@@ -7026,14 +7076,42 @@ function costruisciIndiceDispensa(){
   indiceFatto = true;
 }
 
+// Le dispense delle altre materie stanno in dispense.js e pesano quasi mezzo mega:
+// si montano nella pagina solo quando le apri, non all'avvio. Chi studia matematica
+// non deve aspettare che il browser disegni quattrocento pagine che non guardera'.
+const MATERIE_DISP = ['mercato', 'tributario', 'previdenziale', 'privato'];
+const montate = {};
+function montaDispensa(slug){
+  if(montate[slug]) return;
+  const corpo = $('disp-corpo-' + slug);
+  const testo = (window.OCF_DISPENSE || {})[slug];
+  if(!corpo) return;
+  if(!testo){
+    corpo.innerHTML = '<div class="vuoto">Questa dispensa non e\' stata caricata. Ricarica la pagina.</div>';
+    return;
+  }
+  corpo.innerHTML = testo;
+  const nav = $('disp-indice-' + slug);
+  if(nav) nav.innerHTML = [...corpo.querySelectorAll('.d-sez > h2')].map((h, i) => {
+    const sez = h.parentElement;
+    if(!sez.id) sez.id = slug + '-sez-' + i;
+    return `<a href="#${sez.id}">${h.textContent.replace(/^\s*\d+\s*·\s*/, '')}</a>`;
+  }).join('');
+  montate[slug] = true;
+}
 function pannelloDispensa(quale){
   $('disp-pan-corso').classList.toggle('nascosto', quale !== 'corso');
   $('disp-pan-errori').classList.toggle('nascosto', quale !== 'errori');
   $('disp-pan-schema').classList.toggle('nascosto', quale !== 'schema');
+  MATERIE_DISP.forEach(m => {
+    const p = $('disp-pan-' + m);
+    if(p) p.classList.toggle('nascosto', quale !== m);
+  });
   document.querySelectorAll('.disp-tab').forEach(b => b.classList.toggle('attiva', b.dataset.pan === quale));
   try{ localStorage.setItem('ocf_disp_pan', quale); }catch(e){}
   if(quale === 'corso') costruisciIndiceDispensa();
   if(quale === 'schema') renderSchema();
+  if(MATERIE_DISP.indexOf(quale) >= 0) montaDispensa(quale);
 }
 
 function renderDispensa(){
@@ -7169,6 +7247,7 @@ $('tab-dispensa').onclick = () => { renderDispensa(); mostra('vista-dispensa'); 
 $('btn-stampa').onclick = () => window.print();
 $('btn-stampa-corso').onclick = () => window.print();
 document.querySelectorAll('.disp-tab').forEach(b => b.onclick = () => pannelloDispensa(b.dataset.pan));
+document.querySelectorAll('.btn-stampa-mat').forEach(b => b.onclick = () => { montaDispensa(b.dataset.mat); window.print(); });
 (function(){
   let salvato = 'corso';
   try{ salvato = localStorage.getItem('ocf_disp_pan') || 'corso'; }catch(e){}
