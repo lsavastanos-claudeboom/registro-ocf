@@ -1909,7 +1909,7 @@ b.dubbia{color:var(--ottone-t);}
           <button id="btn-reset"><svg class="ic"><use href="#i-cestino"/></svg> Azzera</button>
         </div>
         <input type="file" id="file-progressi" class="filejs" accept=".json,application/json">
-        <label class="toggle toggle-chiaro" style="margin-top:14px"><input type="checkbox" id="chk-autosave" checked> Scarica anche il file .json a fine test (copia di sicurezza) <span class="mini-chiaro" id="ultimo-salvataggio"></span></label>
+        <label class="toggle toggle-chiaro" style="margin-top:14px"><input type="checkbox" id="chk-autosave"> Scarica anche il file .json a fine test (copia di sicurezza) <span class="mini-chiaro" id="ultimo-salvataggio"></span></label>
         <div class="ultimi-test" id="ultimi-test"></div>
         <div class="nota nota-chiara" style="margin-top:14px">I progressi si salvano da soli nel browser: chiudi e riapri e ritrovi tutto. Il file .json a fine test resta come copia di sicurezza (o per passare a un altro dispositivo, con <b>Carica progressi</b>).</div>
       </details>
@@ -3933,7 +3933,7 @@ function renderHome(){
   renderAndamento();
   renderMaledette();
   renderTematiche();
-  $('chk-autosave').checked = stato.autosave !== false;
+  $('chk-autosave').checked = stato.autosave === true;
   aggiornaMixLabel();
 
   const sg = statiPool(QUESTIONS);
@@ -6669,7 +6669,10 @@ function fineTest(){
     stato.giorni[oggiISO()] = g;
   }
   if(risposte.length > 0) salvaLocale();
-  const autosalva = risposte.length > 0 && stato.autosave !== false;
+  // Il file .json a fine test era la rete di sicurezza di quando i progressi stavano
+  // solo nel browser. Adesso c'e' la sincronizzazione sull'account, quindi si scarica
+  // solo se lo si chiede: la spunta e' spenta finche' non la si accende.
+  const autosalva = risposte.length > 0 && stato.autosave === true;
   if(autosalva) salvaProgressi();
   $('r-autosave').classList.toggle('nascosto', !autosalva);
   renderSegnaliTest(riepilogoSegnali(risposte, test.risposte));
@@ -7586,6 +7589,7 @@ window.addEventListener('online', () => { if(utente) pushCloud(); });
 window.addEventListener('offline', () => { if(utente) setSync('fuori', 'offline'); });
 
 function avviaApp(messaggio){
+  spegniSalvataggioSuFile();
   renderHome();
   if(messaggio) $('nota-pool').textContent = messaggio;
 }
@@ -7622,6 +7626,22 @@ async function dopoLogin(sessione){
     : risorti
       ? `Bentornata! Progressi sincronizzati. ${risorti === 1 ? 'Un test cancellato era' : risorti + ' test cancellati erano'} tornato dentro da un altro dispositivo: l'ho tolto di nuovo.`
       : 'Bentornata! Progressi sincronizzati sul tuo account.');
+}
+
+// Una tantum: chi aveva acceso il salvataggio su file quando i progressi stavano solo
+// nel browser se lo ritrova spento, adesso che c'e' la sincronizzazione sull'account.
+// Si fa una volta sola: se poi lo riaccende, resta acceso.
+const CHIAVE_SPEGNI_FILE = 'ocf_autosave_spento_v59';
+function spegniSalvataggioSuFile(){
+  try{
+    if(localStorage.getItem(CHIAVE_SPEGNI_FILE)) return;
+    localStorage.setItem(CHIAVE_SPEGNI_FILE, '1');
+  }catch(e){ return; }              // senza memoria del browser non si insiste
+  if(stato && stato.autosave === true){
+    stato.autosave = false;
+    salvaLocale();
+    const c = $('chk-autosave'); if(c) c.checked = false;
+  }
 }
 
 async function avvio(){
