@@ -546,6 +546,15 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .modale{background:var(--foglio); border-radius:14px; padding:22px; max-width:430px; width:96%;
         box-shadow:0 12px 34px rgba(var(--ombra),.38);}
 .modale p{margin-bottom:16px; font-size:.97rem;}
+/* Lo schema degli appunti aperto SOPRA il test: si chiude e si torna alla domanda,
+   senza uscire dal quiz e senza perdere le risposte gia' date. */
+.modale-schema{max-width:760px; width:100%; max-height:88vh; display:flex; flex-direction:column;
+  padding:18px 20px;}
+.modale-schema .sch-testa{display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding-bottom:12px; border-bottom:1px solid var(--bordo); flex:none;}
+.modale-schema .sch-testa h2{margin:0; font-size:1.05rem; display:flex; align-items:center; gap:8px;}
+.modale-schema .sch-scroll{overflow-y:auto; margin-top:14px; flex:1 1 auto;
+  -webkit-overflow-scrolling:touch;}
 .statline{display:flex; gap:18px; flex-wrap:wrap; margin-top:8px; font-size:.85rem;}
 .statline span b{font-size:1.05rem;}
 .vuoto{color:var(--nebbia); font-size:.85rem; margin-top:8px;}
@@ -1953,6 +1962,8 @@ b.dubbia{color:var(--ottone-t);}
       <div class="trucco nascosto" id="q-trucco"></div>
       <div class="segnali nascosto" id="q-segnali"></div>
       <div id="q-rileggi"></div>
+      <div class="nota nascosto" id="q-aggiornamento">C'è una versione aggiornata dell'app: si installa
+        appena finisci questo test. Va' avanti tranquilla, non perdi niente.</div>
       <div class="azioni">
         <button class="btn-s" id="btn-abbandona">Termina ora</button>
         <span class="spazio"></span>
@@ -3510,6 +3521,28 @@ b.dubbia{color:var(--ottone-t);}
   </div>
 </div>
 
+<div id="velo-ripresa" class="velo nascosto">
+  <div class="modale">
+    <h2 style="margin:0 0 10px; font-size:1.05rem">Riprendiamo da dove eri?</h2>
+    <p id="rip-testo"></p>
+    <div class="azioni">
+      <span class="spazio"></span>
+      <button class="btn-s" id="rip-chiudi">Chiudi il test e registralo</button>
+      <button class="btn-p" id="rip-riprendi">Riprendi</button>
+    </div>
+  </div>
+</div>
+
+<div id="velo-schema" class="velo nascosto">
+  <div class="modale modale-schema">
+    <div class="sch-testa">
+      <h2><svg class="ic ic-g"><use href="#i-chiave"/></svg> Schema degli appunti</h2>
+      <button class="btn-s" id="schema-chiudi">Torna al test</button>
+    </div>
+    <div class="sch-scroll" id="sch-corpo-velo"></div>
+  </div>
+</div>
+
 <div id="velo-conferma" class="velo nascosto">
   <div class="modale">
     <p id="conferma-testo"></p>
@@ -3784,6 +3817,10 @@ function mostra(vista){
   $('tab-cerca').classList.toggle('attiva', vista === 'vista-cerca');
   $('tab-dispensa').classList.toggle('attiva', vista === 'vista-dispensa');
   window.scrollTo(0,0);
+  // un aggiornamento rimasto in attesa perché c'era un test aperto si installa qui:
+  // fuori dal quiz e dopo che i risultati sono stati letti, non prima
+  if(vista !== 'vista-quiz' && vista !== 'vista-risultati' && typeof ricaricaSeInAttesa === 'function')
+    ricaricaSeInAttesa();
 }
 
 // Giorno assoluto: numero di giorni dal 1970. Serve a misurare le distanze in
@@ -6193,12 +6230,44 @@ function selezionaNuoveBilanciate(nuove, n, argsSel){
 }
 
 // ---------- costruzione test ----------
+// ---------- il test in corso, scritto su disco a ogni risposta ----------
+// I risultati veri si scrivono solo a fine test, perche' il ripasso distanziato ragiona
+// per test interi e non per singole domande. Percio' qui si tiene una copia viva del
+// test aperto: se l'app si chiude a meta' — un aggiornamento, una scheda buttata giu'
+// dal telefono, una pagina ricaricata — al rientro si riprende dalla stessa domanda
+// invece di ricominciare. La copia sparisce quando il test finisce davvero.
+const CHIAVE_TEST = 'ocf_test_in_corso';
+function salvaTestInCorso(){
+  try{
+    if(!test){ localStorage.removeItem(CHIAVE_TEST); return; }
+    localStorage.setItem(CHIAVE_TEST, JSON.stringify({
+      v: 1, n: test.domande.map(q => q.n), risposte: test.risposte, conf: test.conf,
+      cambi: test.cambi, tempi: test.tempi, idx: test.idx, argomenti: test.argomenti,
+      esame: !!test.esame, sim: !!test.sim, scadenza: test.scadenza || 0,
+      inizio: test.inizio, salvatoIl: Date.now()
+    }));
+  }catch(e){}     // memoria del browser piena o negata: il test continua lo stesso
+}
+function scordaTestInCorso(){
+  try{ localStorage.removeItem(CHIAVE_TEST); }catch(e){}
+}
+function testInCorsoSalvato(){
+  try{
+    const t = JSON.parse(localStorage.getItem(CHIAVE_TEST) || 'null');
+    if(!t || t.v !== 1 || !Array.isArray(t.n) || !t.n.length) return null;
+    if(!t.risposte || !Object.keys(t.risposte).length) return null;   // niente da riprendere
+    if(t.n.some(n => !byNum[n])) return null;                          // banca dati cambiata
+    return t;
+  }catch(e){ return null; }
+}
+
 function lanciaTest(domande, tag, opts){
   if(!domande.length) return;
   opts = opts || {};
   test = { domande, idx: 0, risposte: {}, esame: opts.esame !== undefined ? opts.esame : $('chk-esame').checked,
            inizio: Date.now(), argomenti: tag, sim: !!opts.sim, scadenza: opts.scadenza || 0, conf: {},
            tempi: {}, cambi: {}, tIniz: 0 };
+  scordaTestInCorso();
   clearInterval(timerInt);
   const aggTimer = () => {
     const trascorsi = Math.floor((Date.now() - test.inizio) / 1000);
@@ -6557,6 +6626,7 @@ function confermaRisposta(){
   $('q-parziale').textContent = `Parziale: ${giuste}/${Object.keys(test.risposte).length}`;
   $('btn-prossima').textContent = labelAvanti();
   $('btn-prossima').focus();
+  salvaTestInCorso();          // da qui in poi questa risposta non si perde più
 }
 
 function prossima(){
@@ -6564,13 +6634,14 @@ function prossima(){
   if(test.risposte[q.n] === undefined) return;
   segnaTempo(q);
   if(!test.esame && !test.conf[q.n]){ confermaRisposta(); return; }
-  if(test.idx < test.domande.length - 1){ test.idx++; renderDomanda(); }
+  if(test.idx < test.domande.length - 1){ test.idx++; renderDomanda(); salvaTestInCorso(); }
   else fineTest();
 }
 
 function fineTest(){
   if(!test) return;   // già chiuso (es. countdown scaduto mentre era aperto un modale)
   clearInterval(timerInt);
+  scordaTestInCorso();   // il test si chiude qui: la copia viva non serve più
   $('velo-conferma').classList.add('nascosto');
   const risposte = test.domande.filter(q => test.risposte[q.n] !== undefined);
   const errori = [], giuste = [];
@@ -7444,6 +7515,8 @@ $('btn-carica').onclick = () => $('file-progressi').click();
 $('file-progressi').onchange = caricaProgressi;
 $('btn-reset').onclick = () => conferma('Azzerare tutti i progressi (risultati, storico e giornate)? Verrà cancellato tutto: nel browser e sul tuo account online.', async () => {
   const autosavePrec = stato.autosave;
+  test = null; clearInterval(timerInt);
+  scordaTestInCorso();                 // via anche il test lasciato a metà: non deve risorgere
   stato = {risultati:{}, storico:[], giorni:{}, nTest:0, autosave: autosavePrec, azzeratoIl: Date.now()};
   try{ localStorage.removeItem(CHIAVE_LOCALE); localStorage.setItem(CHIAVE_AZZ, String(stato.azzeratoIl)); }catch(e){}
   salvaLocale();                       // riscrive subito lo stato vuoto in locale
@@ -7508,9 +7581,42 @@ function renderSchema(){
   }
   $('sch-corpo').innerHTML = h;
 }
+// Lo schema degli appunti durante un test si apre SOPRA la domanda, in una finestra:
+// cambiare schermata a meta' quiz faceva uscire dal test e le risposte gia' date, che
+// vengono scritte solo alla fine, andavano perse.
+// Le sezioni dello schema sono navigabili anche qui dentro: invece di duplicarle si
+// spostano davvero nella finestra e alla chiusura tornano al loro posto, cosi' i
+// pulsanti restano quelli veri e non c'e' un secondo schema da tenere allineato.
+function apriSchemaSopraIlTest(){
+  renderSchema();
+  const dentro = $('sch-corpo-velo');
+  dentro.appendChild($('sch-nav'));
+  dentro.appendChild($('sch-corpo'));
+  dentro.scrollTop = 0;
+  $('velo-schema').classList.remove('nascosto');
+}
+function chiudiSchemaSopraIlTest(){
+  const casa = $('disp-pan-schema');
+  if(casa){ casa.appendChild($('sch-nav')); casa.appendChild($('sch-corpo')); }
+  $('velo-schema').classList.add('nascosto');
+}
+$('schema-chiudi').onclick = chiudiSchemaSopraIlTest;
+$('rip-riprendi').onclick = riprendiTestSalvato;
+$('rip-chiudi').onclick = chiudiTestSalvato;
+$('velo-schema').addEventListener('click', e => {
+  if(e.target.id === 'velo-schema') chiudiSchemaSopraIlTest();     // tocco fuori: si chiude
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && !$('velo-schema').classList.contains('nascosto'))
+    chiudiSchemaSopraIlTest();
+});
+
 document.addEventListener('click', e => {
   if(e.target.classList && e.target.classList.contains('lnk-schema')){
-    e.preventDefault(); renderDispensa(); pannelloDispensa('schema'); mostra('vista-dispensa');
+    e.preventDefault();
+    const inTest = test && !$('vista-quiz').classList.contains('nascosto');
+    if(inTest){ apriSchemaSopraIlTest(); return; }
+    renderDispensa(); pannelloDispensa('schema'); mostra('vista-dispensa');
   }
 });
 
@@ -7588,10 +7694,94 @@ salvaLocale = function(){
 window.addEventListener('online', () => { if(utente) pushCloud(); });
 window.addEventListener('offline', () => { if(utente) setSync('fuori', 'offline'); });
 
+// Ricaricare la pagina mentre un test e' aperto chiudeva la schermata del quiz a meta'.
+// Da qui in poi il ricarico aspetta: si fa appena si esce dal test, e se e' un
+// aggiornamento lo si dice, cosi' nessuno resta col dubbio.
+let ricaricoInAttesa = false;
+function ricaricaAppenaSiPuo(perAggiornamento){
+  if(!test){ location.reload(); return; }
+  salvaTestInCorso();
+  ricaricoInAttesa = true;
+  if(perAggiornamento){
+    const av = $('q-aggiornamento');
+    if(av) av.classList.remove('nascosto');
+  }
+}
+function ricaricaSeInAttesa(){
+  if(!ricaricoInAttesa || test) return;
+  ricaricoInAttesa = false;
+  location.reload();
+}
+
 function avviaApp(messaggio){
   spegniSalvataggioSuFile();
   renderHome();
   if(messaggio) $('nota-pool').textContent = messaggio;
+  proponiRipresaTest();
+}
+
+// Se l'app si e' chiusa a meta' test, al rientro si riprende dalla stessa domanda.
+// Chi non vuole riprendere puo' chiudere il test: le risposte gia' date vengono
+// registrate lo stesso, non buttate via.
+function proponiRipresaTest(){
+  const t = testInCorsoSalvato();
+  if(!t) return;
+  const date = Object.keys(t.risposte).length;
+  const quando = new Date(t.salvatoIl || t.inizio || Date.now())
+    .toLocaleString('it-IT', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+  $('rip-testo').innerHTML =
+    `Il test del <b>${quando}</b> si è chiuso prima della fine — <b>${date}</b> `
+    + `${date === 1 ? 'risposta era già stata data' : 'risposte erano già state date'} `
+    + `su ${t.n.length}. Le ho tenute da parte.`;
+  $('velo-ripresa').classList.remove('nascosto');
+}
+function riprendiTestSalvato(){
+  const t = testInCorsoSalvato();
+  $('velo-ripresa').classList.add('nascosto');
+  if(!t) return;
+  test = { domande: t.n.map(n => byNum[n]), idx: Math.min(t.idx || 0, t.n.length - 1),
+           risposte: t.risposte || {}, conf: t.conf || {}, cambi: t.cambi || {},
+           tempi: t.tempi || {}, esame: !!t.esame, sim: !!t.sim,
+           // il tempo riparte da adesso: il cronometro di un test interrotto non
+           // direbbe niente di vero, e su una simulazione punirebbe due volte
+           inizio: Date.now(), scadenza: t.scadenza || 0,
+           argomenti: t.argomenti, tIniz: 0 };
+  clearInterval(timerInt);
+  if(test.scadenza){
+    timerInt = setInterval(() => {
+      const resto = test.scadenza - Math.floor((Date.now() - test.inizio) / 1000);
+      if(resto <= 0){ $('q-timer').textContent = '00:00'; clearInterval(timerInt); fineTest(); return; }
+      $('q-timer').textContent = fmtT(resto);
+      $('q-timer').classList.toggle('rosso', resto < 300);
+    }, 1000);
+  } else {
+    timerInt = setInterval(() => {
+      $('q-timer').textContent = fmtT(Math.floor((Date.now() - test.inizio) / 1000));
+    }, 1000);
+  }
+  $('q-timer').classList.remove('rosso');
+  $('q-timer').textContent = test.scadenza ? fmtT(test.scadenza) : '00:00';
+  mostra('vista-quiz');
+  renderDomanda();
+  // la domanda a cui era rimasta era gia' confermata: rimettila com'era
+  const q = test.domande[test.idx];
+  if(test.risposte[q.n] !== undefined){
+    const scelta = test.risposte[q.n];
+    if(test.conf[q.n]){ test.conf[q.n] = false; rispondi(scelta); confermaRisposta(); }
+    else rispondi(scelta);
+  }
+  salvaTestInCorso();
+}
+function chiudiTestSalvato(){
+  const t = testInCorsoSalvato();
+  $('velo-ripresa').classList.add('nascosto');
+  if(!t) return;
+  // si registra come un test terminato in anticipo: le risposte date contano
+  test = { domande: t.n.map(n => byNum[n]), idx: t.n.length - 1,
+           risposte: t.risposte || {}, conf: t.conf || {}, cambi: t.cambi || {},
+           tempi: t.tempi || {}, esame: !!t.esame, sim: false,
+           inizio: t.inizio || Date.now(), scadenza: 0, argomenti: t.argomenti, tIniz: 0 };
+  fineTest();
 }
 
 async function dopoLogin(sessione){
@@ -7659,7 +7849,8 @@ async function avvio(){
     renderHome();
   }
   sb.auth.onAuthStateChange((evento, sessione) => {
-    if(evento === 'SIGNED_OUT'){ location.reload(); }
+    // anche la disconnessione aspetta: ricaricare a meta' test chiuderebbe la schermata
+    if(evento === 'SIGNED_OUT') ricaricaAppenaSiPuo(false);
   });
 }
 
@@ -7692,19 +7883,21 @@ $('btn-esci').onclick = () => conferma('Vuoi uscire dall\'account? I progressi r
 if('serviceWorker' in navigator && location.protocol === 'https:'){
   navigator.serviceWorker.register('sw.js').then(reg => {
     // controlla se c'e' una versione nuova adesso, e poi ogni mezz'ora
-    reg.update().catch(() => {});
-    setInterval(() => reg.update().catch(() => {}), 30*60*1000);
+    // mai cercare aggiornamenti mentre un test e' aperto: si rimanda al giro dopo
+    if(!test) reg.update().catch(() => {});
+    setInterval(() => { if(!test) reg.update().catch(() => {}); }, 30*60*1000);
   }).catch(() => {});
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     try {
       if(sessionStorage.getItem('ocf_ricaricato') === '1') return;
       sessionStorage.setItem('ocf_ricaricato', '1');
     } catch(e){}
-    location.reload();
+    ricaricaAppenaSiPuo(true);
   });
   // e quando si torna sull'app dopo averla lasciata in secondo piano
   document.addEventListener('visibilitychange', () => {
     if(document.visibilityState !== 'visible') return;
+    if(test) return;                       // test aperto: non si va a cercare aggiornamenti
     navigator.serviceWorker.getRegistration().then(r => r && r.update().catch(() => {})).catch(() => {});
   });
 }
