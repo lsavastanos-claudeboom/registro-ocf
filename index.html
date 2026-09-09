@@ -1952,6 +1952,7 @@ b.dubbia{color:var(--ottone-t);}
       <div class="spiega nascosto" id="q-spiega"></div>
       <div class="trucco nascosto" id="q-trucco"></div>
       <div class="segnali nascosto" id="q-segnali"></div>
+      <div id="q-rileggi"></div>
       <div class="azioni">
         <button class="btn-s" id="btn-abbandona">Termina ora</button>
         <span class="spazio"></span>
@@ -6426,6 +6427,7 @@ function renderDomanda(){
   $('q-segnali').classList.add('nascosto');
   $('q-spiega').classList.add('nascosto');
   $('q-trucco').classList.add('nascosto');
+  $('q-rileggi').innerHTML = '';
   $('btn-prossima').disabled = true;
   $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
   test.tIniz = Date.now();          // cronometro della singola domanda (serve a capire le risposte incerte)
@@ -6547,6 +6549,9 @@ function confermaRisposta(){
     if(haTrucco(q.n)){ $('q-trucco').innerHTML = truccoHTML(q.n); $('q-trucco').classList.remove('nascosto'); }
     const ind = indizioSegnali(q, i);
     if(ind){ $('q-segnali').innerHTML = ind; $('q-segnali').classList.remove('nascosto'); }
+    // Il paragrafo di dispensa che spiega l'argomento: chiuso, cosi' non rompe il ritmo
+    // del test a chi vuole tirare dritto, ma e' li' nel momento in cui l'errore e' fresco.
+    $('q-rileggi').innerHTML = rileggiHTML(q);
   }
   const giuste = Object.entries(test.risposte).filter(([n,x]) => byNum[n].e === x).length;
   $('q-parziale').textContent = `Parziale: ${giuste}/${Object.keys(test.risposte).length}`;
@@ -6709,7 +6714,6 @@ function fineTest(){
       <div class="r">✔ Risposta esatta: ${letteraMostrata(q, q.e)}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
       ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
       ${haTrucco(q.n) ? `<div class="trucco" style="margin-top:8px">${truccoHTML(q.n)}</div>` : ''}
-      ${rileggiHTML(q)}
     </div>`).join('');
   const pierG = giuste.length, pierT = risposte.length;
   test = null;
