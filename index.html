@@ -514,6 +514,23 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .err-item .r{color:var(--vidimato-t); margin-top:4px;}
 .err-item .tua{color:var(--lacca-t);}
 .err-item.rip-sup{border-left-color:var(--vidimato);}
+/* Il ripasso e' un di piu': deve leggersi come secondario rispetto alla risposta e
+   alla spiegazione, non competere con loro. Quindi niente colore, solo il bordo. */
+.rileggi{margin-top:8px; border:1px solid var(--bordo); border-left:4px solid var(--nebbia);
+  border-radius:var(--r-int); background:rgba(var(--velo),.04);}
+.rileggi > summary{cursor:pointer; list-style:none; padding:9px 13px; display:flex; gap:9px;
+  align-items:baseline; flex-wrap:wrap; font-size:.87rem;}
+.rileggi > summary::-webkit-details-marker{display:none;}
+.rileggi > summary::after{content:"▾"; margin-left:auto; color:var(--nebbia); font-size:.8rem;
+  transition:transform .15s;}
+.rileggi[open] > summary::after{transform:rotate(180deg);}
+.rileggi .rl-t{font-family:var(--f-mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase;
+  font-weight:700; color:var(--nebbia); white-space:nowrap;}
+.rileggi .rl-d{color:var(--testo); font-weight:600;}
+.rileggi .rl-corpo{margin:0; padding:0 13px 12px; font-size:.88rem;
+  border-top:1px solid var(--bordo); padding-top:10px;}
+.rileggi .rl-corpo > :first-child{margin-top:0;}
+.rileggi .rl-corpo > :last-child{margin-bottom:0;}
 .pill-ko{background:var(--laccabg); color:var(--lacca-t);}
 .pill-sup{background:var(--vidibg); color:var(--vidimato-t);}
 .pill-nuova{background:rgba(var(--velo),.10); color:var(--nebbia);}
@@ -6692,6 +6709,7 @@ function fineTest(){
       <div class="r">✔ Risposta esatta: ${letteraMostrata(q, q.e)}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
       ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
       ${haTrucco(q.n) ? `<div class="trucco" style="margin-top:8px">${truccoHTML(q.n)}</div>` : ''}
+      ${rileggiHTML(q)}
     </div>`).join('');
   const pierG = giuste.length, pierT = risposte.length;
   test = null;
@@ -7041,6 +7059,7 @@ function renderRipasso(){
         <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
         <div class="r">✔ Risposta esatta: ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
         ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
+        ${rileggiHTML(q)}
       </div>`;
     }).join('');
     return `<details class="grp-arg" open>
@@ -7163,12 +7182,111 @@ function dispensaCorpoHTML(errate){
       <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
       <div class="r">✔ ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
       ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
+      ${rileggiHTML(q)}
     </div>`;
   };
   return gruppi.filter(g => g.domande.length).map(g => `
     <div class="disp-tit">${g.tema}</div>
     <div class="disp-sub">${g.domande.length} ${g.domande.length === 1 ? 'domanda' : 'domande'} — ${g.domande.filter(q => stato.risultati[q.n].s === 'ko').length} ancora da superare</div>
     ${g.domande.map(item).join('')}`).join('');
+}
+
+// ---------- il paragrafo di dispensa da rileggere dopo un errore ----------
+// Sbagliare una domanda dice poco; rileggere il pezzo di dispensa che la spiega dice
+// molto. Sotto ogni errore si aggancia il PARAGRAFO (il sotto-capitolo, non l'intero
+// capitolo: sarebbe illeggibile) che ha piu' parole rare in comune con la domanda.
+// Se nessun paragrafo supera la soglia non si mostra niente: meglio niente che il
+// paragrafo sbagliato.
+const DISP_DI_ARG = {
+  'Diritto mercato finanziario':          'mercato',
+  'Matematica ed economia finanziaria':   'corso',
+  'Diritto tributario':                   'tributario',
+  'Diritto previdenziale e assicurativo': 'previdenziale',
+  'Diritto privato e commerciale':        'privato'
+};
+const NOME_DISP = {mercato: 'Mercato finanziario', corso: 'Matematica', tributario: 'Tributario',
+                   previdenziale: 'Previdenziale', privato: 'Privato e commerciale'};
+// Tarate sulla banca dati vera: sotto 2,0 gli abbinamenti diventano casuali, e un
+// paragrafo che non stacca il secondo di almeno un terzo vuol dire che la domanda
+// sta a cavallo fra due argomenti — meglio non indicarne nessuno.
+const SOGLIA_RILEGGI = 1.4;
+const STACCO_RILEGGI = 1.30;
+// I capitoli di metodo non spiegano un argomento: non vanno mai proposti come ripasso.
+const CAP_META = /parole che decidono|nota su questa dispensa|^\s*\d+\s*·\s*la mappa/i;
+
+function corpoDispensa(slug){
+  if(slug === 'corso'){ const e = $('disp-corso'); return e ? e.innerHTML : ''; }
+  return (window.OCF_DISPENSE || {})[slug] || '';
+}
+// stesso vocabolario dell'indice delle domande: parole singole piu' coppie e terzine
+function terminiDi(txt){
+  const seq = sequenza(txt);
+  const s = new Set(seq);
+  for(let i = 0; i < seq.length - 1; i++){
+    s.add(seq[i] + ' ' + seq[i+1]);
+    if(i < seq.length - 2) s.add(seq[i] + ' ' + seq[i+1] + ' ' + seq[i+2]);
+  }
+  return s;
+}
+const PAR_DISP = {};
+function paragrafiDi(slug){
+  if(PAR_DISP[slug]) return PAR_DISP[slug];
+  const testo = corpoDispensa(slug);
+  if(!testo){ return (PAR_DISP[slug] = []); }
+  const cont = document.createElement('div');
+  cont.innerHTML = testo;
+  const out = [];
+  cont.querySelectorAll('.d-sez').forEach(sez => {
+    const h2 = sez.querySelector('h2');
+    const cap = h2 ? h2.textContent.trim() : '';
+    let cur = null;
+    [...sez.children].forEach(el => {
+      if(el.tagName === 'H2') return;
+      if(el.tagName === 'H3'){
+        const tit = el.textContent.trim();
+        cur = /prova a rispondere/i.test(tit) ? null : {cap, tit, pezzi: [], testo: tit};
+        if(cur) out.push(cur);
+        return;
+      }
+      if(!cur) return;
+      cur.pezzi.push(el.outerHTML);
+      cur.testo += ' ' + (el.textContent || '');
+    });
+  });
+  return (PAR_DISP[slug] = out
+    .filter(p => p.pezzi.length && p.testo.length > 180 && !CAP_META.test(p.cap))
+    .map(p => ({cap: p.cap, tit: p.tit, html: p.pezzi.join(''), termini: terminiDi(p.testo)})));
+}
+function paragrafoPer(q){
+  const slug = DISP_DI_ARG[q.t];
+  if(!slug) return null;
+  const lista = paragrafiDi(slug);
+  if(!lista.length) return null;
+  const {toks, idf} = ensureIndex();
+  const qt = toks[q.n] || [];
+  let best = null, bs = 0, secondo = 0;
+  lista.forEach(p => {
+    let sc = 0;
+    qt.forEach(w => {
+      if(idf[w] >= SOGLIA_IDF && p.termini.has(w))
+        sc += idf[w] * (1 + 0.6 * (w.split(' ').length - 1));
+    });
+    sc /= Math.sqrt(p.termini.size || 1);
+    if(sc > bs){ secondo = bs; bs = sc; best = p; }
+    else if(sc > secondo) secondo = sc;
+  });
+  if(bs < SOGLIA_RILEGGI) return null;
+  if(secondo > 0 && bs / secondo < STACCO_RILEGGI) return null;
+  return best;
+}
+function rileggiHTML(q){
+  let p = null;
+  try { p = paragrafoPer(q); } catch(e){ p = null; }
+  if(!p) return '';
+  const tit = p.tit.replace(/^\s*[\d.]+\s*/, '');
+  return `<details class="rileggi"><summary><span class="rl-t">Rileggi</span>`
+       + `<span class="rl-d">${NOME_DISP[DISP_DI_ARG[q.t]]} · ${p.cap.replace(/^\s*\d+\s*·\s*/, '')}`
+       + ` — ${tit}</span></summary><div class="d-corpo rl-corpo">${p.html}</div></details>`;
 }
 
 // ---------- ricerca banca dati ----------
