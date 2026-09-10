@@ -86,7 +86,7 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 
 /* ============ IL CAMPO ============
    L'unica cosa che questa app può mostrare e nessun'altra: la banca dati è
-   chiusa e contabile. 4.995 segni, uno per domanda, nei quattro stati.
+   chiusa e contabile. Un segno per domanda, nei quattro stati.
    È la firma della pagina, quindi è l'unico elemento denso e cromatico:
    tutto il resto attorno sta zitto. */
 .campo-fascia{border-bottom:1px solid var(--bordo); background:var(--foglio);}
@@ -122,7 +122,7 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 .sp-attesa{background:var(--ottone-pieno);} .sp-salda{background:var(--vidimato);}
 /* ================= QuizzOcf — identità "il campo" =================
    Il colore non decora: nomina i quattro stati in cui può trovarsi ognuna
-   delle 4.995 domande. Sono l'unico vocabolario cromatico dell'app.
+   delle domande della banca dati. Sono l'unico vocabolario cromatico dell'app.
      mai vista  →  --nuova     grigio-petrolio, non marcata
      da recuperare → --lacca   rosso della correzione
      in attesa di riconferma → --ottone  ambra, provvisorio
@@ -1785,7 +1785,7 @@ b.dubbia{color:var(--ottone-t);}
   <img src="icons/logo-64.png" alt="" class="logo-img">
   <div class="marchio">
     <h1>Quizz<span class="rosso">Ocf</span></h1>
-    <div class="sub">Banca dati 2026 · 4.995 domande</div>
+    <div class="sub">Banca dati 2026 · <span class="n-banca">4.995</span> domande</div>
   </div>
   <div class="utente-box">
     <span id="sync-stato" class="nascosto"><span class="sync-dot"></span><span id="sync-testo">sincronizzato</span></span>
@@ -1799,7 +1799,7 @@ b.dubbia{color:var(--ottone-t);}
   <section class="campo-fascia" id="campo-fascia">
     <div class="campo-int">
       <div class="campo-testa">
-        <span class="campo-tit">La banca dati · 4.995 domande</span>
+        <span class="campo-tit">La banca dati · <span class="n-banca">4.995</span> domande</span>
         <div class="campo-leg" id="campo-leg"></div>
       </div>
       <canvas id="campo" aria-hidden="true"></canvas>
@@ -2200,7 +2200,6 @@ b.dubbia{color:var(--ottone-t);}
 <p>I <b>certificati</b> si scambiano sul <b>SEDEX</b> e sono operazioni di cartolarizzazione. Possono essere a capitale garantito, al rialzo (<b>bull</b>), al ribasso (<b>bear</b>) o sulla volatilità. Esiste il tipo <b>benchmark</b>, che replica il sottostante, e il tipo <b>leverage</b>, che ha la leva finanziaria.</p>
 <p>Il <b>covered warrant</b> ha la leva a causa del <b>multiplo</b>, cioè il numero di azioni sottostanti, stabilito all'emissione. Può essere call o put.</p>
 </section>
-
 <section class="d-sez" id="s-derivati">
 <h2>2 · I derivati</h2>
 
@@ -2438,7 +2437,6 @@ b.dubbia{color:var(--ottone-t);}
 <p>Quindi lo scambio parte fra 3 mesi, l'operazione dura in tutto 9 mesi, e il periodo effettivo di scambio è di <b>6 mesi</b> (9 − 3).</p>
 </div>
 </section>
-
 <section class="d-sez" id="s-opzioni">
 <h2>3 · Le opzioni</h2>
 
@@ -2555,7 +2553,6 @@ b.dubbia{color:var(--ottone-t);}
 <li><b>Opzioni sui tassi</b> — cap, floor, collar (vedi sopra).</li>
 </ul>
 </section>
-
 <section class="d-sez" id="s-scenario">
 <h2>4 · Analisi di scenario: macro, tassi, valute</h2>
 
@@ -2669,7 +2666,6 @@ b.dubbia{color:var(--ottone-t);}
 </table></div>
 <p class="d-nota">M1, M2 e M3 sono <b>tutte</b> forme di liquidità: cambia solo quanto è facile spenderle subito.</p>
 </section>
-
 <section class="d-sez" id="s-portafoglio">
 <h2>5 · Portafoglio, rischio e performance</h2>
 
@@ -2796,9 +2792,307 @@ b.dubbia{color:var(--ottone-t);}
 <p>Il <b>VaR</b> (Value at Risk) esprime la perdita massima attesa entro un certo <b>livello di confidenza</b> e su un certo orizzonte temporale.</p>
 <p class="d-trucco-inline"><b>Regola pratica:</b> se la parola <b>VaR</b> compare nella domanda, la risposta che contiene <b>VaR</b> è quella giusta.</p>
 </section>
+<section class="d-sez" id="s-bond-sostenibili">
+<h2>6 · Le obbligazioni sostenibili</h2>
+<h3>6.1 Che cosa cambia, e che cosa no</h3>
+<div class="d-attenzione">
+<p><b>Trappola n.1.</b> Resta <b>un'obbligazione</b>: nessun vincolo di tasso, durata, valuta, rimborso o rating. Dal bond ordinario lo distingue il <b>monitoraggio periodico sull'allocazione dei fondi</b>, mai un elemento finanziario: falsi "solo enti pubblici", "agevolazioni fiscali", "garanzia statale", "rischio di cambio". L'etichetta la mette <b>l'emittente</b>: i principles <b>ICMA</b> sono <b>volontari</b>, nessuna autorità certifica.</p>
+</div>
+<h3>6.2 I quattro pilastri (Green e Social Bond Principles)</h3>
+<div class="d-tabw"><table class="d-tab">
+<thead><tr><th>Pilastro</th><th>Richiede</th></tr></thead>
+<tbody>
+<tr><td><b>1. Uso dei proventi</b></td><td>progetti ambientali o sociali; si può <b>finanziare o rifinanziare</b></td></tr>
+<tr><td><b>2. Valutazione e selezione</b></td><td>criteri di scelta</td></tr>
+<tr><td><b>3. Gestione dei proventi</b></td><td>somme tracciate fino all'allocazione</td></tr>
+<tr><td><b>4. Reporting</b></td><td><b>annuale, fino alla completa allocazione</b>; il social documenta l'<b>impatto sociale</b></td></tr>
+</tbody>
+</table></div>
+<div class="d-trucco">
+<p>Ogni elemento <b>finanziario</b> (prezzo, rating, durata, cedola) è distrattore; le <b>percentuali secche</b> (30%, 50%) non esistono.</p>
+</div>
+<h3>6.3 Green, social, sustainability</h3>
+<p>Conta la destinazione, non l'emittente.</p>
+<div class="d-tabw"><table class="d-tab">
+<thead><tr><th>Etichetta</th><th>Proventi</th></tr></thead>
+<tbody>
+<tr><td><b>Green</b></td><td>solo ambiente: rinnovabili, efficienza, trasporto pulito, emissioni, <b>catena di fornitura a basse emissioni</b></td></tr>
+<tr><td><b>Social</b></td><td>solo sociale: <b>alloggi sociali per famiglie a basso reddito</b>, sanità, istruzione, inclusione lavorativa, borse di studio</td></tr>
+<tr><td><b>Sustainability</b></td><td><b>esclusivamente una combinazione</b> di green e social, <b>in qualunque proporzione</b></td></tr>
+</tbody>
+</table></div>
+<div class="d-trucco">
+<p>Energia, emissioni, trasporti = <b>green anche con beneficiari deboli</b>; esclusi carbone, fossili, partecipazioni. <b>Mixed</b>, <b>hybrid</b> e <b>covered bond</b> non sono categorie ICMA. <b>BTP Green</b>: use of proceeds del Tesoro.</p>
+</div>
+<h3>6.4 Le quattro strutture ICMA</h3>
+<p>Green e social sono speculari.</p>
+<div class="d-tabw"><table class="d-tab">
+<thead><tr><th>Struttura</th><th>Garanzia</th><th>Rivalsa</th></tr></thead>
+<tbody>
+<tr><td><b>Standard use of proceeds</b></td><td><b>non garantita</b></td><td><b>piena</b> ("full recourse to the issuer")</td></tr>
+<tr><td><b>Revenue bond</b></td><td>flussi vincolati (tariffe, canoni, imposte di scopo)</td><td><b>assente</b> ("no recourse to the issuer")</td></tr>
+<tr><td><b>Project bond</b></td><td>esposizione <b>diretta</b> al rischio del progetto</td><td><b>può anche</b> esserci, non obbligatoria</td></tr>
+<tr><td><b>Secured collateral</b></td><td>garantita: proventi netti al progetto <b>che garantisce l'obbligazione</b></td><td>—</td></tr>
+<tr><td><b>Secured standard</b></td><td>i progetti <b>possono o meno garantire, in tutto o in parte</b></td><td>—</td></tr>
+</tbody>
+</table></div>
+<div class="d-trucco">
+<p><b>Ricavi del progetto</b> → revenue; esposizione al progetto senza flussi né garanzie → project; <b>collaterale</b> → secured; <b>non garantito + piena rivalsa + proventi vincolati</b> → standard. A "in ogni caso" si risponde <b>no</b>; valuta, emittente e <b>durata</b> mai.</p>
+</div>
+<h3>6.5 I sustainability-linked bond</h3>
+<p>Proventi <b>liberi</b> (general purpose) + <b>condizioni finanziarie</b> legate a obiettivi ESG predefiniti = <b>SLB</b>, la via di chi vuole risorse <b>genericamente</b>.</p>
+<div class="d-box">
+<p><b>Green, social, sustainability</b>: vincolo sui <b>PROVENTI</b> → monitoraggio dell'<b>allocazione</b>. <b>SLB</b>: vincolo sui <b>RISULTATI</b> → monitoraggio della <b>performance</b> dei KPI sui target ESG dell'emittente, verifica esterna <b>almeno annuale</b>; cedola <b>step-up</b> se mancano, <b>step-down</b> se centrati: il rendimento <b>può aumentare o diminuire</b>.</p>
+<p>Falsi: verifica mensile, conversione in azioni, durata minima.</p>
+</div>
+<p><b>KPI</b> = che cosa si misura (CO2, consumi, gender pay gap); <b>SPT</b> = <b>miglioramenti misurabili negli indicatori chiave a cui l'emittente si impegna con tempistica predefinita</b>. La <b>second party opinion</b> <b>fornisce una valutazione</b> su KPI e SPT: giudizio, non garanzia.</p>
+<div class="d-trucco">
+<p><b>Progetto o target?</b> Opera concreta → green o social. <b>Impegno + percentuale + scadenza</b> (−50% CO2 entro il 2050, −40% consumi, gender pay gap in cinque anni) = SPT → <b>SLB</b>; parole-spia "<b>genericamente</b>", "<b>scopi generali</b>". Si emette per <b>mostrare al mercato un impegno ESG tangibile</b>.</p>
+</div>
+<h3>6.6 L'European green bond</h3>
+<p><b>Obbligazione verde europea</b> (EuGB): denominazione riservata dal <b>Reg. (UE) 2023/2631</b>, l'ICMA non basta.</p>
+<div class="d-tabw"><table class="d-tab">
+<thead><tr><th>Requisito</th><th>In pratica</th></tr></thead>
+<tbody>
+<tr><td><b>Tassonomia UE</b></td><td>proventi allineati al <b>Reg. (UE) 2020/852</b>; ammesse le attività <b>transitorie e abilitanti</b> allineate</td></tr>
+<tr><td>Trasparenza</td><td>scheda informativa pre-emissione, reporting allocazione e impatto, <b>revisore registrato ESMA</b> obbligatorio</td></tr>
+<tr><td><b>Flessibilità 15%</b></td><td>max 15% senza criteri di vaglio tecnico; <b>85%</b> allineato</td></tr>
+</tbody>
+</table></div>
+<div class="d-attenzione">
+<p>Fuori: carbone e fossili, assenza del revisore, quote non allineate. Nessun rating minimo, nessuna riserva al pubblico, nessuna garanzia statale. È <b>sempre falso</b> che i green bond ICMA non vincolino i proventi.</p>
+</div>
+<h3>6.7 Transition bond e greenwashing</h3>
+<p>Per chi <b>parte sporco e migliora</b>: gasolio → ibrido, carbone → gas, riconversione dei processi.</p>
+<div class="d-trucco">
+<p>Fossile meno inquinante = <b>transition</b>; già pulito, eolico o fotovoltaico = <b>green</b>; obiettivo aziendale senza progetto = <b>SLB</b>. Parole-spia: <b>alto impatto</b>, <b>hard to abate</b>, settore energetico <b>tradizionale</b>, <b>riconversione</b>, <b>percorso di decarbonizzazione</b>.</p>
+</div>
+<p>È il più esposto al <b>greenwashing</b>: finanzia <b>attività non chiaramente allineate agli obiettivi climatici</b> e, a differenza dell'EuGB, <b>non deve finanziare attività che rientrano nella tassonomia UE</b>; svantaggio per l'investitore: <b>minore trasparenza sugli impatti ambientali</b>.</p>
+<h3>6.8 Prova a rispondere</h3>
+<div class="d-esercizi">
+<div class="d-es">
+<p class="d-es-d"><b>1.</b> Non garantito, 7 anni, piena rivalsa; proventi a inclusione lavorativa.</p>
+<p class="d-es-r"><b>Standard social use of proceeds bond</b>; importo e durata sono rumore.</p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>2.</b> Parco eolico, investitori esposti al rischio del progetto, senza flussi né garanzie.</p>
+<p class="d-es-r"><b>Green project bond</b>; coi ricavi di una tramvia sarebbe revenue, col collaterale secured.</p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>3.</b> Caso compatibile con un'obbligazione verde europea?</p>
+<p class="d-es-r">Fondi in <b>attività transitorie allineate alla tassonomia</b> (Reg. 2020/852).</p>
+</div>
+</div>
+<div class="d-concl-box">
+<ul>
+<li><b>Use of proceeds</b> (green, social, sustainability, transition): vincolo sui <b>proventi</b>; <b>SLB</b>: proventi liberi, vincolo sui <b>risultati</b>.</li>
+<li><b>EuGB</b> = Reg. 2023/2631 + tassonomia 2020/852 + revisore ESMA + <b>15%</b>; <b>transition</b> = fuori tassonomia, più <b>greenwashing</b>.</li>
+</ul>
+</div>
+</section>
+<section class="d-sez" id="s-esg">
+<h2>7 · Investire con criteri ESG: le sette strategie</h2>
 
+<h3>7.1 Ex ante ed ex post</h3>
+<div class="d-box">
+<p><b>Ex post</b> — agiscono su titoli <b>già in portafoglio</b>: azionariato attivo e il monitoraggio dell'impact investing. <b>Ex ante</b> — tutte le altre: <b>elaborate nella fase precedente l'investimento e basate su specifici criteri di inclusione</b>. <i>Ex ante</i> non vuol dire «finanziario»: tutte usano dati ESG.</p>
+<p><b>Ex post e ad alto effort</b> → <b>active ownership</b>.</p>
+</div>
+
+<h3>7.2 Le sette strategie</h3>
+<div class="d-tabw"><table class="d-tab">
+<thead><tr><th>Strategia</th><th>Che cosa fa</th><th>Si basa su</th><th>Esclude?</th><th>Engagement?</th></tr></thead>
+<tbody>
+<tr><td><b>Esclusione</b><br>exclusionary screening</td><td>decide <b>a priori</b> di non investire: settori, comportamenti, emittenti, <b>Paesi e governi</b></td><td>criteri ESG <b>del gestore</b>, anche una <b>soglia minima</b> di score</td><td><b>Sì</b>, subito</td><td>No</td></tr>
+<tr><td><b>Screening normativo</b><br>norms-based screening</td><td>valuta la <b>conformità delle imprese target a normative internazionali</b></td><td><b>standard condivisi</b>: Global Compact e Convenzione anticorruzione ONU, OCSE, ILO</td><td><b>Sì</b>, se il dialogo fallisce</td><td><b>Sì</b>, fase intermedia</td></tr>
+<tr><td><b>Best in class</b></td><td>prende le imprese coi <b>migliori punteggi ESG in un certo settore</b>: i migliori <i>nel</i> settore, non i settori migliori</td><td><b>rating ESG relativi</b>, tutte e tre le dimensioni, non dati finanziari storici</td><td><b>No</b>: ammette <b>settori controversi</b> coi rating migliori</td><td>No</td></tr>
+<tr><td><b>Azionariato attivo</b><br>active ownership</td><td><b>dialoga costantemente col management</b> delle partecipate ed <b>esercita i diritti di voto</b></td><td><b>ogni azionista ha una responsabilità sulla sostenibilità della partecipata</b></td><td><b>No</b>: <b>non offre un vero e proprio criterio di selezione dei titoli</b></td><td><b>Sì</b>, è la strategia</td></tr>
+<tr><td><b>Integrazione ESG</b><br>ESG integration</td><td><b>inclusione esplicita e sistematica dei fattori ESG nell'analisi finanziaria tradizionale</b></td><td>i fattori ESG nella <b>valutazione del rischio</b> degli asset, approccio <b>olistico</b></td><td><b>No</b>, mai a priori</td><td>No</td></tr>
+<tr><td><b>Investimenti a tema</b><br>thematic investment</td><td><b>selezione proattiva di società in attività favorevoli allo sviluppo sostenibile</b></td><td>un <b>tema</b>: clima, acqua, rinnovabili; i <b>green bond</b></td><td>No</td><td>No</td></tr>
+<tr><td><b>Impact investing</b></td><td><b>impatto sociale e ambientale misurabile</b> più <b>ritorno economico</b></td><td><b>intenzionalità</b> (ex ante), <b>misurabilità</b> (rendiconto ex post), <b>addizionalità</b></td><td>No</td><td>No, ma <b>monitora</b></td></tr>
+</tbody>
+</table></div>
+
+<h3>7.3 Le tre coppie che si confondono</h3>
+<p><b>Esclusione e screening normativo</b>: stesso esito — <b>entrambe possono condurre alla eliminazione di un titolo dal portafoglio</b> (non il voto, non i dati patrimoniali) — parametro diverso: <b>standard internazionali condivisi</b> contro <b>criteri del gestore</b>. Gli artt. 6 e 8 del Reg. (UE) 2019/2088 riguardano l'<b>informativa dei prodotti</b>.</p>
+<p><b>Azionariato attivo e screening normativo</b>: là l'engagement è la strategia, qui una fase, quindi «<b>entrambe possono prevedere una fase di engagement</b>».</p>
+<p><b>Tematico e impact investing</b>: stesse attività, diversa <b>misurazione</b> (parametri ex ante più rendiconto ex post).</p>
+<div class="d-attenzione">
+<p><b>Gemelli.</b> Due domande aprono con «quella dell'azionariato attivo:» con risposte diverse: in una vince il <b>criterio di selezione</b>, nell'altra la <b>responsabilità dell'azionista</b>.</p>
+</div>
+
+<h3>7.4 Engagement soft e hard (Forum finanza sostenibile)</h3>
+<p>L'<b>engagement</b> è il <b>dialogo costruttivo tra investitori e imprese su questioni ESG, accompagnato dall'esercizio attivo dei diritti di voto</b>, per <b>impatti positivi di sostenibilità</b>: un processo con <b>obiettivi intermedi e monitoraggio dei progressi</b>, non speculativo, non sulle performance passate, senza <i>short</i>.</p>
+<div class="d-box">
+<p><b>Soft</b> — dialogo informale: <b>incontro col top management</b>, lettere, <b>incontri periodici</b> con le partecipate; <b>non occorre essere azionisti</b>, lo può fare un obbligazionista, senza soglie di capitale.</p>
+<p><b>Hard</b> — diritti sociali: <b>voto</b> in assemblea, <b>mozioni per integrare l'ordine del giorno</b> (anche di CdA), modifiche statutarie, <b>ricorsi</b> contro delibere; <b>presuppone la qualifica di azionista</b>.</p>
+</div>
+<div class="d-trucco">
+<p>Soft = <b>parlo</b>, hard = <b>uso i diritti</b>: assemblea, consiglio, mozione, voto, ricorso → hard. Il <b>«mid engagement» non esiste</b>, ogni <b>soglia di capitale</b> per dialogare (il 3%) è inventata, e gli <b>incontri informali col management</b> nelle opzioni sull'hard sono soft. Riuscito = <b>cambiamento sostanziale</b> (<b>ridurre le emissioni inquinanti</b>); il «piano di comunicazione sull'immagine ESG» è <b>greenwashing</b>. Per <b>continuare</b>: <b>nuovi obiettivi e monitoraggi</b>, non vendere né scrivere all'Autorità.</p>
+</div>
+
+<h3>7.5 Impact investing: rendimento e punto debole</h3>
+<p>Rendimento atteso <b>positivo</b>, mai nullo né negativo: senza ritorno è <b>filantropia</b>. Settori tipici: <b>housing sociale</b>, microfinanza, <b>servizi educativi</b> e sanitari, rinnovabili.</p>
+<div class="d-attenzione">
+<p><b>Punto debole</b>: <b>elevata complessità e costi del monitoraggio e della rendicontazione dell'impatto</b>. Distrattori da altre strategie: «difficoltà di individuare i settori controversi» è dell'esclusione, l'<b>assenza di standardizzazione</b> dei rating ESG.</p>
+</div>
+
+<h3>7.6 Tre quesiti svolti</h3>
+<div class="d-es">
+<p class="d-es-d"><b>1.</b> X partecipa al <b>25%</b> di Y, che opera negli armamenti; la SGR Beta non può investire <b>né in X né in Y</b>. Soglia di tolleranza?</p>
+<p class="d-es-r">Soglia = <b>quota massima di esposizione</b> al settore controverso, <b>indiretta compresa</b>. Conta chi resta fuori: Y è il settore vietato, X è esposta indirettamente. Con soglia 25% X rientrerebbe; del fatturato non c'è traccia. Quindi <b>0%</b>: il 25% è la partecipazione, il numero-trappola.</p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>2.</b> Un fondo apre una fase di <b>engagement</b> per correggere comportamenti non conformi a norme di sostenibilità, <b>prima di escludere</b> la partecipata.</p>
+<p class="d-es-r"><b>Screening normativo</b>: non conformità → dialogo → esclusione. La parola <i>engagement</i> non fa la risposta: qui è lo strumento, e l'hard engagement non è una strategia di selezione.</p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>3.</b> Mozioni per integrare l'ordine del giorno: soft engagement?</p>
+<p class="d-es-r"><b>No, hard engagement</b>: sono diritti sociali. Né «dipende dalle mozioni» né «sì, se l'assemblea è ordinaria».</p>
+</div>
+
+<div class="d-concl-box">
+<p>Fra due risposte chiediti, nell'ordine: <b>quando</b> agisce la strategia e <b>chi scrive il criterio</b>.</p>
+</div>
+</section>
+<section class="d-sez" id="s-sfdr">
+<h2>8 · I fondi e il regolamento SFDR</h2>
+
+<h3>8.1 La scala art. 6 / 8 / 9</h3>
+<p>Il <b>Reg. (UE) 2019/2088</b> (<b>SFDR</b>) riguarda l'<b>informativa</b>: obbliga a dichiarare, non a essere verdi. Copre <b>tutti i prodotti finanziari</b>: chi non integra i rischi di sostenibilità è <b>art. 6</b>. Le categorie sono <b>tre</b>, 6-8-9 (l'«art. 12» è inventato). Non dipendono da <b>asset class</b>, <b>strategia</b>, valuta, scadenza, rating, clientela, Kyoto, settore o paese delle partecipate.</p>
+<div class="d-tabw"><table class="d-tab d-confronto">
+<thead><tr><th></th><th>art. 6</th><th>art. 8</th><th>art. 9</th></tr></thead>
+<tbody>
+<tr><td><b>Gergo</b></td><td><b>tradizionale</b></td><td><b>light green</b></td><td><b>dark green</b></td></tr>
+<tr><td><b>Dichiara</b></td><td>di <b>non integrare criteri ESG</b> nelle strategie d'investimento</td><td>di <b>promuovere</b> caratteristiche ambientali o sociali, o una combinazione, <b>purché le imprese investite rispettino prassi di buona governance</b></td><td>di <b>avere come obiettivo</b> l'investimento sostenibile dell'<b>art. 2</b> (ambientale <i>o</i> sociale) e di <b>misurarlo</b></td></tr>
+<tr><td><b>Portafoglio</b></td><td>libero</td><td>anche <b>asset non ESG compliant</b></td><td><b>solo</b> investimenti sostenibili</td></tr>
+<tr><td><b>Informativa</b></td><td><b>se e in che modo</b> i rischi di sostenibilità entrano nelle decisioni, <b>o perché non rilevanti</b></td><td>in più: le <b>modalità con cui le caratteristiche ESG sono promosse</b></td><td>in più: <b>obiettivo e risultati misurati</b></td></tr>
+<tr><td><b>Vendibile «green»</b></td><td><b>mai</b></td><td>sì, nei limiti della promozione</td><td>sì</td></tr>
+</tbody>
+</table></div>
+
+<h3>8.2 Il trucco delle parole</h3>
+<div class="d-trucco">
+<p><b>«Promuove»</b> caratteristiche ambientali o sociali → <b>8</b>.</p>
+<p><b>«Ha come obiettivo»</b> l'investimento sostenibile, <b>misurato e rendicontato</b> → <b>9</b>.</p>
+<p>Nessuna delle due, o descrizione <b>in negativo</b> («non ha come obiettivo la promozione di caratteristiche ambientali o sociali») → <b>6</b>.</p>
+<p><b>Entrambe le spie, una negata</b> («promuove caratteristiche sociali <b>ma non ha come obiettivo</b> investimenti sostenibili»): vince la negazione, resta l'<b>8</b>.</p>
+</div>
+<div class="d-box">
+<p>Le tecniche non classificano: <i>best in class</i>, <i>negative screening</i>, <i>engagement</i>, <i>active ownership</i>. Non esistono il <b>«light brown»</b> né l'«art. 8 <i>dark green</i>»: <b>8 = light green, 9 = dark green</b>.</p>
+</div>
+
+<h3>8.3 I vincoli che non esistono</h3>
+<p><b>L'8 è permissivo</b>: non deve escludere <b>automaticamente</b> le imprese ad alto impatto, applicare <b>sistematicamente</b> l'<i>hard engagement</i>, comprare <b>esclusivamente</b> green bond o social bond. Può <b>escludere i settori controversi</b> se ciò fa parte della promozione: non è riservata al 9 né vietata dall'ESMA.</p>
+<p><b>Il 9 è rigidissimo</b>: investimenti non sostenibili <b>in nessun caso</b> — nessun tetto del 50%, nessuna deroga per i titoli di Stato, nessun via libera ESMA. Compra <b>azioni di società che contribuiscono a obiettivi ambientali sostenibili</b>; fuori il <i>future</i> speculativo sul petrolio, l'obbligazione di una petrolifera (il rating non conta), il titolo di Stato, <b>non sostenibile di per sé</b>.</p>
+<div class="d-attenzione">
+<p><b>Dove la banca dati semplifica.</b> Usa le formule della tabella: per il 6 «<b>non integra criteri ESG</b>», per il 9 portafoglio <b>integralmente sostenibile</b>. Nella prassi un 6 parla comunque dei rischi e un 9 tiene liquidità; nelle risposte no.</p>
+</div>
+
+<h3>8.4 Informativa, PAI, tassonomia</h3>
+<p>L'informativa <b>precontrattuale</b> sta nel <b>prospetto informativo</b>, prima della sottoscrizione, mai in bilancio. Chiede <b>parole, non percentuali</b>: nessuna soglia del 10%, nessun bilancio sociale, nessuno <i>score</i> a cinque anni. Rischi <b>non rilevanti</b>? Lì stesso una <b>spiegazione chiara e concisa</b> (<i>comply or explain</i>), senza promuoverlo all'8 o al 9 né fare <i>engagement</i>. La <b>periodica</b> dice in che <b>misura</b> la promozione si è realizzata (8) e quale <b>impatto</b> (9).</p>
+<p>I <b>PAI</b> sono i principali effetti negativi degli investimenti sulla sostenibilità: le <b>emissioni di CO2</b>, proprie o delle partecipate, stanno <b>nei PAI</b> e non sono il delta fra 6 e 8; i <b>benefici fiscali</b> sono fuori dal regolamento. Che cosa sia verde lo dice la <b>tassonomia UE</b> (<b>Reg. 2020/852</b>, <b>sei obiettivi ambientali</b>): l'8 e il 9 ne dichiarano la <b>quota allineata</b>, il 100% non è requisito dell'8.</p>
+
+<h3>8.5 MiFID II e greenwashing</h3>
+<p>Con <b>MiFID II</b> le <b>preferenze di sostenibilità</b> del cliente si raccolgono nel <b>questionario di profilatura</b>.</p>
+<div class="d-trucco">
+<p><b>Nessuna preferenza</b> ESG → <b>art. 6</b>, «che non persegue obiettivi ESG ma rispetta gli obblighi informativi sulla sostenibilità».</p>
+<p><b>Promozione</b> di caratteristiche sociali sì, <b>scetticismo</b> sulla sostenibilità come unico obiettivo → <b>art. 8</b>. <b>Impatto misurabile</b> → <b>art. 9</b>.</p>
+<p>Più risposte ripetono <b>la stessa frase corretta</b> con <b>numeri diversi</b>: leggi il numero.</p>
+</div>
+<p>Dichiarare <b>dark green</b> un fondo che è <b>art. 6</b> è <b>greenwashing</b>: divario fra etichetta e contenuto.</p>
+
+<h3>8.6 Prova a rispondere</h3>
+<div class="d-es">
+<p class="d-es-d"><b>1.</b> Art. 6: solo green bond, elevati punteggi ESG, alto impatto sociale, o azionario che <b>nega</b> di promuovere caratteristiche ambientali o sociali?</p>
+<p class="d-es-r"><b>L'ultimo</b>, per <b>sottrazione</b>: gli altri hanno un elemento verde o sociale esplicito.</p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>2.</b> Alfa investe in <b>green bond</b> ma non dichiara un <b>obiettivo vincolante</b> né garantisce il <b>100%</b> sostenibile. Dark green?</p>
+<p class="d-es-r"><b>No</b>: mancano entrambi i requisiti del 9, i green bond sono l'esca. Al massimo <b>art. 8</b>.</p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>3.</b> Alfa investe esclusivamente in progetti di riduzione dei gas serra allineati agli accordi di Parigi. Art.…?</p>
+<p class="d-es-r"><b>9, se misura e rendiconta.</b> Solo progetti climatici è già un obiettivo (non è 6); le due opzioni sul 9 differiscono <b>solo</b> per quella.</p>
+</div>
+
+<div class="d-concl-box">
+<p><b>In poche righe.</b> SFDR è informativa e copre <b>tutti</b> i prodotti: il <b>6</b> non pretende (trasparenza sui rischi, mai «green»), l'<b>8</b> <b>promuove</b>, il <b>9</b> <b>persegue e misura</b>.</p>
+</div>
+</section>
+<section class="d-sez" id="s-microcredito">
+<h2>9 · Il microcredito</h2>
+
+<h3>9.1 Che cos'è, e perché non è un prestito qualunque</h3>
+<p>Concedere credito al pubblico è attività riservata. L'<b>articolo 111 del Testo Unico Bancario</b> apre una deroga: gli <b>operatori di microcredito</b>, iscritti in un <b>apposito elenco</b> tenuto dall'<b>organismo di vigilanza</b>, possono finanziare chi non ha un patrimonio da ipotecare, dentro i limiti del <b>decreto MEF 17 ottobre 2014, n. 176</b>.</p>
+<div class="d-box">
+<p><b>La chiave.</b> Qui la garanzia non è un bene, è il rapporto: i <b>servizi ausiliari sono un requisito del finanziamento</b>, la contropartita del divieto di garanzie reali. Se mancano, non è microcredito.</p>
+</div>
+
+<h3>9.2 I due binari, da non confondere mai</h3>
+<div class="d-tabw"><table class="d-tab">
+<thead><tr><th></th><th>Imprenditoriale (titolo I)</th><th>Sociale (art. 5)</th></tr></thead>
+<tbody>
+<tr><td><b>Destinatari</b></td><td>autonomi, imprese individuali, società di persone, s.r.l. (anche semplificate), cooperative. <b>Mai la S.p.A.</b></td><td><b>persone fisiche</b> vulnerabili</td></tr>
+<tr><td><b>Finalità</b></td><td>avvio o esercizio dell'attività</td><td><b>inclusione sociale e finanziaria</b></td></tr>
+<tr><td><b>Importo max</b></td><td><b>75.000 €</b> per beneficiario;<br><b>100.000 €</b> sole s.r.l. con garanzia reale</td><td><b>10.000 €</b> di esposizione verso il medesimo finanziatore, <b>in ogni momento</b></td></tr>
+<tr><td><b>Durata max</b></td><td><b>10 anni</b></td><td><b>5 anni</b></td></tr>
+<tr><td><b>Garanzie reali</b></td><td><b>vietate</b>, unica deroga le s.r.l.</td><td><b>mai</b>, in nessun caso</td></tr>
+<tr><td><b>Condizioni</b></td><td>di mercato</td><td><b>più favorevoli</b> del mercato</td></tr>
+<tr><td><b>Servizi ausiliari</b></td><td>assistenza e <b>monitoraggio</b></td><td><b>bilancio familiare</b></td></tr>
+</tbody>
+</table></div>
+<div class="d-trucco">
+<p><b>Il trucco dei due binari.</b> Se la domanda dice «inclusione sociale e finanziaria», prendi il numero <b>più piccolo</b> della quaterna. E se un'opzione lega la garanzia reale a una soglia in euro, è copiata dall'imprenditoriale.</p>
+</div>
+
+<h3>9.3 Beneficiari e soglie di dipendenti</h3>
+<p>L'<b>articolo 1</b> elenca i beneficiari in modo <b>chiuso</b>: chi non è in lista è fuori, nessuna condizione lo fa rientrare. Le esche sono criteri che il decreto <b>non</b> usa — <b>settore</b>, <b>totale dell'attivo</b>, <b>età</b> — da scartare a vista.</p>
+<p>Il tetto dimensionale cambia con la forma: <b>5 unità</b> per autonomi e imprese individuali, <b>10 unità</b> di <b>dipendenti non soci</b> per società di persone, s.r.l. semplificate e cooperative.</p>
+<div class="d-attenzione">
+<p><b>Dove il quiz è ambiguo.</b> Una domanda su un'impresa individuale con <b>50 dipendenti</b> motiva il No con «superiore alle <b>10 unità</b>», cioè la soglia delle società. Poco importa: con le cifre dell'esame entrambe le soglie portano allo stesso No. Tieni la coppia <b>5 / 10</b> e scegli il più piccolo della quaterna.</p>
+</div>
+
+<h3>9.4 I numeri dell'imprenditoriale</h3>
+<div class="d-tabw"><table class="d-tab">
+<thead><tr><th>Requisito</th><th>Limite</th><th>Norma</th></tr></thead>
+<tbody>
+<tr><td>Importo <b>senza</b> garanzia reale</td><td><b>75.000 €</b> per beneficiario</td><td>art. 4, c. 1</td></tr>
+<tr><td>Importo, <b>sole s.r.l. con</b> garanzia reale</td><td><b>100.000 €</b></td><td>art. 4, c. 1 (deroga)</td></tr>
+<tr><td>Concentrazione su un beneficiario</td><td><b>10%</b> del capitale sociale al netto delle perdite, da ultimo bilancio approvato</td><td>art. 4, c. 1-bis</td></tr>
+<tr><td>Cadenza massima delle rate</td><td><b>trimestrale</b> (mensile sì, semestrale no)</td><td>art. 4, c. 3</td></tr>
+<tr><td>Durata massima</td><td><b>10 anni</b></td><td>art. 4, c. 4</td></tr>
+</tbody>
+</table></div>
+<p>La deroga non la fa la garanzia, la fa <b>la forma societaria</b>: per chi non è una s.r.l. — un'associazione, per esempio — un finanziamento con garanzia reale <b>non è microcredito in nessun caso</b>, qualunque sia l'importo. E somma debito residuo e nuova richiesta prima di confrontare col tetto: un prestito in corso non è, da solo, motivo di rifiuto.</p>
+<div class="d-trucco">
+<p><b>I tre controlli, in quest'ordine:</b> <b>dipendenti</b> → <b>importo</b> → <b>durata</b>. La risposta giusta nomina ciò che sfonda.</p>
+</div>
+
+<h3>9.5 Le finalità dell'articolo 2</h3>
+<p>Elencate in senso <b>largo</b>: beni e servizi strumentali, compresi i <b>canoni di leasing</b> e le <b>spese per polizze assicurative</b>; <b>retribuzioni di nuovi dipendenti o soci lavoratori</b>; scorte; <b>formazione</b> — corsi sulle capacità tecniche e professionali, corsi dei <b>soci</b> (di persone e cooperative allo stesso modo), corsi per l'inserimento nel lavoro, <b>universitari e post-universitari</b>.</p>
+<p>Se la domanda chiede se due voci rientrano entrambe, la giusta è <b>entrambe</b>.</p>
+
+<h3>9.6 Prova a rispondere</h3>
+<div class="d-es">
+<p class="d-es-d"><b>1.</b> Una s.r.l. chiede <b>97.000 €</b> con ipoteca su un immobile. Si può concedere?</p>
+<p class="d-es-r"><b>Sì, può procedere</b> · vale la deroga delle s.r.l., fino a 100.000 €. Non basta la garanzia: serve che il beneficiario sia <b>proprio una s.r.l.</b></p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>2.</b> Società di persone, <b>7 dipendenti non soci</b>, chiede <b>65.000 €</b> per <b>15 anni</b>.</p>
+<p class="d-es-r"><b>No: la durata supera i 10 anni</b> · dipendenti e importo reggono, sfonda solo la durata: è quella la motivazione giusta, non l'importo.</p>
+</div>
+<div class="d-es">
+<p class="d-es-d"><b>3.</b> <b>48.000 €</b> per <b>10 anni</b> a un'impresa individuale con <b>7 dipendenti</b>.</p>
+<p class="d-es-r"><b>No: troppi dipendenti</b> · importo e durata reggono (10 anni è il massimo esatto), ma l'impresa è già fuori soglia: <b>conta i dipendenti prima degli euro e degli anni</b>.</p>
+</div>
+
+<div class="d-concl-box">
+<p><b>Oltre alle tabelle.</b> Elenco <b>chiuso</b> dei beneficiari, <b>S.p.A. sempre esclusa</b> · finalità dell'art. 2 in senso ampio · <b>servizi ausiliari obbligatori</b>, ciò che distingue il microcredito da un prestito qualunque · operatori iscritti nell'elenco dell'organismo di vigilanza.</p>
+</div>
+</section>
 <section class="d-sez" id="s-normativa">
-<h2>6 · Le schede di normativa</h2>
+<h2>10 · Le schede di normativa</h2>
 <p class="d-intro">Qui il ragionamento serve meno e la memoria serve di più. Il criterio che tiene insieme quasi tutto è uno: <b>capire in quale parte del TUF ti trovi</b>, perché da lì discende chi è l'autorità competente — ed è la prima cosa che il quiz mette alla prova.</p>
 
 <div class="d-box d-mappa">
@@ -2811,7 +3105,7 @@ b.dubbia{color:var(--ottone-t);}
 </ul>
 </div>
 
-<h3>6.1 Mercati (modulo V) — art. 61-90 + reg. 20249 + regolamento di Borsa</h3>
+<h3>10.1 Mercati (modulo V) — art. 61-90 + reg. 20249 + regolamento di Borsa</h3>
 
 <div class="d-key d-key-ok">
 <p class="d-key-t">Parole 100% corrette</p>
@@ -2886,7 +3180,7 @@ b.dubbia{color:var(--ottone-t);}
 </tbody>
 </table></div>
 
-<h3>6.2 Appello al pubblico risparmio — art. 91-112 (106 domande)</h3>
+<h3>10.2 Appello al pubblico risparmio — art. 91-112 (106 domande)</h3>
 <p>L'appello comprende <b>l'offerta al pubblico di sottoscrizione o di vendita</b> (OPS / OPV, cioè la sollecitazione all'investimento) <b>più l'offerta pubblica di acquisto</b> (OPA). Competenza <b>sempre CONSOB</b>.</p>
 
 <div class="d-key d-key-ok">
@@ -2957,7 +3251,7 @@ b.dubbia{color:var(--ottone-t);}
 </tbody>
 </table></div>
 
-<h3>6.3 Abuso di mercato — art. 166 in poi (59 domande)</h3>
+<h3>10.3 Abuso di mercato — art. 166 in poi (59 domande)</h3>
 <p>Comprende due reati distinti: <b>abuso di informazione privilegiata</b> e <b>manipolazione del mercato</b>. Competenza <b>CONSOB</b>.</p>
 
 <div class="d-key d-key-ok">
@@ -3002,7 +3296,7 @@ b.dubbia{color:var(--ottone-t);}
 </ul>
 <p class="d-nota">Giorni: sempre <b>la più bassa</b>.</p>
 
-<h3>6.4 Gestione collettiva del risparmio (260 domande)</h3>
+<h3>10.4 Gestione collettiva del risparmio (260 domande)</h3>
 <p>Fondi comuni, SICAV, OICR, OICVM, FIA, intermediari.</p>
 
 <div class="d-key d-key-ok">
@@ -3099,12 +3393,11 @@ b.dubbia{color:var(--ottone-t);}
 <li>l'organo di controllo può avvalersi di tutte le attività operative all'interno dell'azienda.</li>
 </ul>
 </section>
-
 <section class="d-sez" id="s-parole">
-<h2>7 · Le parole che decidono la risposta</h2>
+<h2>11 · Le parole che decidono la risposta</h2>
 <p class="d-intro">Questa è la parte da leggere l'ultimo giorno. Sono scorciatoie statistiche, non regole di diritto: servono <b>quando non sai la risposta</b>, non al posto di saperla. Ma su una banca dati chiusa funzionano, e valgono qualche punto.</p>
 
-<h3>7.1 Valide ovunque (matematica finanziaria e non solo)</h3>
+<h3>11.1 Valide ovunque (matematica finanziaria e non solo)</h3>
 <div class="d-due-colonne">
 <div class="d-key d-key-ok">
 <p class="d-key-t">Corrette oltre il 90%</p>
@@ -3134,7 +3427,7 @@ b.dubbia{color:var(--ottone-t);}
 </div>
 <p class="d-nota"><b>Un'eccezione da ricordare:</b> «sempre» dentro <b>«Sì, sempre»</b> è invece spesso corretta. È l'unico contesto in cui l'assoluto è un buon segno.</p>
 
-<h3>7.2 Macroeconomia e analisi di scenario</h3>
+<h3>11.2 Macroeconomia e analisi di scenario</h3>
 <div class="d-key d-key-ok">
 <p class="d-key-t">Corrette al 100%</p>
 <ul>
@@ -3144,7 +3437,7 @@ b.dubbia{color:var(--ottone-t);}
 <p class="d-nota">La logica: in macroeconomia quasi nulla ha una causa sola. Le risposte che ammettono la molteplicità sono quelle vere.</p>
 </div>
 
-<h3>7.3 Derivati e opzioni</h3>
+<h3>11.3 Derivati e opzioni</h3>
 <div class="d-key d-key-ok">
 <p class="d-key-t">Sempre giusta</p>
 <ul>
@@ -3166,7 +3459,7 @@ b.dubbia{color:var(--ottone-t);}
 </ol>
 </div>
 
-<h3>7.4 Portafoglio</h3>
+<h3>11.4 Portafoglio</h3>
 <div class="d-due-colonne">
 <div class="d-key">
 <p class="d-key-t">Se la domanda è su <b>Markowitz</b></p>
@@ -3181,7 +3474,7 @@ b.dubbia{color:var(--ottone-t);}
 </div>
 <p class="d-nota">Sul <b>VaR</b>: se la parola compare nella domanda, la risposta che la contiene è quella giusta.</p>
 
-<h3>7.5 Il metodo dei numeri, materia per materia</h3>
+<h3>11.5 Il metodo dei numeri, materia per materia</h3>
 <p>Quando le quattro risposte si distinguono solo per un numero, la scelta segue uno schema che cambia da sezione a sezione. Questa tabella è il riassunto.</p>
 <div class="d-tabw"><table class="d-tab d-numeri">
 <thead><tr><th>Sezione</th><th>Giorni / mesi</th><th>Percentuali</th><th>Importi in €</th></tr></thead>
@@ -3196,7 +3489,7 @@ b.dubbia{color:var(--ottone-t);}
 </table></div>
 <p class="d-nota">Le eccezioni a questi schemi sono elencate nelle rispettive schede della sezione 6: sono poche e vale la pena impararle, perché il quiz le usa proprio per punire chi applica la regola a occhi chiusi.</p>
 
-<h3>7.6 L'ordine in cui usarle</h3>
+<h3>11.6 L'ordine in cui usarle</h3>
 <div class="d-box d-ordine">
 <ol>
 <li><b>So la risposta?</b> Allora rispondi e passa oltre. Tutto il resto serve solo se la risposta non la sai.</li>
@@ -3209,9 +3502,8 @@ b.dubbia{color:var(--ottone-t);}
 </ol>
 </div>
 </section>
-
 <section class="d-sez" id="s-formulario">
-<h2>8 · Formulario</h2>
+<h2>12 · Formulario</h2>
 <p class="d-intro">Tutte le formule in un posto solo, con accanto la trappola che il quiz ci costruisce sopra.</p>
 
 <div class="d-tabw"><table class="d-tab d-formulario">
@@ -3283,7 +3575,7 @@ b.dubbia{color:var(--ottone-t);}
 </tbody>
 </table></div>
 
-<h3>8.1 Gli esempi svolti, tutti insieme</h3>
+<h3>12.1 Gli esempi svolti, tutti insieme</h3>
 <div class="d-esercizi">
 <div class="d-es">
 <p class="d-es-d"><b>1.</b> Corso secco 98,10, rateo cedola 1,60. Prezzo tel quel?</p>
@@ -3343,9 +3635,8 @@ b.dubbia{color:var(--ottone-t);}
 </div>
 </div>
 </section>
-
 <section class="d-sez" id="s-note">
-<h2>9 · Nota su questa dispensa</h2>
+<h2>13 · Nota su questa dispensa</h2>
 <p>È costruita interamente sui tuoi appunti del corso: l'organizzazione e le spiegazioni sono mie, il contenuto è il tuo. Nel trascriverli ho corretto alcuni refusi di battitura e sistemato qualche punto in cui la formulazione poteva trarre in inganno. Li elenco qui, perché se ricordi la frase originale devi sapere qual è la versione buona.</p>
 <div class="d-tabw"><table class="d-tab d-correzioni">
 <thead><tr><th>Negli appunti</th><th>Nella dispensa</th><th>Perché</th></tr></thead>
@@ -3381,8 +3672,7 @@ b.dubbia{color:var(--ottone-t);}
 <p><b>Un avvertimento sui trucchi.</b> Le parole-chiave e le regole sui numeri sono <b>regolarità statistiche</b> osservate su questa banca dati: aiutano quando non sai la risposta, e su una prova da 60 domande possono valere qualche punto. Ma hanno un tasso di successo intorno al 50-60%, non del 100%, e non sostituiscono lo studio: una domanda che sai vale il 100%, una indovinata col trucco vale poco più di una moneta lanciata bene. Usale come rete di sicurezza, non come metodo.</p>
 </div>
 </section>
-
-      </div>
+</div>
     </div>
 
 
@@ -3452,7 +3742,7 @@ b.dubbia{color:var(--ottone-t);}
     <div class="card">
       <h2><svg class="ic ic-g"><use href="#i-lente"/></svg> Cerca nella banca dati</h2>
       <div class="cerca-riga">
-        <input type="search" id="campo-cerca" placeholder="Cerca una parola o una frase tra le 4.995 domande… (es. OICR, usufrutto, market abuse)">
+        <input type="search" id="campo-cerca" placeholder="Cerca una parola o una frase nella banca dati… (es. OICR, usufrutto, market abuse)">
         <select id="cerca-arg"><option value="">Tutti gli argomenti</option></select>
       </div>
       <div class="nota" id="cerca-conta"></div>
@@ -4579,7 +4869,8 @@ let campoTimer = null;
 window.addEventListener('resize', () => { clearTimeout(campoTimer); campoTimer = setTimeout(() => disegnaCampo(), 160); });
 
 // ====================== SEGNALI STATISTICI DELLA BANCA DATI ======================
-// Studio sulle 4.995 domande: certe formule ricorrono molto più spesso nelle risposte
+// Studio misurato sulle 4.995 domande della banca dati di partenza: certe formule
+// ricorrono molto più spesso nelle risposte
 // giuste (linguaggio ripreso dagli articoli) o in quelle sbagliate (assoluti, catene
 // autorizzative inventate). Sono indizi da usare SOLO quando la risposta non si sa:
 // il motore azzecca il 58% quando esprime un vincitore unico — utile, non affidabile.
@@ -4638,7 +4929,7 @@ const SEGNALI = [
   {i:"base-di", t:"pos", p:1, q:33, k:100, r:/in base a|sulla base di/, e:"\"in base a\" / \"sulla base di\"", n:"rimando al criterio previsto"},
 ];
 const SEG_CASUALE = 25;            // una risposta a caso su quattro
-const SEG_DOMANDE = 4995;          // ampiezza dello studio
+const SEG_DOMANDE = 4995;   // ampiezza dello studio: le domande su cui i segnali sono stati misurati
 
 // Applica le regole a una risposta. Una regola specifica assorbe quelle generiche
 // (es. "Sì, ma solo" assorbe "ma solo" e "solo") così un segnale non conta due volte.
@@ -5113,7 +5404,7 @@ function renderVerifica(pr){
       <div class="st-cop-tit"><svg class="ic"><use href="#i-avviso"/></svg> Mai verificata su una prova vera</div>
       <p>Il numero qui sopra è un calcolo, non una misura: sale man mano che copri la banca dati,
         anche se i punteggi dei tuoi test restano fermi. L'unico modo per sapere se è realistico
-        è la <b>simulazione d'esame</b>: 60 domande pescate a caso da tutte le 4.995, con la
+        è la <b>simulazione d'esame</b>: 60 domande pescate a caso da tutte le ${fmtN(QUESTIONS.length)}, con la
         struttura del bando, esattamente come il 15 ottobre. Quel punteggio dice quanto prenderesti oggi.</p>
       <button class="btn-p pjv-btn" id="pjv-sim">Fai una simulazione →</button>
     </div>`;
@@ -7713,7 +8004,17 @@ function ricaricaSeInAttesa(){
   location.reload();
 }
 
+// Quante sono le domande lo dice la banca dati, non un numero scritto a mano: quando
+// se ne aggiungono (le 148 di agosto) i conteggi a video si aggiornano da soli.
+function scriviQuanteDomande(){
+  const n = fmtN(QUESTIONS.length);
+  document.querySelectorAll('.n-banca').forEach(e => e.textContent = n);
+  const c = $('campo-cerca');
+  if(c) c.placeholder = `Cerca una parola o una frase tra le ${n} domande… (es. OICR, usufrutto, ESG)`;
+}
+
 function avviaApp(messaggio){
+  scriviQuanteDomande();
   spegniSalvataggioSuFile();
   renderHome();
   if(messaggio) $('nota-pool').textContent = messaggio;
