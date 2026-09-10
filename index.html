@@ -326,6 +326,19 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
       letter-spacing:.005em; font-family:var(--f-testo); }
 .pill-arg{background:var(--azz); color:var(--testo);}
 .pill-rip{background:var(--ottonebg); color:var(--ottone-t);}
+/* Quanto vale la domanda all'esame: 1 o 2 punti. È una caratteristica del quesito,
+   non uno stato del suo studio, quindi non prende i colori degli stati (verde, rosso,
+   ambra): resta un'etichetta neutra con il numero in evidenza. */
+.pill-pt{background:transparent; border:1px solid var(--bordo); color:var(--nebbia);
+         padding:2px 9px; white-space:nowrap;}
+.pill-pt b{color:var(--testo); font-weight:800; font-variant-numeric:tabular-nums;}
+.pill-pt.pt2{border-color:rgba(var(--velo),.28); background:rgba(var(--velo),.05);}
+.pill-fuori{background:var(--azz); color:var(--nebbia); border:1px dashed var(--bordo);}
+.st-su100{color:var(--nebbia); font-size:.86em; white-space:nowrap;}
+.st-stima{color:var(--nebbia); white-space:nowrap;}
+.chip-fuori{color:var(--nebbia); font-weight:400;}
+.cop-coda{display:block; margin-top:4px; color:var(--nebbia); font-size:.9em;}
+.campo-tit-sub{color:var(--nebbia); font-weight:400;}
 .arg-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
 .arg-head h2{margin-bottom:0; margin-right:auto;}
 .mix-box{display:flex; align-items:center; gap:8px; background:rgba(var(--velo),.05); border:1px solid var(--bordo); border-radius:var(--r-int); padding:8px 12px; flex-wrap:wrap;}
@@ -568,7 +581,9 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .prog-pct > span:first-child{font-family:var(--f-display); font-variation-settings:var(--morbido);
   font-size:2.6rem; font-weight:600; color:var(--testo); line-height:.95; letter-spacing:-.02em;
   font-variant-numeric:tabular-nums;}
-.prog-pct-lab{font-size:.66rem; color:var(--nebbia); line-height:1.3;}
+.prog-pct-lab{font-size:.66rem; color:var(--nebbia); line-height:1.45;}
+.prog-pct-lab b{color:var(--testo); font-weight:700;}
+.prog-pct-lab #prog-pct-dom{font-size:1.15em; font-variant-numeric:tabular-nums;}
 .sbar{display:flex; height:20px; border-radius:5px; overflow:hidden; background:rgba(var(--velo),.10); margin-top:6px;}
 .sbar > div{height:100%; border-right:2px solid var(--foglio);}
 .sbar > div:last-child{border-right:none;}
@@ -1113,6 +1128,7 @@ b.dubbia{color:var(--ottone-t);}
 .st-proiezione.bene .pj-num b{color:var(--vidimato-t);}
 .st-proiezione.male .pj-num b{color:var(--ottone-t);}
 .pj-num span{display:block; font-size:.82rem; color:var(--nebbia); margin-top:3px;}
+.pj-num b i{font-size:.42em; font-style:normal; font-weight:600; color:var(--nebbia); margin-left:6px; letter-spacing:.02em;}
 .pj-meta{font-size:.8rem; color:var(--nebbia); text-align:right; line-height:1.5;}
 .pj-nota{margin-top:9px; font-size:.88rem; line-height:1.55;}
 .pj-freno{display:inline-block; margin-top:6px; color:var(--lacca-t); font-weight:600;}
@@ -1799,7 +1815,7 @@ b.dubbia{color:var(--ottone-t);}
   <section class="campo-fascia" id="campo-fascia">
     <div class="campo-int">
       <div class="campo-testa">
-        <span class="campo-tit">La banca dati · <span class="n-banca">4.995</span> domande</span>
+        <span class="campo-tit">La banca dati · <span class="n-banca">4.995</span> domande<span class="campo-tit-sub"> · <span class="n-ufficiali">—</span> ufficiali per <span class="n-punti-banca">—</span> punti</span></span>
         <div class="campo-leg" id="campo-leg"></div>
       </div>
       <canvas id="campo" aria-hidden="true"></canvas>
@@ -1835,9 +1851,9 @@ b.dubbia{color:var(--ottone-t);}
           <span class="avvia-freccia" aria-hidden="true">→</span>
         </button>
         <div class="azione-alt">
-          <button class="modo modo-sim" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+6+6+5), 85 minuti di tempo, correzione solo alla fine, soglia 80%">
+          <button class="modo modo-sim" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+6+6+5), di cui 20 da 1 punto e 40 da 2 per 100 punti in tutto, 85 minuti di tempo, correzione solo alla fine, si passa con 80 punti">
             <span class="modo-ico"><svg class="ic ic-xl"><use href="#i-prova"/></svg></span>
-            <span class="modo-testo"><b>Simulazione esame</b><span>60 domande · 85 minuti · come la prova vera</span></span>
+            <span class="modo-testo"><b>Simulazione esame</b><span>60 domande · 100 punti · 85 minuti · come la prova vera</span></span>
           </button>
           <button class="modo modo-pro" id="btn-pro" title="30 domande mirate al ritmo d'esame: errori ripetuti + tematiche deboli + argomento con precisione peggiore. Correzione alla fine.">
             <span class="modo-ico"><svg class="ic ic-xl"><use href="#i-fiamma"/></svg></span>
@@ -1899,7 +1915,7 @@ b.dubbia{color:var(--ottone-t);}
     <div class="card card-prog" id="card-progressi">
       <div class="prog-testa">
         <h2><svg class="ic ic-g"><use href="#i-curva"/></svg> I tuoi progressi</h2>
-        <div class="prog-pct"><span id="prog-pct">0%</span><span class="prog-pct-lab">della banca dati<br>superata</span></div>
+        <div class="prog-pct"><span id="prog-pct">0%</span><span class="prog-pct-lab" id="prog-pct-lab">dei <b>punti</b> della banca ufficiale<br><b id="prog-pct-dom">0%</b> delle <b>domande</b></span></div>
       </div>
       <div class="sbar sbar-prog" id="prog-bar"></div>
       <div class="prog-chips" id="stat-globale"></div>
@@ -1935,7 +1951,7 @@ b.dubbia{color:var(--ottone-t);}
     <!-- 4 · STORICO -->
     <div class="card" id="card-storico">
       <details class="dett-card"><summary><svg class="ic"><use href="#i-archivio"/></svg> Storico test</summary>
-        <div class="storico-scroll"><table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Punteggio</th><th></th></tr></thead><tbody></tbody></table></div>
+        <div class="storico-scroll"><table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Risposte</th><th>Punti</th><th></th></tr></thead><tbody></tbody></table></div>
         <div class="nota" id="nota-storico"></div>
       </details>
     </div>
@@ -1953,6 +1969,7 @@ b.dubbia{color:var(--ottone-t);}
       </div>
       <div style="margin-top:12px">
         <span class="pill pill-arg" id="q-arg"></span>
+        <span id="q-valore"></span>
         <span class="pill pill-rip nascosto" id="q-rip">RIPASSO — sbagliata in un test precedente</span>
       </div>
       <div class="domanda" id="q-testo"></div>
@@ -1979,7 +1996,7 @@ b.dubbia{color:var(--ottone-t);}
       <h2>Risultato del test</h2>
       <div class="punteggio" id="r-punteggio"></div>
       <div class="esito" id="r-esito"></div>
-      <table class="riep"><thead><tr><th>Argomento</th><th>Corrette</th><th>Sbagliate</th></tr></thead><tbody id="r-argomenti"></tbody></table>
+      <table class="riep"><thead><tr><th>Argomento</th><th>Corrette</th><th>Sbagliate</th><th>Punti</th></tr></thead><tbody id="r-argomenti"></tbody></table>
       <div class="nota nascosto" id="r-autosave">Progressi scaricati automaticamente nel file .json (cartella download): è il tuo salvataggio aggiornato.</div>
       <div class="azioni" style="margin-top:16px">
         <button class="btn-p" id="btn-nuovo">Nuovo test</button>
@@ -4177,8 +4194,13 @@ function proponibile(r){
 // ---------- home ----------
 function statiPool(pool){
   let ok=0, ko=0, nuove=0, koEleg=0, okEleg=0, dubbie=0, daRiconf=0, ricEleg=0, sonde=0;
+  // Gli stessi conteggi pesati in punti, e il conto di quante stanno nella banca
+  // ufficiale: la copertura va misurata su quella, non su tutto il materiale.
+  let ptOk=0, ptTot=0, fuori=0, ptFuori=0, okBanca=0;
   pool.forEach(q => {
     const r = stato.risultati[q.n];
+    if(fuoriBanca(q)){ fuori++; ptFuori += puntiQ(q); }
+    else { ptTot += puntiQ(q); if(r && r.s === 'ok' && !r.p){ ptOk += puntiQ(q); okBanca++; } }
     if(!r) nuove++;
     else if(r.s==='ok'){
       if(r.p) dubbie++; else ok++;          // "da confermare" non vale come superata
@@ -4192,10 +4214,12 @@ function statiPool(pool){
     // candidata a sonda: gia' incontrata e ferma da almeno una settimana
     if(r){ const g = giorniDa(r); if(g !== null && g >= FASCIA_G7) sonde++; }
   });
-  return {ok, ko, nuove, koEleg, okEleg, dubbie, daRiconf, ricEleg, sonde, tot: pool.length};
+  return {ok, ko, nuove, koEleg, okEleg, dubbie, daRiconf, ricEleg, sonde, tot: pool.length,
+          ptOk, ptTot, fuori, ptFuori, okBanca, inBanca: pool.length - fuori};
 }
 
 function renderHome(){
+  scordaRicostruzione();      // i punti dei test vecchi si ricalcolano a ogni giro
   renderCampo();
   const cont = $('lista-argomenti');
   cont.innerHTML = '';
@@ -4264,7 +4288,15 @@ function renderHome(){
   aggiornaMixLabel();
 
   const sg = statiPool(QUESTIONS);
-  salire($('prog-pct'), Math.floor(100*sg.ok/sg.tot), v => v + '%');
+  // La padronanza si misura in punti, non in numero di domande: è quello che conta
+  // all'esame. Il titolo accanto alla cifra lo dice.
+  salire($('prog-pct'), Math.floor(100*sg.ptOk/(sg.ptTot || 1)), v => v + '%');
+  const dom = $('prog-pct-dom');
+  if(dom) dom.textContent = Math.floor(100*sg.okBanca/(sg.inBanca || sg.tot)) + '%';
+  const lab = $('prog-pct-lab');
+  if(lab) lab.title = `${fmtN(sg.ptOk)} punti su ${fmtN(sg.ptTot)} · ${fmtN(sg.okBanca)} domande su ${fmtN(sg.inBanca)}. `
+    + `I due numeri non coincidono perché le domande non valgono uguale: una da 2 punti pesa il doppio di una da 1. `
+    + `Il conto è sulla banca ufficiale${sg.fuori ? `, quindi senza le ${fmtN(sg.fuori)} fuori banca` : ''}.`;
   $('prog-bar').innerHTML =
     (sg.ok ? `<div class="s-sup" style="width:${100*sg.ok/sg.tot}%" title="Superate: ${sg.ok}"></div>` : '') +
     (sg.ko ? `<div class="s-rip" style="width:${100*sg.ko/sg.tot}%" title="Da ripassare: ${sg.ko}"></div>` : '');
@@ -4274,13 +4306,16 @@ function renderHome(){
     ${sg.dubbie ? `<span class="chip" title="Risposte giuste ma date con esitazione (troppo tempo o ripensamenti): tornano al test successivo per una conferma"><span class="dot" style="background:var(--ottone)"></span><span>Da confermare: <b>${fmtN(sg.dubbie)}</b></span></span>` : ''}
     <span class="chip"><span class="dot" style="background:var(--nuova)"></span><span>Mai viste: <b>${fmtN(sg.nuove)}</b></span></span>
     <span class="chip"><span><svg class="ic"><use href="#i-prova"/></svg> Test svolti: <b>${fmtN(stato.storico.length)}</b></span></span>
-    <span class="chip"><span>Totale: <b>${fmtN(sg.tot)}</b></span></span>`;
+    <span class="chip" title="I punti che le domande superate valgono all'esame, sul totale dei punti della banca ufficiale. Conta più della percentuale di domande: una da 2 punti vale il doppio di una da 1."><span>Punti superati: <b>${fmtN(sg.ptOk)}</b> su ${fmtN(sg.ptTot)}</span></span>
+    <span class="chip"><span>Totale: <b>${fmtN(sg.tot)}</b>${sg.fuori ? ` <span class="chip-fuori" title="${fmtN(sg.fuori)} domande non sono più nel database ufficiale OCF di agosto 2026: restano come esercizio, non contano nella copertura e non entrano nelle simulazioni">(${fmtN(sg.inBanca)} ufficiali + ${fmtN(sg.fuori)} fuori banca)</span>` : ''}</span></span>`;
   const ult = stato.storico.slice(-5);
+  const da = Math.max(0, stato.storico.length - 5);
   $('ultimi-test').innerHTML = !ult.length ? '' :
-    '<span class="ut-lab">Ultimi 5 test:</span>' + ult.map(h => {
-      const p = Math.round(100*h.punti/h.tot);
-      const sup = h.punti / h.tot >= 0.8;
-      return `<span class="ut-pill ${sup ? 'ut-sup' : ''}" title="${h.data} — ${h.argomenti}${sup ? ' — superato!' : ''}">${sup ? '<svg class="ic"><use href="#i-coppa"/></svg> ' : ''}${p}%<span class="ut-score">${h.punti}/${h.tot}</span></span>`;
+    '<span class="ut-lab">Ultimi 5 test:</span>' + ult.map((h, j) => {
+      const P = puntiStorico(h, da + j);
+      const p = su100(P.pt, P.ptMax);
+      const sup = p >= SOGLIA_PUNTI;
+      return `<span class="ut-pill ${sup ? 'ut-sup' : ''}" title="${h.data} — ${h.argomenti} — ${h.punti}/${h.tot} risposte esatte, ${P.pt}/${P.ptMax} punti${P.esatto ? '' : ' (stimati)'}${sup ? ' — superato!' : ''}">${sup ? '<svg class="ic"><use href="#i-coppa"/></svg> ' : ''}${P.esatto ? '' : '≈'}${p}/100<span class="ut-score">${h.punti}/${h.tot}</span></span>`;
     }).join('') + '<span class="ut-lab">← più recente</span>';
 
   // Lo storico completo dentro il riquadro scorrevole, dal test piu' recente
@@ -4291,9 +4326,17 @@ function renderHome(){
   stato.storico.slice().reverse().forEach((h, i) => {
     const tr = document.createElement('tr');
     const pct = Math.round(100*h.punti/h.tot);
+    const idx = stato.storico.length - 1 - i;            // posizione vera nello storico
+    const P = puntiStorico(h, idx);
+    const titoloPt = P.esatto
+      ? `${P.pt} punti su ${P.ptMax} — ${su100(P.pt, P.ptMax)} su 100 con il metro dell'esame`
+      : `Stima. Di questo test non è più ricostruibile quali domande conteneva — quelle domande sono state riviste dopo, e ogni domanda tiene memoria solo dell'ultima volta — quindi i punti sono calcolati sul valore medio di una domanda della banca (${puntoMedioBanca().toFixed(2)} punti). Dalle simulazioni fatte da qui in avanti il punteggio è quello vero.`;
     tr.innerHTML = `<td>${stato.storico.length - i}</td><td>${h.data}</td>` +
       `<td>${h.argomenti}${dettaglioMaterie(h)}</td>` +
       `<td><b>${h.punti}/${h.tot}</b> (${pct}%)</td>` +
+      `<td title="${titoloPt}">${P.esatto
+          ? `<b>${P.pt}</b>/${P.ptMax}<span class="st-su100"> · ${su100(P.pt, P.ptMax)}/100</span>`
+          : `<span class="st-stima">≈ ${su100(P.pt, P.ptMax)}/100</span>`}</td>` +
       `<td><button class="btn-canc" data-chiave="${chiaveTest(h).replace(/"/g, '&quot;')}" ` +
       `title="Togli questo test dallo storico">` +
       `<svg class="ic"><use href="#i-cestino"/></svg></button></td>`;
@@ -4481,22 +4524,163 @@ function haDettaglioArg(N){
   return false;
 }
 
+// ====================== QUANTO VALE OGNI DOMANDA ======================
+// Il database ufficiale OCF assegna a ogni quesito un livello: 1 o 2. All'esame una
+// domanda di livello 1 vale 1 punto, una di livello 2 ne vale 2. La prova e' fatta di
+// 60 domande per 100 punti totali, e con soli due valori possibili il conto e' obbligato:
+// 20 domande da 1 punto e 40 da 2. Si passa con 80 punti su 100.
+// Per questo la percentuale di risposte esatte non basta: 48 giuste su 60 valgono 88
+// punti se le sbagliate erano da 1, e 76 se erano da 2. Stessa percentuale, in mezzo
+// c'e' la soglia.
+const PUNTI_ESAME = 100, SOGLIA_PUNTI = 80;
+const SIM_PER_LIVELLO = {1: 20, 2: 40};
+function livelloQ(q){ return (q && q.l === 1) ? 1 : 2; }
+function puntiQ(q){ return livelloQ(q); }
+function puntiDi(lista){ return lista.reduce((a, q) => a + puntiQ(q), 0); }
+function fuoriBanca(q){ return !!(q && q.x); }
+// Le domande che all'esame possono davvero uscire: il database ufficiale OCF.
+let _banca = null;
+function bancaUfficiale(){
+  if(!_banca) _banca = QUESTIONS.filter(q => !fuoriBanca(q));
+  return _banca;
+}
+// Valore medio di una domanda della banca: serve per i test vecchi, di cui non si
+// conosce piu' l'elenco esatto delle domande.
+let _ptMedio = 0;
+function puntoMedioBanca(){
+  if(!_ptMedio){
+    const dentro = QUESTIONS.filter(q => !fuoriBanca(q));
+    _ptMedio = puntiDi(dentro) / (dentro.length || 1);
+  }
+  return _ptMedio;
+}
+function pillolaPunti(q){
+  const l = livelloQ(q);
+  return `<span class="pill pill-pt ${l === 2 ? 'pt2' : 'pt1'}" title="Nel database ufficiale OCF questo quesito è di livello ${l}: all'esame vale ${l === 1 ? 'un punto' : 'due punti'}"><b>${l}</b> ${l === 1 ? 'punto' : 'punti'}</span>`;
+}
+function pillolaFuori(q){
+  return fuoriBanca(q) ? `<span class="pill pill-fuori" title="Non compare nel database ufficiale OCF di agosto 2026: all'esame non può uscire con queste parole. Il concetto resta in programma, quindi la domanda serve ancora come esercizio, ma non conta nella copertura della banca ufficiale.">fuori banca</span>` : '';
+}
+function etichetteQ(q){ return pillolaPunti(q) + (fuoriBanca(q) ? ' ' + pillolaFuori(q) : ''); }
+
+// Com'e' andata, in punti: su una lista di domande e sulle risposte date.
+function puntiFatti(domande, risposte){
+  let pt = 0, ptMax = 0;
+  domande.forEach(q => {
+    ptMax += puntiQ(q);
+    if(risposte[q.n] === q.e) pt += puntiQ(q);
+  });
+  return {pt, ptMax};
+}
+
+// ─── i test già fatti, riletti in punti ──────────────────────────────────────
+// Lo storico non ha mai salvato QUALI domande c'erano in ogni test, quindi un test
+// vecchio non si può ripesare semplicemente rileggendolo. Però ogni domanda porta
+// scritto in quale test è stata vista per l'ultima volta (r.u) e com'è finita (r.s):
+// da qui l'elenco di un test si ricostruisce esatto, purché nessuna di quelle domande
+// sia stata rivista dopo. Vale per i test recenti; per i più vecchi la ricostruzione
+// è parziale e il punteggio si stima sul valore medio di una domanda.
+let _ricostr = null;
+function puntiPerTest(){
+  if(_ricostr) return _ricostr;
+  const per = {};
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r || !r.u) return;
+    const o = per[r.u] || (per[r.u] = {n:0, ok:0, pt:0, ptMax:0});
+    o.n++; o.ptMax += puntiQ(q);
+    if(r.s === 'ok'){ o.ok++; o.pt += puntiQ(q); }
+  });
+  _ricostr = per;
+  return per;
+}
+function scordaRicostruzione(){ _ricostr = null; }
+// Punteggio di una riga dello storico. `esatto` dice se è un dato vero o una stima.
+function puntiStorico(h, indice){
+  if(typeof h.pt === 'number' && h.ptMax) return {pt: h.pt, ptMax: h.ptMax, esatto: true};
+  const allineato = (stato.nTest || 0) === (stato.storico || []).length;
+  if(allineato && indice !== undefined){
+    const o = puntiPerTest()[indice + 1];
+    if(o && o.n === h.tot && o.ok === h.punti) return {pt: o.pt, ptMax: o.ptMax, esatto: true};
+  }
+  const m = puntoMedioBanca();
+  return {pt: Math.round(h.punti * m), ptMax: Math.round(h.tot * m), esatto: false};
+}
+// Punteggio riportato su 100, come all'esame.
+function su100(pt, ptMax){ return ptMax ? Math.round(PUNTI_ESAME * pt / ptMax) : 0; }
+
+// ─── quanto pesa il livello sulla sua resa ───────────────────────────────────
+// Le domande da 2 punti sono mediamente più difficili, ma di quanto lo dicono i suoi
+// dati, non una stima a tavolino: si misura sulla precisione al primo tentativo, che
+// è ricostruibile da tutto lo storico (una domanda indovinata alla prima e mai più
+// sbagliata ha e=0). Finché le risposte sono poche il fattore resta vicino a 1.
+const PESO_LIV = 400;
+function reseLivello(){
+  const a = {1:{ok:0, tot:0}, 2:{ok:0, tot:0}};
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r) return;
+    const s = a[livelloQ(q)];
+    s.tot++;
+    if(r.e === 0 && r.s === 'ok') s.ok++;
+  });
+  const tot = a[1].tot + a[2].tot, ok = a[1].ok + a[2].ok;
+  const base = tot ? ok / tot : 0;
+  const f = {1:1, 2:1};
+  if(base > 0.05){
+    [1,2].forEach(L => {
+      const p = a[L].tot ? a[L].ok / a[L].tot : base;
+      const grezzo = p / base;
+      const peso = a[L].tot / (a[L].tot + PESO_LIV);          // pochi dati: resta a 1
+      f[L] = Math.max(0.7, Math.min(1.3, 1 + (grezzo - 1) * peso));
+    });
+  }
+  return {a, base, f, tot,
+          p1: a[1].tot ? a[1].ok / a[1].tot : null,
+          p2: a[2].tot ? a[2].ok / a[2].tot : null,
+          misurato: a[1].tot >= 80 && a[2].tot >= 80};
+}
+// Da «quota di risposte esatte» a «punti su 100». L'esame pesca 20 domande da 1 punto
+// e 40 da 2: se la resa fosse identica sui due livelli, K sarebbe esattamente 100 e il
+// punteggio coinciderebbe con la percentuale. K si scosta da 100 solo quanto i suoi
+// dati dicono che i due livelli rendono in modo diverso.
+function fattorePunti(){
+  const L = reseLivello();
+  return {K: SIM_PER_LIVELLO[1]*1*L.f[1] + SIM_PER_LIVELLO[2]*2*L.f[2], L,
+          scostamento: Math.round(SIM_PER_LIVELLO[1]*L.f[1] + 2*SIM_PER_LIVELLO[2]*L.f[2] - PUNTI_ESAME)};
+}
+
 // ====================== SEI PRONTA? (sintesi delle simulazioni) ======================
 const SOGLIA_ESAME = 80;
 function simulazioni(){
-  return (stato.storico || []).filter(t => (t.argomenti || '').startsWith('Simulazione'))
-                              .map(t => ({...t, pct: t.tot ? Math.round(100*t.punti/t.tot) : 0}));
+  // Di ogni simulazione servono due numeri: la percentuale di risposte esatte e il
+  // punteggio su 100, che e' quello che decide l'esame. Per le simulazioni fatte prima
+  // che l'app conoscesse i livelli il punteggio e' ricostruito o stimato.
+  return (stato.storico || []).map((t, i) => ({t, i}))
+    .filter(({t}) => (t.argomenti || '').startsWith('Simulazione'))
+    .map(({t, i}) => {
+      const P = puntiStorico(t, i);
+      return {...t, pct: t.tot ? Math.round(100*t.punti/t.tot) : 0,
+              pt: P.pt, ptMax: P.ptMax, ptEsatto: P.esatto, punteggio: su100(P.pt, P.ptMax)};
+    });
 }
 
 // statistiche per i sottoargomenti ufficiali del bando
 function statiSottoargomenti(arg){
   const cfg = SOTTO[arg]; if(!cfg) return null;
-  const righe = cfg.SA.map((nome, i) => ({nome, i, tot:0, ok:0, ko:0, dubbie:0, nuove:0, consolidate:0}));
+  const righe = cfg.SA.map((nome, i) => ({nome, i, tot:0, ok:0, ko:0, dubbie:0, nuove:0, consolidate:0,
+                                          pt:0, ptMax:0, liv2:0, fuori:0}));
   QUESTIONS.forEach(q => {
     if(q.t !== arg) return;
     const i = cfg.map[q.n]; if(i === undefined || !righe[i]) return;
     const R = righe[i]; R.tot++;
     const r = stato.risultati[q.n];
+    if(livelloQ(q) === 2) R.liv2++;
+    if(fuoriBanca(q)) R.fuori++;
+    else {
+      R.ptMax += puntiQ(q);
+      if(r && r.s === 'ok' && !r.p) R.pt += puntiQ(q);
+    }
     if(!r) R.nuove++;
     else if(r.s === 'ok'){
       if(r.p) R.dubbie++; else R.ok++;
@@ -4655,12 +4839,12 @@ function aperturaCoach(){
     elogi.push({peso:5, t:`<b>Record personale.</b> Oggi sei al ${precOggi}% su ${rispOggi} domande: non eri mai andata così bene in una giornata piena. Questo è il livello a cui puoi arrivare, e ci sei arrivata da sola.`});
   if(sims.length >= 2){
     const ultima = sims[sims.length-1];
-    const prec = sims.slice(0,-1).map(x => x.pct);
+    const prec = sims.slice(0,-1).map(x => x.punteggio);
     const fresca = ultima.iso === oggiISO() || ultima.iso === isoMeno(1);   // solo se appena fatta
-    if(fresca && ultima.pct >= SOGLIA_ESAME && Math.max(...prec) < SOGLIA_ESAME)
-      elogi.push({peso:6, t:`<b>Prima simulazione sopra la soglia.</b> ${ultima.pct}%: hai appena dimostrato che l'esame è alla tua portata. Ora l'obiettivo non è più arrivarci, è renderlo stabile.`});
-    else if(fresca && ultima.pct >= SOGLIA_ESAME && ultima.pct >= Math.max(...prec))
-      elogi.push({peso:5, t:`<b>Miglior simulazione finora: ${ultima.pct}%.</b> Sopra la soglia e in crescita. ${variante(['Questo è il tuo passo.','Continua esattamente così.','Te lo sei guadagnato.'])}`});
+    if(fresca && ultima.punteggio >= SOGLIA_PUNTI && Math.max(...prec) < SOGLIA_PUNTI)
+      elogi.push({peso:6, t:`<b>Prima simulazione sopra la soglia.</b> ${ultima.punteggio} punti su 100: hai appena dimostrato che l'esame è alla tua portata. Ora l'obiettivo non è più arrivarci, è renderlo stabile.`});
+    else if(fresca && ultima.punteggio >= SOGLIA_PUNTI && ultima.punteggio >= Math.max(...prec))
+      elogi.push({peso:5, t:`<b>Miglior simulazione finora: ${ultima.punteggio} punti su 100.</b> Sopra la soglia e in crescita. ${variante(['Questo è il tuo passo.','Continua esattamente così.','Te lo sei guadagnato.'])}`});
   }
   if(precAbituale !== null && precVecchia !== null && precAbituale - precVecchia >= 5)
     elogi.push({peso:4, t:`<b>Stai crescendo davvero.</b> Nelle ultime settimane sei passata dal ${precVecchia}% al ${precAbituale}% di precisione. Non è una giornata fortunata: è il lavoro che comincia a pagare.`});
@@ -4764,7 +4948,13 @@ function mosseDelGiorno(){
 
 // stato della copertura: bastano i giorni che restano per vedere tutte le domande?
 function statoCopertura(){
-  const nuoveRimaste = QUESTIONS.filter(q => !stato.risultati[q.n]).length;
+  // La copertura si misura sulla banca ufficiale: le domande fuori banca non possono
+  // uscire all'esame, quindi non entrano nel conto di quanto resta da vedere.
+  const nuoveRimaste = QUESTIONS.filter(q => !stato.risultati[q.n] && !fuoriBanca(q)).length;
+  const fuoriMaiViste = QUESTIONS.filter(q => !stato.risultati[q.n] && fuoriBanca(q)).length;
+  const coda = fuoriMaiViste
+    ? ` <span class="cop-coda">Fuori conto altre ${fmtN(fuoriMaiViste)} domande mai viste che non sono più nella banca ufficiale: si incontrano solo quando le altre sono finite.</span>`
+    : '';
   if(inFaseFinale() || !nuoveRimaste) return null;
   const ggCop = giorniCopertura();
   const servono = Math.ceil(nuoveRimaste / ggCop);
@@ -4774,10 +4964,10 @@ function statoCopertura(){
   if(ritmo && ritmo > 0){
     const ggPrevisti = Math.ceil(nuoveRimaste / ritmo);
     return ggPrevisti > ggCop
-      ? {ok:false, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste e ${ggCop} giorni prima del consolidamento: delle domande di oggi, almeno <b>${servono}</b> devono essere <b>mai viste</b>. Al ritmo attuale ne vedi ${ritmo} al giorno e non basterebbe.`}
-      : {ok:true, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: al ritmo attuale (${ritmo} nuove al giorno) le vedi tutte in tempo.`};
+      ? {ok:false, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste e ${ggCop} giorni prima del consolidamento: delle domande di oggi, almeno <b>${servono}</b> devono essere <b>mai viste</b>. Al ritmo attuale ne vedi ${ritmo} al giorno e non basterebbe.${coda}`}
+      : {ok:true, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: al ritmo attuale (${ritmo} nuove al giorno) le vedi tutte in tempo.${coda}`};
   }
-  return {ok:null, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: delle domande di oggi, almeno <b>${servono}</b> devono essere <b>mai viste</b>.`};
+  return {ok:null, testo:`Restano <b>${fmt(nuoveRimaste)}</b> domande mai viste in ${ggCop} giorni: delle domande di oggi, almeno <b>${servono}</b> devono essere <b>mai viste</b>.${coda}`};
 }
 
 
@@ -5121,12 +5311,12 @@ function traguardo(){
   const t = stato.traguardo;
   return (typeof t === 'number' && t >= 0.5 && t <= 0.99) ? t : OBIETTIVO_ESAME;
 }
-// "il 90%" ma "l'80%": l'articolo cambia con la cifra, e scriverlo storto si nota.
+// Il traguardo è un punteggio d'esame, non una percentuale di risposte: si scrive
+// «80 punti», e cambia la preposizione, non l'articolo.
 function trgTesto(t, prep){
   const n = Math.round(t*100);
-  const vocale = String(n)[0] === '8';           // 80, 85 -> l'  ·  90 -> il
-  const forme = {'': vocale ? "l'" : 'il ', 'a': vocale ? "all'" : 'al ', 'di': vocale ? "dell'" : 'del '};
-  return (forme[prep || ''] || forme['']) + n + '%';
+  const forme = {'': '', 'a': 'a ', 'di': 'di '};
+  return (forme[prep || ''] || '') + n + ' punti';
 }
 function secondiPerDomanda(){
   return (stato.tMedio && stato.tN >= 30) ? stato.tMedio/1000 : SECONDI_DEFAULT;
@@ -5150,7 +5340,8 @@ function livelloSimulato(){
   const sim = simulazioni().filter(t => t.tot >= 40);
   if(!sim.length) return null;
   const ultime = sim.slice(-3);
-  return {media: Math.round(ultime.reduce((a,t) => a + t.pct, 0) / ultime.length),
+  return {media: Math.round(ultime.reduce((a,t) => a + t.punteggio, 0) / ultime.length),
+          mediaRisposte: Math.round(ultime.reduce((a,t) => a + t.pct, 0) / ultime.length),
           n: sim.length, usate: ultime.length, ultimaIso: sim[sim.length-1].iso};
 }
 
@@ -5194,8 +5385,12 @@ function reseMisurate(){
 }
 
 function proiezioneEsame(){
+  // L'esame pesca solo dalla banca ufficiale: la proiezione si fa su quella. Le
+  // domande fuori banca sono esercizio, non materiale d'esame, e gonfierebbero il
+  // denominatore facendo sembrare la copertura più indietro di quanto sia.
+  const banca = bancaUfficiale();
   let acquisite = 0, attesaRic = 0, aperteKo = 0, nuoveRimaste = 0;
-  QUESTIONS.forEach(q => {
+  banca.forEach(q => {
     const r = stato.risultati[q.n];
     if(!r){ nuoveRimaste++; return; }
     if(r.s === 'ok'){ if(!r.p && !r.k) acquisite++; else attesaRic++; }
@@ -5203,8 +5398,11 @@ function proiezioneEsame(){
   });
   const okFam = acquisite + attesaRic;             // già superate almeno una volta
   const inLavorazione = attesaRic + aperteKo;      // viste ma non ancora consolidate
+  // La precisione al primo tentativo misura LEI, non la banca: si conta su tutte le
+  // domande che ha incontrato, anche quelle fuori banca. È la composizione — quante
+  // ne restano, quante ne mancano — che va misurata sul materiale d'esame.
   const pt = primoTentativo(QUESTIONS);
-  const N = QUESTIONS.length;
+  const N = banca.length;
   const rese = reseMisurate();
   // Sulle domande mai viste lo storico completo (ricostruito dai risultati) ne sa più
   // del contatore, che parte da oggi: si usa la fonte con più osservazioni.
@@ -5252,21 +5450,32 @@ function proiezioneEsame(){
   const maiFinali = Math.max(0, N - vistePreviste);
   const grezzo = stima(okFinali, koFinali, maiFinali);
 
+  // Dalla quota di risposte esatte al PUNTEGGIO. L'esame pesca 20 domande da 1 punto
+  // e 40 da 2: se andasse uguale su entrambi i livelli il punteggio coinciderebbe con
+  // la percentuale, e K varrebbe 100. Se sulle domande da 2 punti va peggio — e quanto,
+  // lo dicono i suoi dati — K scende e il punteggio previsto resta sotto la percentuale.
+  const FP = fattorePunti();
+  const k = FP.K / 100;
+
   // Verifica sul campo: cosa direbbe il modello per OGGI, e cosa dicono le simulazioni.
   const modelloOggi = stima(okFam, aperteKo, nuoveRimaste);
+  const modelloOggiPt = modelloOggi * FP.K;
   const sim = livelloSimulato();
-  const scarto = sim ? Math.max(-0.15, Math.min(0.15, sim.media/100 - modelloOggi)) : 0;
-  const previsto = Math.max(0, Math.min(0.98, grezzo + scarto));
+  const scarto = sim ? Math.max(-15, Math.min(15, sim.media - modelloOggiPt)) : 0;   // in punti
+  const previsto = Math.max(0, Math.min(98, grezzo * FP.K + scarto));
   // Forbice: non un numero secco ma l'intervallo che l'incertezza delle misure consente.
-  const banda = (rese.ric.banda*okFinali + rese.rip.banda*koFinali + rese.nuove.banda*maiFinali) / N;
+  const banda = ((rese.ric.banda*okFinali + rese.rip.banda*koFinali + rese.nuove.banda*maiFinali) / N) * FP.K;
   const previstoMin = Math.max(0, previsto - banda);
-  const previstoMax = Math.min(0.98, previsto + banda);
+  const previstoMax = Math.min(98, previsto + banda);
   // Se una domanda consolidata regge meno dell'obiettivo, l'obiettivo non si raggiunge
   // nemmeno consolidando tutto: in quel caso il traguardo è l'intera banca dati.
+  // Il traguardo è un punteggio: per confrontarlo con le rese, che sono quote di
+  // risposte esatte, va tradotto dividendo per k.
   const trg = traguardo();
-  const tettoRaggiungibile = pRic > trg;
+  const trgQ = Math.min(0.99, trg / k);
+  const tettoRaggiungibile = pRic > trgQ;
   const serveAcquisite = tettoRaggiungibile
-    ? Math.min(N, N * (trg - pNuova) / (pRic - pNuova))
+    ? Math.min(N, N * (trgQ - pNuova) / (pRic - pNuova))
     : N;
   const mancanti = Math.max(0, serveAcquisite - acquisite);
   const alGiorno = gg > 0 ? Math.ceil(mancanti * rpd / gg) : 0;
@@ -5278,13 +5487,15 @@ function proiezioneEsame(){
           pNuova, pMisurata, baseMisura: baseNuove, rese, pRic, pRip,
           pAcq: pRic, rpd, tettoRaggiungibile,
           okFinali, koFinali, maiFinali, vistePreviste,
-          sim, modelloOggi: Math.round(modelloOggi*100), grezzo: Math.round(grezzo*100),
-          scarto: Math.round(scarto*100), ancorata: !!sim,
-          previstoMin: Math.round(previstoMin*100), previstoMax: Math.round(previstoMax*100),
+          sim, modelloOggi: Math.round(modelloOggiPt), grezzo: Math.round(grezzo*FP.K),
+          scarto: Math.round(scarto), ancorata: !!sim,
+          previstoMin: Math.round(previstoMin), previstoMax: Math.round(previstoMax),
           ggDati, datiScarsi, ggMancanti: Math.max(0, GG_MIN_RITMO - ggDati),
           domandeMancanti: Math.max(0, DOMANDE_MIN_STIMA - pt.tot),
           ritmo, ritmoNuove, ritmoNuoveStimato, gg, ggCop,
-          previsto: Math.round(previsto * 100),
+          previsto: Math.round(previsto),
+          rispostePreviste: Math.round(grezzo*100),     // la stessa previsione in risposte esatte
+          k, fattorePunti: FP, trgQ,
           serveAcquisite: Math.round(serveAcquisite), alGiorno, nuoveAlGiorno,
           limitataDallaCopertura,
           traguardo: trg,
@@ -5404,8 +5615,8 @@ function renderVerifica(pr){
       <div class="st-cop-tit"><svg class="ic"><use href="#i-avviso"/></svg> Mai verificata su una prova vera</div>
       <p>Il numero qui sopra è un calcolo, non una misura: sale man mano che copri la banca dati,
         anche se i punteggi dei tuoi test restano fermi. L'unico modo per sapere se è realistico
-        è la <b>simulazione d'esame</b>: 60 domande pescate a caso da tutte le ${fmtN(QUESTIONS.length)}, con la
-        struttura del bando, esattamente come il 15 ottobre. Quel punteggio dice quanto prenderesti oggi.</p>
+        è la <b>simulazione d'esame</b>: 60 domande pescate a caso dalle ${fmtN(bancaUfficiale().length)} della banca ufficiale, con la
+        struttura del bando e i valori veri (20 da 1 punto, 40 da 2), esattamente come il 15 ottobre. Quel punteggio dice quanti punti prenderesti oggi.</p>
       <button class="btn-p pjv-btn" id="pjv-sim">Fai una simulazione →</button>
     </div>`;
   }
@@ -5418,8 +5629,8 @@ function renderVerifica(pr){
   return `<div class="pj-verifica">
     <div class="st-cop-tit">Verificata sulle tue simulazioni</div>
     <div class="pjv-righe">
-      <div class="pjv-box"><b>${pr.modelloOggi}%</b><span>quanto il modello prevede per oggi</span></div>
-      <div class="pjv-box mis"><b>${pr.sim.media}%</b><span>quanto hai fatto davvero${pr.sim.usate > 1 ? ` (ultime ${pr.sim.usate} simulazioni)` : ''}</span></div>
+      <div class="pjv-box"><b>${pr.modelloOggi}</b><span>punti che il modello prevede per oggi</span></div>
+      <div class="pjv-box mis"><b>${pr.sim.media}</b><span>punti fatti davvero${pr.sim.usate > 1 ? ` (ultime ${pr.sim.usate} simulazioni)` : ''}</span></div>
       <div class="pjv-box"><b>${segno}${pr.scarto}</b><span>correzione applicata</span></div>
     </div>
     <p>${commento} Rifalla ogni una o due settimane: è l'unico controllo che tiene onesta la previsione.</p>
@@ -5433,8 +5644,11 @@ function scalaRitmi(pr){
     // Se una domanda riconfermata regge meno del traguardo, quel traguardo non si
     // raggiunge nemmeno consolidando tutta la banca dati: dirlo è più utile che
     // mostrare due righe con lo stesso numero.
-    const oltreTenuta = pr.pRic <= t;
-    const serve = oltreTenuta ? pr.N : Math.min(pr.N, pr.N * (t - pr.pNuova) / (pr.pRic - pr.pNuova));
+    // Il traguardo è un punteggio: va tradotto in quota di risposte esatte (diviso k)
+    // prima di confrontarlo con la tenuta di una domanda riconfermata.
+    const tq = Math.min(0.99, t / (pr.k || 1));
+    const oltreTenuta = pr.pRic <= tq;
+    const serve = oltreTenuta ? pr.N : Math.min(pr.N, pr.N * (tq - pr.pNuova) / (pr.pRic - pr.pNuova));
     const mancanti = Math.max(0, serve - pr.acquisite);
     const alGiorno = pr.gg > 0 ? Math.ceil(mancanti * pr.rpd / pr.gg) : 0;
     return {t, pct: Math.round(t*100), alGiorno, tempo: tempoStimato(alGiorno), oltreTenuta,
@@ -5451,10 +5665,10 @@ function renderScala(pr){
   return `<div class="pj-scala">
     <div class="st-cop-tit">Quanto costa ogni traguardo</div>
     <p class="pjs-intro">Al ritmo di adesso — <b>${pr.ritmo.toLocaleString('it-IT', {useGrouping:true})}</b> domande al giorno,
-      circa ${tempoStimato(pr.ritmo)} — arrivi al <b>${pr.previsto}%</b>. Ecco cosa serve per salire.
+      circa ${tempoStimato(pr.ritmo)} — arrivi a <b>${pr.previsto} punti</b>. Ecco cosa serve per salire.
       Tocca una riga per scegliere il traguardo: l'obiettivo in cima si adegua.</p>
     ${righe.map(r => `<button class="pjs-riga${r.scelto ? ' scelto' : ''}${r.fattibile ? ' ok' : ''}${r.oltreTenuta ? ' oltre' : ''}" data-trg="${r.t}">
-        <span class="pjs-obb">${r.pct}%</span>
+        <span class="pjs-obb">${r.pct} p.</span>
         <span class="pjs-et">${et(r)}</span>
         <span class="pjs-num">${r.oltreTenuta
           ? `<span class="pjs-oltre">oltre la tenuta attuale (${Math.round(pr.pRic*100)}%)</span> · tutta la banca dati`
@@ -5521,37 +5735,41 @@ function renderStato(){
   let verdetto;
   if(sims.length < 2){
     verdetto = `<div class="st-nosim">
-        <p>Il metro più onesto è la <b>simulazione d'esame</b>: 60 domande con le quote reali, 85 minuti, correzione alla fine.
+        <p>Il metro più onesto è la <b>simulazione d'esame</b>: 60 domande con le quote reali, 20 da 1 punto e 40 da 2, 85 minuti, correzione alla fine.
         ${sims.length === 0 ? 'Non ne hai ancora fatta nessuna' : 'Ne hai fatta una'}: dalla seconda compare qui il verdetto.</p>
         <button class="btn-p" id="st-sim"><svg class="ic"><use href="#i-prova"/></svg> Fai una simulazione</button>
       </div>`;
   } else {
+    // Il verdetto si legge in PUNTI, non in percentuale di risposte: all'esame
+    // quello che conta e' arrivare a 80 su 100, e le domande non valgono uguale.
     const ultime = sims.slice(-5);
-    const media = Math.round(ultime.reduce((a,t) => a + t.pct, 0) / ultime.length);
+    const media = Math.round(ultime.reduce((a,t) => a + t.punteggio, 0) / ultime.length);
+    const mediaPct = Math.round(ultime.reduce((a,t) => a + t.pct, 0) / ultime.length);
     const meta = Math.ceil(ultime.length/2);
-    const mA = ultime.slice(0, meta).reduce((a,t)=>a+t.pct,0)/meta;
-    const mB = ultime.slice(-meta).reduce((a,t)=>a+t.pct,0)/meta;
+    const mA = ultime.slice(0, meta).reduce((a,t)=>a+t.punteggio,0)/meta;
+    const mB = ultime.slice(-meta).reduce((a,t)=>a+t.punteggio,0)/meta;
     const trend = Math.round(mB - mA);
-    const superate = ultime.filter(t => t.pct >= SOGLIA_ESAME).length;
+    const superate = ultime.filter(t => t.punteggio >= SOGLIA_PUNTI).length;
+    const stimate = ultime.filter(t => !t.ptEsatto).length;
     let livello, cls;
-    if(media >= SOGLIA_ESAME + 5 && superate >= Math.ceil(ultime.length*0.6)){ livello='Pronta'; cls='ok'; }
-    else if(media >= SOGLIA_ESAME - 5){ livello='Ci sei quasi'; cls='quasi'; }
+    if(media >= SOGLIA_PUNTI + 5 && superate >= Math.ceil(ultime.length*0.6)){ livello='Pronta'; cls='ok'; }
+    else if(media >= SOGLIA_PUNTI - 5){ livello='Ci sei quasi'; cls='quasi'; }
     else { livello='Non ancora'; cls='no'; }
     const frecce = trend > 1 ? `<span class="st-trend su">▲ +${trend} punti tra le prime e le ultime</span>`
                  : trend < -1 ? `<span class="st-trend giu">▼ ${trend} punti tra le prime e le ultime</span>`
                  : `<span class="st-trend neutro">◆ stabile</span>`;
-    const barre = ultime.map(t => `<div class="pr-col" title="${t.data}: ${t.punti}/${t.tot} (${t.pct}%)">
-        <div class="pr-bar ${t.pct >= SOGLIA_ESAME ? 'ok' : ''}" style="height:${Math.max(4, Math.round(t.pct*0.5))}px"></div>
-        <div class="pr-lab">${t.pct}%</div></div>`).join('');
+    const barre = ultime.map(t => `<div class="pr-col" title="${t.data}: ${t.punti}/${t.tot} risposte esatte (${t.pct}%) → ${t.punteggio} punti su 100${t.ptEsatto ? '' : ' (stimati: di questo test non si conosce più l\'elenco delle domande)'}">
+        <div class="pr-bar ${t.punteggio >= SOGLIA_PUNTI ? 'ok' : ''}" style="height:${Math.max(4, Math.round(t.punteggio*0.5))}px"></div>
+        <div class="pr-lab">${t.ptEsatto ? '' : '≈'}${t.punteggio}</div></div>`).join('');
     verdetto = `<div class="st-riga">
         <div class="st-esito ${cls}">
           <span class="st-badge">${livello}</span>
-          <span class="st-dati"><b>${media}%</b> di media nelle simulazioni · soglia ${SOGLIA_ESAME}%</span>
+          <span class="st-dati"><b>${media}/100</b> punti di media nelle simulazioni · soglia ${SOGLIA_PUNTI} · ${mediaPct}% di risposte esatte</span>
           ${frecce}
         </div>
         <div class="st-mini">
-          <div class="pr-graf"><div class="pr-soglia" style="bottom:${Math.round(SOGLIA_ESAME*0.5)+16}px"></div>${barre}</div>
-          <div class="pr-cap">ultime ${ultime.length} simulazioni · ${superate} sopra soglia</div>
+          <div class="pr-graf"><div class="pr-soglia" style="bottom:${Math.round(SOGLIA_PUNTI*0.5)+16}px"></div>${barre}</div>
+          <div class="pr-cap">ultime ${ultime.length} simulazioni, in punti su 100 · ${superate} sopra soglia${stimate ? ` · ${stimate} con punteggio stimato` : ''}</div>
         </div>
       </div>`;
   }
@@ -5566,7 +5784,7 @@ function renderStato(){
     <div class="st-proiezione ${pr.datiScarsi ? 'provvisoria' : (pr.raggiungibile ? 'bene' : 'male')}">
       <div class="st-cop-tit">Proiezione al 15 ottobre${pr.datiScarsi ? '<span class="pj-tag">stima provvisoria</span>' : ''}</div>
       <div class="pj-riga">
-        <div class="pj-num"><b>${pr.previstoMin}–${pr.previstoMax}%</b><span>punteggio previsto all'esame — una forbice, non un numero secco: si stringe man mano che le misure si accumulano</span></div>
+        <div class="pj-num"><b>${pr.previstoMin}–${pr.previstoMax}<i>punti</i></b><span>previsti all'esame, su 100 (si passa con ${SOGLIA_PUNTI}) — una forbice, non un numero secco: si stringe man mano che le misure si accumulano. Sono ${pr.rispostePreviste}% di risposte esatte, pesate per quanto vale ogni domanda</span></div>
         <div class="pj-meta">
           ${fmt(pr.acquisite)} domande consolidate su ${fmt(pr.N)}<br>
           ritmo attuale ${pr.ritmo ? fmt(pr.ritmo) + ' domande al giorno'
@@ -5574,7 +5792,7 @@ function renderStato(){
         </div>
       </div>
       <div class="pj-nota">${!pr.tettoRaggiungibile
-        ? `Con la tenuta che stiamo misurando (<b>${Math.round(pr.pAcq*100)}%</b> su una domanda consolidata) <b>${trgTesto(pr.traguardo)}</b> non si raggiunge nemmeno consolidando tutta la banca dati: il traguardo diventa vederla e riconfermarla per intero, e alzare la tenuta con più ripassi.`
+        ? `Con la tenuta che stiamo misurando (<b>${Math.round(pr.pAcq*100)}%</b> su una domanda consolidata) <b>${trgTesto(pr.traguardo)}</b> non si raggiungono nemmeno consolidando tutta la banca dati: il traguardo diventa vederla e riconfermarla per intero, e alzare la tenuta con più ripassi.`
         : pr.raggiungibile
         ? `Sei sulla strada <b>${trgTesto(pr.traguardo,'di')}</b>: a questo ritmo arrivi sopra l'obiettivo. Serve solo non mollare.`
         : `Per arrivare <b>${trgTesto(pr.traguardo,'a')}</b> servono <b>${fmt(pr.serveAcquisite)}</b> domande <b>consolidate</b> — cioè superate e poi riconfermate a distanza. Da qui all'esame sono <b>${fmt(pr.alGiorno)} domande al giorno</b>, ed è l'obiettivo che trovi in cima.`}
@@ -5645,7 +5863,7 @@ function renderMaledette(){
       <div class="dt-tit"><svg class="ic"><use href="#i-lucchetto"/></svg> Domande che continui a sbagliare</div>
       <div class="mal-testo">Sono <b>${m.length}</b> domande sbagliate almeno ${SOGLIA_MALEDETTA} volte`
       + (aperte ? ` (<b>${aperte}</b> ancora da superare)` : '')
-      + `; la più ostinata ti ha fregata <b>${peggio}</b> volte. Riproporle uguali non basta: leggile con spiegazione e trucco, poi verificale.</div>
+      + `; la più ostinata ti ha fregata <b>${peggio}</b> volte. All'esame queste domande valgono <b>${fmtN(puntiDi(m))} punti</b>, di cui <b>${fmtN(puntiDi(m.filter(q => livelloQ(q) === 2)))}</b> su quelle da 2. Riproporle uguali non basta: leggile con spiegazione e trucco, poi verificale.</div>
       <div class="mal-azioni">
         <button class="btn-s" id="btn-mal-studia"><svg class="ic"><use href="#i-libro"/></svg> Studiale una per una</button>
         <button class="btn-s" id="btn-mal-test"><svg class="ic"><use href="#i-mirino"/></svg> Mettiti alla prova su queste</button>
@@ -5757,8 +5975,8 @@ function renderAndamento(){
   if(ambitoSel !== null){
     const soglia = 80;
     consiglio = p1 >= soglia
-      ? `<b>${nomeAmbito}</b>: ${p1}%, sopra la soglia d'esame dell'${soglia}%.`
-      : `<b>${nomeAmbito}</b>: ${p1}%, ${soglia - p1} punti sotto la soglia d'esame.`;
+      ? `<b>${nomeAmbito}</b>: ${p1}% di risposte esatte, sopra il riferimento dell'${soglia}%.`
+      : `<b>${nomeAmbito}</b>: ${p1}% di risposte esatte, ${soglia - p1} punti sotto il riferimento dell'${soglia}%.`;
   } else {
     const trend = trendPerAmbito(w1, w2, Math.max(8, N * 2));
     if(trend.length){
@@ -5787,7 +6005,7 @@ function renderAndamento(){
     </div>
     <div class="and-gr">
       <div class="and-plot" style="height:${H_PLOT}px">
-        <div class="and-soglia" style="bottom:${Math.round(0.8*H_PLOT)}px"><span>soglia esame 80%</span></div>
+        <div class="and-soglia" style="bottom:${Math.round(0.8*H_PLOT)}px"><span title="È l'80% di risposte esatte. La soglia vera dell'esame sono 80 punti su 100: la trovi nelle simulazioni, dove ogni domanda pesa per quanto vale.">riferimento 80% di risposte esatte</span></div>
         <div class="and-barre">${barre}</div>
       </div>
       <div class="and-gg-riga">${etichette}</div>
@@ -5819,12 +6037,13 @@ function sottoBlocco(){
           : `<span class="${R.pct < 60 ? 'so-basso' : (R.pct >= 80 ? 'so-alto' : '')}">${R.pct}%</span>`}</td>
       <td class="dt-n">${R.ko ? `<span class="dt-d giu">${fmt(R.ko)}</span>` : '—'}</td>
       <td class="dt-n">${fmt(R.nuove)}</td>
+      <td class="dt-n" title="Punti già superati sul totale dei punti ufficiali di questo sottoargomento${R.fuori ? ` · ${fmt(R.fuori)} domande fuori banca non contate` : ''}"><b>${fmt(R.pt)}</b>/${fmt(R.ptMax)}</td>
       <td class="so-az"><button class="so-btn" data-sa="${R.i}" title="Allena questo sottoargomento"><svg class="ic ic-pieno"><use href="#i-play"/></svg></button></td>
     </tr>`).join('');
   return `<div class="dt-blocco">
       <div class="dt-tit">Sottoargomenti di ${arg} <span class="dt-hint">— dal più debole; il tasto avvia un test mirato</span></div>
       <div class="so-scroll"><table class="dt-tab so-tab"><thead><tr>
-        <th>Sottoargomento</th><th>Superate</th><th>Da ripassare</th><th>Nuove</th><th></th>
+        <th>Sottoargomento</th><th>Superate</th><th>Da ripassare</th><th>Nuove</th><th>Punti</th><th></th>
       </tr></thead><tbody>${corpo}</tbody></table></div>
     </div>`;
 }
@@ -6105,9 +6324,10 @@ function tassoEsitazione(){
 }
 // il lavoro che manca, contato in risposte da dare
 function lavoroResiduo(){
+  // Il lavoro che resta è quello sulla banca ufficiale: è ciò che l'esame chiede.
   const c = costiConsolidamento();
   let U = 0, K = 0, R = 0, C = 0;
-  QUESTIONS.forEach(q => {
+  bancaUfficiale().forEach(q => {
     const r = stato.risultati[q.n];
     if(!r) U++;
     else if(r.s !== 'ok') R++;
@@ -6504,7 +6724,11 @@ function selezionaNuoveBilanciate(nuove, n, argsSel){
   QUESTIONS.forEach(q => { if(nelPool(q, argsSel)){ const k = chiaveGruppo(q); totali[k] = (totali[k] || 0) + 1; } });
   const G = Object.keys(gruppi).map(k => {
     const tot = totali[k] || gruppi[k].length;
-    return {dom: shuffle(gruppi[k].slice()), preso: 0, tot, viste: tot - gruppi[k].length};
+    // Dentro il gruppo si parte sempre dalle domande della banca ufficiale: quelle
+    // fuori banca restano disponibili, ma si incontrano solo quando le altre sono finite.
+    const dom = shuffle(gruppi[k].slice());
+    dom.sort((a, b) => (fuoriBanca(a) ? 1 : 0) - (fuoriBanca(b) ? 1 : 0));
+    return {dom, preso: 0, tot, viste: tot - gruppi[k].length};
   });
   const out = [];
   for(let i = 0; i < n; i++){
@@ -6693,6 +6917,8 @@ function avviaTest(){
       vuoti -= extra.length;
     }
   }
+  // il mix dei livelli come all'esame: 20 domande da 1 punto e 40 da 2
+  if(domande.length === N_TEST) bilanciaLivelli(domande, pool);
   shuffle(domande);
   let tag = sel.length === ARGOMENTI.length ? 'Tutti' : sel.map(a => a.split(' ')[0] + ' ' + (a.split(' ')[1]||'')).join(', ');
   const filtriTag = argFiltrati(sel);
@@ -6718,11 +6944,81 @@ const STRUTTURA_ESAME = [
 ];
 const MINUTI_ESAME = 85;
 
+// ---------- il mix dei livelli, come lo vuole il bando ----------
+// Ogni test da 60 domande deve avere 20 domande da 1 punto e 40 da 2: è la
+// composizione della prova vera, e solo con quella il punteggio di un test si legge
+// con lo stesso metro dell'esame. La selezione per ripasso non guarda il livello,
+// quindi qui si aggiusta il mix a valle: si scambiano le domande del livello in
+// eccesso con altre dello stesso argomento e della stessa classe (sbagliata, da
+// riconfermare, mai vista, già superata). Così il criterio di ripasso resta quello:
+// cambia solo il valore delle domande scelte.
+function classeDi(q){
+  const r = stato.risultati[q.n];
+  if(!r) return 'nuova';
+  if(r.s === 'ko') return 'rip';
+  return (r.k || r.p) ? 'ric' : 'vinta';
+}
+// Chi si sacrifica per primo quando c'è da scambiare: mai una sbagliata da recuperare.
+const ORDINE_SACRIFICIO = {vinta: 0, ric: 1, nuova: 2, rip: 3};
+function bilanciaLivelli(domande, pool){
+  const vuole = quoteLivello(domande.length);
+  const dentro = new Set(domande.map(q => q.n));
+  const conta = L => domande.reduce((a, q) => a + (livelloQ(q) === L ? 1 : 0), 0);
+  let giri = 0;
+  while(conta(1) !== vuole[1] && giri++ < 120){
+    const troppo = conta(1) > vuole[1] ? 1 : 2;
+    const serve = troppo === 1 ? 2 : 1;
+    const uscenti = domande.filter(q => livelloQ(q) === troppo)
+      .sort((a, b) => ORDINE_SACRIFICIO[classeDi(a)] - ORDINE_SACRIFICIO[classeDi(b)]);
+    let fatto = false;
+    for(const via of uscenti){
+      const cl = classeDi(via);
+      const cand = pool.filter(q => livelloQ(q) === serve && !dentro.has(q.n) && q.t === via.t);
+      if(!cand.length) continue;
+      const stessaClasse = cand.filter(q => classeDi(q) === cl);
+      const scelto = pescaUno(stessaClasse) || pescaUno(cand);
+      if(!scelto) continue;
+      domande[domande.indexOf(via)] = scelto;
+      dentro.delete(via.n); dentro.add(scelto.n);
+      fatto = true; break;
+    }
+    if(!fatto) break;      // materiale finito: meglio un mix imperfetto che un test corto
+  }
+  return domande;
+}
+function pescaUno(arr){ return arr.length ? arr[Math.floor(Math.random()*arr.length)] : null; }
+
+// La prova vera è fatta di 20 domande da 1 punto e 40 da 2, per 100 punti esatti.
+// La simulazione pesca con quella composizione: dentro ogni materia si rispettano le
+// quote del bando, e i livelli si distribuiscono in proporzione, come fa l'esame.
+// Le domande fuori dalla banca dati ufficiale non entrano mai: all'esame non possono
+// uscire, e farebbero sballare il punteggio su 100.
+function quoteLivello(n){
+  const q1 = Math.round(n * SIM_PER_LIVELLO[1] / (SIM_PER_LIVELLO[1] + SIM_PER_LIVELLO[2]));
+  return {1: q1, 2: n - q1};
+}
 function avviaSimulazione(){
   const domande = [];
+  const avanzo = {1: 0, 2: 0};
   STRUTTURA_ESAME.forEach(([arg, n]) => {
-    domande.push(...shuffle(QUESTIONS.filter(q => q.t === arg)).slice(0, n));
+    const pool = QUESTIONS.filter(q => q.t === arg && !fuoriBanca(q));
+    const q = quoteLivello(n);
+    [1, 2].forEach(L => {
+      const vuole = q[L] + avanzo[L];
+      const presi = shuffle(pool.filter(x => livelloQ(x) === L)).slice(0, vuole);
+      avanzo[L] = vuole - presi.length;              // se manca materiale, recupera dopo
+      domande.push(...presi);
+    });
   });
+  // Se una materia non ha abbastanza domande di un livello, si completa con le altre
+  // mantenendo il conto totale: meglio un livello spostato che un test corto.
+  const dentro = new Set(domande.map(q => q.n));
+  const manca = STRUTTURA_ESAME.reduce((a, [, n]) => a + n, 0) - domande.length;
+  if(manca > 0){
+    const resto = shuffle(QUESTIONS.filter(q => !fuoriBanca(q) && !dentro.has(q.n)));
+    resto.sort((a, b) => (avanzo[livelloQ(b)] || 0) - (avanzo[livelloQ(a)] || 0));
+    domande.push(...resto.slice(0, manca));
+  }
   shuffle(domande);
   lanciaTest(domande, 'Simulazione esame', {esame: true, sim: true, scadenza: MINUTI_ESAME * 60});
 }
@@ -6772,9 +7068,13 @@ function renderDomanda(){
   $('q-contatore').textContent = `Domanda ${test.idx+1} di ${test.domande.length}`;
   const risposteDate = Object.keys(test.risposte).length;
   const giuste = Object.entries(test.risposte).filter(([n,i]) => byNum[n].e === i).length;
-  $('q-parziale').textContent = test.esame ? '' : `Parziale: ${giuste}/${risposteDate}`;
+  // Il parziale in punti: è quello che conterebbe all'esame.
+  const PP = puntiFatti(test.domande.filter(x => test.risposte[x.n] !== undefined), test.risposte);
+  $('q-parziale').textContent = test.esame ? ''
+    : `Parziale: ${giuste}/${risposteDate}${risposteDate ? ` · ${PP.pt}/${PP.ptMax} punti` : ''}`;
   $('q-prog').style.width = (100*test.idx/test.domande.length) + '%';
   $('q-arg').textContent = q.t;
+  $('q-valore').innerHTML = etichetteQ(q);
   const rq = stato.risultati[q.n];
   const inRipasso = rq && rq.s === 'ko' && !test.sim;
   const vintaRip = !inRipasso && rq && rq.s === 'ok' && !test.sim;
@@ -7010,10 +7310,15 @@ function fineTest(){
     };
     giuste.forEach(q => contaMat(q, 'ok'));
     errori.forEach(q => contaMat(q, 'ko'));
+    // Il punteggio vero del test: ogni domanda pesa quanto vale all'esame. Per una
+    // simulazione contano tutte le 60 domande, anche quelle lasciate senza risposta.
+    const PT = puntiFatti(test.sim ? test.domande : risposte, test.risposte);
     stato.storico.push({ data: new Date().toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
                          iso: oggiISO(), argomenti: test.argomenti, punti: giuste.length,
                          tot: test.sim ? test.domande.length : risposte.length, mat,
+                         pt: PT.pt, ptMax: PT.ptMax,
                          k: Date.now().toString(36) + Math.random().toString(36).slice(2, 8) });
+    scordaRicostruzione();
     const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
     g.test++; g.ok += giuste.length; g.ko += errori.length;
     g.nuove = (g.nuove || 0) + nuoveViste;   // copertura: domande viste per la prima volta
@@ -7047,44 +7352,54 @@ function fineTest(){
     $('disp-corpo-risultati').innerHTML = '';
   }
   // render risultati
-  $('r-punteggio').textContent = test.sim ? `${giuste.length} / ${test.domande.length}` : `${giuste.length} / ${risposte.length}`;
+  const PTfine = puntiFatti(test.sim ? test.domande : risposte, test.risposte);
+  const su100fine = su100(PTfine.pt, PTfine.ptMax);
+  $('r-punteggio').textContent = test.sim ? `${PTfine.pt} / ${PTfine.ptMax} punti`
+                                          : `${giuste.length} / ${risposte.length}`;
   const pct = risposte.length ? giuste.length/risposte.length : 0;
   const el = $('r-esito');
-  el.className = 'esito ' + (pct >= 0.8 ? 'ok' : 'ko');
+  el.className = 'esito ' + (su100fine >= SOGLIA_PUNTI ? 'ok' : 'ko');
   el.textContent = risposte.length === 0 ? 'Nessuna risposta data.' :
-    (pct >= 0.8 ? `Ottimo: ${Math.round(pct*100)}% di risposte esatte` : `${Math.round(pct*100)}% di risposte esatte — le ${errori.length} sbagliate torneranno nei prossimi test finché non le superi 2 volte`);
-  let superato = risposte.length > 0 && pct >= 0.8;
+    (su100fine >= SOGLIA_PUNTI
+      ? `Ottimo: ${PTfine.pt} punti su ${PTfine.ptMax} — ${su100fine} su 100, sopra la soglia · ${Math.round(pct*100)}% di risposte esatte`
+      : `${PTfine.pt} punti su ${PTfine.ptMax} — ${su100fine} su 100 (serve ${SOGLIA_PUNTI}) · ${Math.round(pct*100)}% di risposte esatte — le ${errori.length} sbagliate torneranno nei prossimi test finché non le superi 2 volte`);
+  let superato = risposte.length > 0 && su100fine >= SOGLIA_PUNTI;
   if(test.sim){
-    const sup = giuste.length >= 48;   // soglia reale: 80/100 ≈ 48 domande su 60
+    const sup = PTfine.pt >= SOGLIA_PUNTI;   // la soglia vera: 80 punti su 100
     superato = sup;
     el.className = 'esito ' + (sup ? 'ok' : 'ko');
-    el.textContent = `Simulazione esame: ${giuste.length}/60 — ${sup ? 'SUPERATA (soglia 80%)' : 'non superata (soglia: 48 esatte su 60)'}`
-      + (risposte.length < 60 ? ` · ${60 - risposte.length} domande senza risposta` : '');
+    el.textContent = `Simulazione esame: ${PTfine.pt} punti su ${PTfine.ptMax} — ${sup ? `SUPERATA (soglia ${SOGLIA_PUNTI})` : `non superata (serve ${SOGLIA_PUNTI})`}`
+      + ` · ${giuste.length}/${test.domande.length} risposte esatte`
+      + (risposte.length < test.domande.length ? ` · ${test.domande.length - risposte.length} domande senza risposta` : '');
   }
   if(superato) $('velo-amore').classList.remove('nascosto');
   const perArg = {};
-  risposte.forEach(q => {
-    perArg[q.t] = perArg[q.t] || {ok:0, ko:0};
-    perArg[q.t][test.risposte[q.n] === q.e ? 'ok' : 'ko']++;
+  (test.sim ? test.domande : risposte).forEach(q => {
+    perArg[q.t] = perArg[q.t] || {ok:0, ko:0, pt:0, ptMax:0};
+    const a = perArg[q.t];
+    a.ptMax += puntiQ(q);
+    if(test.risposte[q.n] === undefined) return;
+    if(test.risposte[q.n] === q.e){ a.ok++; a.pt += puntiQ(q); } else a.ko++;
   });
   $('r-argomenti').innerHTML = Object.entries(perArg).map(([t,v]) =>
-    `<tr><td>${t}</td><td style="color:var(--vidimato-t)"><b>${v.ok}</b></td><td style="color:var(--lacca-t)"><b>${v.ko}</b></td></tr>`).join('');
+    `<tr><td>${t}</td><td style="color:var(--vidimato-t)"><b>${v.ok}</b></td><td style="color:var(--lacca-t)"><b>${v.ko}</b></td>` +
+    `<td><b>${v.pt}</b>/${v.ptMax}</td></tr>`).join('');
   const ce = $('card-errori');
   ce.classList.toggle('nascosto', errori.length === 0);
   $('r-errori').innerHTML = errori.map(q => `
     <div class="err-item">
-      <span class="pill pill-arg">${q.t}</span>
+      <span class="pill pill-arg">${q.t}</span> ${etichetteQ(q)}
       <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
       <div class="tua">✘ La tua risposta: ${letteraMostrata(q, test.risposte[q.n])}) ${q.a[test.risposte[q.n]].replace(/</g,'&lt;')}</div>
       <div class="r">✔ Risposta esatta: ${letteraMostrata(q, q.e)}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
       ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
       ${haTrucco(q.n) ? `<div class="trucco" style="margin-top:8px">${truccoHTML(q.n)}</div>` : ''}
     </div>`).join('');
-  const pierG = giuste.length, pierT = risposte.length;
+  const pierG = giuste.length, pierT = risposte.length, pierQ = PTfine.ptMax ? PTfine.pt / PTfine.ptMax : null;
   test = null;
   renderHome();
   mostra('vista-risultati');
-  if(typeof Pier !== 'undefined') Pier.reagisci(pierG, pierT);
+  if(typeof Pier !== 'undefined') Pier.reagisci(pierG, pierT, pierQ);
 }
 
 // ---------- progressi: salva / carica / reset ----------
@@ -7425,6 +7740,7 @@ function renderRipasso(){
         <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da superare'}</span>
         <span class="pill pill-rip">sbagliata ${r.e === 1 ? '1 volta' : r.e + ' volte'}</span>
         ${!sup && !proponibile(r) ? `<span class="pill pill-pausa">⏸ torna tra ${r.t - (stato.nTest || 0)} test</span>` : ''}
+        ${etichetteQ(q)}
         <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
         <div class="r">✔ Risposta esatta: ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
         ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
@@ -7548,6 +7864,7 @@ function dispensaCorpoHTML(errate){
     return `<div class="err-item ${sup ? 'rip-sup' : ''}">
       <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da superare'}</span>
       <span class="pill pill-rip">sbagliata ${r.e === 1 ? '1 volta' : r.e + ' volte'}</span>
+      ${etichetteQ(q)}
       <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
       <div class="r">✔ ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
       ${SPIEG[q.n] ? `<div class="spiega" style="margin-top:8px">${spiegaHTML(q.n)}</div>` : ''}
@@ -7692,7 +8009,7 @@ function renderCerca(){
       : r.s === 'ok' ? `<span class="pill pill-sup">✔ superata${r.e ? ' (dopo ' + r.e + (r.e === 1 ? ' errore' : ' errori') + ')' : ''}</span>`
       : `<span class="pill pill-ko">✘ da ripassare</span>`;
     return `<div class="cerca-item">
-      <span class="pill pill-arg">${q.t}</span> ${badge}
+      <span class="pill pill-arg">${q.t}</span> ${badge} ${etichetteQ(q)}
       <div class="d">${q.n}. ${ev(q.q)}</div>
       <div class="r">✔ ${'ABCD'[q.e]}) ${ev(q.a[q.e])}</div>
     </div>`;
@@ -7753,7 +8070,7 @@ ARGOMENTI.forEach(a => {
   o.value = a; o.textContent = a;
   $('cerca-arg').appendChild(o);
 });
-$('btn-sim').onclick = () => conferma(`Avviare la simulazione d'esame? Come la prova vera: 60 domande (24 mercato + 19 matematica + 6 privato + 6 tributario + 5 previdenziale) estratte da tutta la banca dati, ${MINUTI_ESAME} minuti di tempo, correzione solo alla fine, soglia 80%.`, avviaSimulazione);
+$('btn-sim').onclick = () => conferma(`Avviare la simulazione d'esame? Come la prova vera: 60 domande (24 mercato + 19 matematica + 6 privato + 6 tributario + 5 previdenziale) estratte dalla banca dati ufficiale: 20 valgono 1 punto e 40 ne valgono 2, per 100 punti in tutto. ${MINUTI_ESAME} minuti di tempo, correzione solo alla fine, si passa con ${SOGLIA_PUNTI} punti.`, avviaSimulazione);
 $('btn-pro').onclick = avviaPro;
 $('chk-solo-aperte').onchange = renderRipasso;
 $('chk-solo-errori').onchange = aggiornaNota;
@@ -8009,6 +8326,11 @@ function ricaricaSeInAttesa(){
 function scriviQuanteDomande(){
   const n = fmtN(QUESTIONS.length);
   document.querySelectorAll('.n-banca').forEach(e => e.textContent = n);
+  // Quante sono quelle che all'esame possono davvero uscire, e quanti punti valgono.
+  const uff = bancaUfficiale();
+  document.querySelectorAll('.n-ufficiali').forEach(e => e.textContent = fmtN(uff.length));
+  document.querySelectorAll('.n-punti-banca').forEach(e => e.textContent = fmtN(puntiDi(uff)));
+  document.querySelectorAll('.n-fuori').forEach(e => e.textContent = fmtN(QUESTIONS.length - uff.length));
   const c = $('campo-cerca');
   if(c) c.placeholder = `Cerca una parola o una frase tra le ${n} domande… (es. OICR, usufrutto, ESG)`;
 }
@@ -8340,9 +8662,11 @@ const Pier = (() => {
     riparti();
   }
 
-  function reagisci(giuste, totali){
+  // La quota che decide posa e frase e' il PUNTEGGIO, non il numero di risposte:
+  // e' quello che conta all'esame. Il conto delle sbagliate resta in domande.
+  function reagisci(giuste, totali, quota){
     if(!totali) return;
-    const q = giuste / totali;
+    const q = (typeof quota === 'number' && isFinite(quota)) ? quota : giuste / totali;
     const r = REAZIONI.find(x => q >= x.min) || REAZIONI[REAZIONI.length - 1];
     if(angolo) angolo.classList.remove('p-piccolo');
     posa(r.posa);
@@ -8400,7 +8724,7 @@ const Pier = (() => {
     posa: n => prova(() => posa(n)),
     dice: (t, ms) => prova(() => dice(t, ms)),
     modalita: m => prova(() => modalita(m)),
-    reagisci: (g, t) => prova(() => reagisci(g, t))
+    reagisci: (g, t, q) => prova(() => reagisci(g, t, q))
   };
 })();
 
