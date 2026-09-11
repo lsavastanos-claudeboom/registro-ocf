@@ -1969,7 +1969,6 @@ b.dubbia{color:var(--ottone-t);}
       </div>
       <div style="margin-top:12px">
         <span class="pill pill-arg" id="q-arg"></span>
-        <span id="q-valore"></span>
         <span class="pill pill-rip nascosto" id="q-rip">RIPASSO — sbagliata in un test precedente</span>
       </div>
       <div class="domanda" id="q-testo"></div>
@@ -7074,7 +7073,10 @@ function renderDomanda(){
     : `Parziale: ${giuste}/${risposteDate}${risposteDate ? ` · ${PP.pt}/${PP.ptMax} punti` : ''}`;
   $('q-prog').style.width = (100*test.idx/test.domande.length) + '%';
   $('q-arg').textContent = q.t;
-  $('q-valore').innerHTML = etichetteQ(q);
+  // Mentre risponde non si dice quanto vale la domanda: saperlo prima non cambia
+  // come si risponde, e sposta l'attenzione dal quesito al punteggio. Il valore
+  // conta lo stesso — entra nel parziale qui sopra e nel risultato — e si vede
+  // dopo, sulle domande sbagliate e in tutti gli elenchi fuori dal test.
   const rq = stato.risultati[q.n];
   const inRipasso = rq && rq.s === 'ko' && !test.sim;
   const vintaRip = !inRipasso && rq && rq.s === 'ok' && !test.sim;
