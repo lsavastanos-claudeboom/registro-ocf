@@ -7067,10 +7067,9 @@ function renderDomanda(){
   $('q-contatore').textContent = `Domanda ${test.idx+1} di ${test.domande.length}`;
   const risposteDate = Object.keys(test.risposte).length;
   const giuste = Object.entries(test.risposte).filter(([n,i]) => byNum[n].e === i).length;
-  // Il parziale in punti: è quello che conterebbe all'esame.
-  const PP = puntiFatti(test.domande.filter(x => test.risposte[x.n] !== undefined), test.risposte);
-  $('q-parziale').textContent = test.esame ? ''
-    : `Parziale: ${giuste}/${risposteDate}${risposteDate ? ` · ${PP.pt}/${PP.ptMax} punti` : ''}`;
+  // Il parziale conta le risposte, non i punti: durante il test il punteggio non
+  // serve a niente e distrae. I punti tornano alla fine, nel risultato.
+  $('q-parziale').textContent = test.esame ? '' : `Parziale: ${giuste}/${risposteDate}`;
   $('q-prog').style.width = (100*test.idx/test.domande.length) + '%';
   $('q-arg').textContent = q.t;
   // Mentre risponde non si dice quanto vale la domanda: saperlo prima non cambia
