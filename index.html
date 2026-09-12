@@ -351,6 +351,14 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .mix-val.rosso{color:var(--lacca-t);} .mix-val.verde{color:var(--vidimato-t);}
 .mix-box input[type=range]:disabled{opacity:.4; cursor:not-allowed;}
 .mix-box .mini b{color:var(--testo);}
+/* Chi decide il mix: il piano o lei. La riga sta sopra i cursori perche' senza
+   quella non si capisce se spostarli serva a qualcosa. */
+.mix-testa{display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  font-size:.7rem; color:var(--nebbia); line-height:1.35; margin-bottom:3px;}
+.mix-guida b{color:var(--testo); font-weight:700;}
+.mix-torna{color:var(--inchiostro2); text-decoration:none; white-space:nowrap;
+  border-bottom:1px solid currentColor; padding-bottom:1px;}
+.mix-torna:hover{color:var(--azione);}
 #mix-label b:last-child, #mix-label b.rosso{color:var(--lacca-t);}
 
 /* ---------- quiz: la scheda-domanda ---------- */
@@ -1862,6 +1870,10 @@ b.dubbia{color:var(--ottone-t);}
         </div>
       </div>
       <div class="mix-box mix-tre">
+        <div class="mix-testa">
+          <span class="mix-guida" id="mix-guida"></span>
+          <a href="#" class="mix-torna nascosto" id="mix-piano">torna al piano</a>
+        </div>
         <div class="mix-riga"><span class="mini mix-nome"><i class="stato-p sp-nuova"></i> Nuove</span>
           <input type="range" id="mix-nuove" min="0" max="100" step="5" value="70" title="Percentuale di domande mai viste">
           <b class="mini mix-val" id="mix-val-n">70%</b></div>
@@ -8079,40 +8091,86 @@ $('chk-autosave').onchange = () => { stato.autosave = $('chk-autosave').checked;
 $('amore-chiudi').onclick = () => $('velo-amore').classList.add('nascosto');
 // Il quarto riservato alle riconferme non passa dai cursori: va dichiarato,
 // altrimenti le percentuali mostrate non corrispondono al test reale.
+// Come sarebbe composto il prossimo test secondo il piano automatico, in percentuale:
+// serve a far vedere sui cursori quello che il piano sta davvero facendo, invece di
+// una posizione che non c'entra niente con il test che parte.
+function quotePiano(){
+  const s = statiPool(QUESTIONS.filter(q => nelPool(q, argomentiSelezionati())));
+  const c = composizionePiano(s, N_TEST);
+  const tot = (c.nNew + c.nRip + c.nRic + c.nVin + (c.nSonda || 0)) || N_TEST;
+  const pc = n => Math.round(100 * n / tot);
+  return {nuove: pc(c.nNew), ko: pc(c.nRip), vinte: pc(c.nVin + (c.nSonda || 0)), c};
+}
+
 function aggiornaQuotaRiconferme(){
   const riga = $('mix-riconferme'); if(!riga) return;
+  const auto = pianoAttivo();
   const s = statiPool(QUESTIONS.filter(q => nelPool(q, argomentiSelezionati())));
-  const nRic = Math.min(s.ricEleg || 0, Math.round(N_TEST * QUOTA_RICONFERME));
+  const nRic = auto ? composizionePiano(s, N_TEST).nRic
+                    : Math.min(s.ricEleg || 0, Math.round(N_TEST * QUOTA_RICONFERME));
   riga.classList.toggle('nascosto', nRic === 0);
   if(nRic) $('mix-val-r').textContent = Math.round(100 * nRic / N_TEST) + '%';
   const resto = N_TEST - nRic;
+  // Il conto «la percentuale si applica al resto» vale solo quando comandano i cursori:
+  // col piano attivo le percentuali mostrate sono gia' quelle del test che parte.
   [['n', mixNuove()], ['k', mixKo()], ['v', mixVinte()]].forEach(([k, q]) => {
     const el = $('mix-val-' + k); if(!el) return;
-    el.title = nRic ? `≈ ${Math.round(resto * q / 100)} domande su ${N_TEST}: la percentuale si applica alle ${resto} non riservate` : '';
+    el.title = (!auto && nRic) ? `≈ ${Math.round(resto * q / 100)} domande su ${N_TEST}: la percentuale si applica alle ${resto} non riservate` : '';
   });
 }
 
 function aggiornaMixLabel(){
-  $('mix-nuove').value = mixNuove();
-  $('mix-ko').value = mixKo();
-  $('mix-val-n').textContent = mixNuove() + '%';
-  $('mix-val-k').textContent = mixKo() + '%';
-  $('mix-val-v').textContent = mixVinte() + '%';
-  $('mix-label').innerHTML = `<b>${mixNuove()}%</b> nuove · <b class="rosso">${mixKo()}%</b> sbagliate · <b>${mixVinte()}%</b> vinte`;
+  // Due modi, e si deve vedere quale e' in funzione: o comanda il piano — e allora i
+  // cursori mostrano le sue quote — oppure comanda lei. Prima i cursori si muovevano
+  // senza che nessuno li leggesse: sembravano un comando e non lo erano.
+  const auto = pianoAttivo();
+  const q = auto ? quotePiano() : {nuove: mixNuove(), ko: mixKo(), vinte: mixVinte()};
+  $('mix-nuove').value = q.nuove;
+  $('mix-ko').value = q.ko;
+  $('mix-val-n').textContent = q.nuove + '%';
+  $('mix-val-k').textContent = q.ko + '%';
+  $('mix-val-v').textContent = q.vinte + '%';
+  $('mix-label').innerHTML = `<b>${q.nuove}%</b> nuove · <b class="rosso">${q.ko}%</b> sbagliate · <b>${q.vinte}%</b> vinte`;
+  const g = $('mix-guida');
+  if(g) g.innerHTML = auto
+    ? 'Mix deciso dal <b>piano</b> — sposta un cursore per decidere tu'
+    : 'Mix <b>scelto da te</b>';
+  const btn = $('mix-piano');
+  if(btn) btn.classList.toggle('nascosto', auto);
   aggiornaQuotaRiconferme();
 }
+// Muovere un cursore vuol dire prendere il comando: il piano si fa da parte.
+function prendiIlComando(){
+  if(pianoAttivo()){
+    const q = quotePiano();            // si parte da dove stava il piano, non da un salto
+    stato.mixNuove = q.nuove;
+    stato.mixKo = Math.min(q.ko, 100 - q.nuove);
+    stato.pianoAuto = false;
+  }
+}
 $('mix-nuove').oninput = () => {
-  stato.mixNuove = +$('mix-nuove').value;
+  const v = +$('mix-nuove').value;
+  prendiIlComando();
+  stato.mixNuove = v;
   if(stato.mixKo > 100 - stato.mixNuove) stato.mixKo = 100 - stato.mixNuove;
   aggiornaMixLabel();
   aggiornaNota();
   salvaLocale();
 };
 $('mix-ko').oninput = () => {
-  stato.mixKo = Math.min(+$('mix-ko').value, 100 - mixNuove());
+  const v = +$('mix-ko').value;
+  prendiIlComando();
+  stato.mixKo = Math.min(v, 100 - mixNuove());
   aggiornaMixLabel();
   aggiornaNota();
   salvaLocale();
+};
+$('mix-piano').onclick = (e) => {
+  e.preventDefault();
+  stato.pianoAuto = true;
+  salvaLocale();
+  aggiornaMixLabel();
+  aggiornaNota();
 };
 $('btn-avvia').onclick = avviaTest;
 $('btn-prossima').onclick = prossima;
