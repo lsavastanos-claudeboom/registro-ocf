@@ -367,6 +367,13 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .rec-av-spieg b{color:var(--testo);}
 .rec-k i{display:block; font-style:normal; font-size:.7rem; color:var(--nebbia); margin-top:6px;
   padding-top:5px; border-top:1px solid var(--filo); font-variant-numeric:tabular-nums;}
+.rec-ieri{margin-top:8px; padding:9px 12px; border-radius:var(--r-min); background:var(--azz); border:1px solid var(--filo);}
+.rec-i-tit{font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--nebbia); margin-bottom:6px;}
+.rec-i-riga{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; font-size:.84rem; padding:2px 0;}
+.rec-i-et{color:var(--nebbia); flex:0 0 auto;}
+.rec-i-val{margin-left:auto; font-variant-numeric:tabular-nums;}
+.rec-i-nota{margin:7px 0 0; font-size:.75rem; color:var(--nebbia); line-height:1.45;}
+@media(max-width:520px){ .rec-i-val{margin-left:0; flex-basis:100%;} }
 .rec-moto{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; font-size:.8rem; color:var(--nebbia);}
 .rec-moto span{padding:5px 10px; border-radius:999px; background:var(--azz); border:1px solid var(--filo);}
 .rec-moto b{color:var(--testo); font-variant-numeric:tabular-nums;}
@@ -4735,6 +4742,24 @@ function statoRecupero(){
   // e' stato aggiunto, quindi all'inizio c'e' solo oggi.
   const gg = giorniAttiviRecenti(9).filter(g => typeof g.rec === 'number');
   const ritmo = gg.length ? (gg.reduce((s, g) => s + g.rec, 0) / gg.length) : null;
+  // L'ultima giornata di lavoro, letta dai contatori di classe che l'app registra da
+  // sempre: quanti ripassi di domande sbagliate, con che resa, e quante riconferme.
+  // Ogni ripasso esatto e' un passo avanti nel recupero (una domanda che si chiude o
+  // che arriva a meta'), quindi il movimento e' leggibile anche per i giorni passati.
+  const quotaMeta = aperte ? meta / aperte : 0;      // quante delle aperte sono a un passo dalla fine
+  const gcls = giorniAttiviRecenti(13).filter(g => g.cls);
+  const ug = gcls.find(g => (g.cls.rip && (g.cls.rip.ok + g.cls.rip.ko)) || (g.cls.ric && (g.cls.ric.ok + g.cls.ric.ko)));
+  const giornata = ug ? (() => {
+    const rp = ug.cls.rip || {ok: 0, ko: 0}, rc = ug.cls.ric || {ok: 0, ko: 0};
+    const nRip = rp.ok + rp.ko, nRic = rc.ok + rc.ko;
+    // Un ripasso indovinato e' un passo avanti; un ripasso sbagliato su una domanda
+    // gia' a meta' ne toglie uno (il conteggio delle giuste di fila riparte da zero).
+    // Non si sa quali fossero a meta', ma se ne conosce la quota: si scala quella.
+    return {iso: ug.iso, k: ug.k, test: ug.test || 0,
+            rip: nRip, resaRip: nRip ? rp.ok / nRip : null,
+            passi: Math.max(0, Math.round(rp.ok - rp.ko * quotaMeta)),
+            ric: nRic, resaRic: nRic ? rc.ok / nRic : null};
+  })() : null;
   // quanto manca, e quanto costa: una domanda a meta' vuole una risposta esatta,
   // una da riprendere ne vuole due. Diviso la resa vera sui ripassi, fa le risposte
   // che servono davvero.
@@ -4756,15 +4781,21 @@ function statoRecupero(){
   const passiFatti = chiuse * 2 + meta;
   const avanz = passiTot ? passiFatti / passiTot : 0;
   const passiOggi = chiuseOggi * 2 + metaOggi;
-  const passiAlGiorno = gg.length
-    ? gg.reduce((s, g) => s + (g.rec || 0) * 2 + (g.met || 0), 0) / gg.length : null;
+  // Passi al giorno: dove ci sono i contatori esatti si usano quelli, sulle giornate
+  // precedenti vale il numero di ripassi indovinati — ogni ripasso esatto e' un passo.
+  // Cosi' il ritmo e' leggibile da subito e non da quando e' stato aggiunto il conteggio.
+  const ggPassi = giorniAttiviRecenti(9).filter(g => typeof g.rec === 'number' || (g.cls && g.cls.rip));
+  const passiAlGiorno = ggPassi.length
+    ? ggPassi.reduce((s, g) => s + (typeof g.rec === 'number'
+        ? (g.rec || 0) * 2 + (g.met || 0)
+        : Math.max(0, g.cls.rip.ok - g.cls.rip.ko * quotaMeta)), 0) / ggPassi.length : null;
   const settimana = passiAlGiorno !== null && passiTot ? 700 * passiAlGiorno / passiTot : null;
   const allEsame = passiAlGiorno !== null && passiTot
     ? Math.min(100, 100 * (passiFatti + passiAlGiorno * giorniAllEsame()) / passiTot) : null;
   const arg = Object.values(perArg).sort((a, b) => b.aperte - a.aperte);
   return {mai, aperte, meta, daZero, dure, chiuse, chiuseOggi, metaOggi, ritmo, gg: gg.length,
           risposteServono, ggResti, alGiorno, ripassiAlGiorno, finisce, resa, arg,
-          metaAlGiorno, metaRipassi, passiTot, passiFatti, avanz, passiOggi,
+          giornata, metaAlGiorno, metaRipassi, passiTot, passiFatti, avanz, passiOggi,
           passiAlGiorno, settimana, allEsame, scadenza: isoCopertura()};
 }
 
@@ -4781,6 +4812,24 @@ function renderRecupero(){
   const oggi = (R.chiuseOggi || R.metaOggi)
     ? `<div class="rec-oggi"><b>Oggi:</b> ${R.metaOggi ? `<b>${fmt(R.metaOggi)}</b> ${R.metaOggi === 1 ? 'portata' : 'portate'} a metà strada` : ''}${R.metaOggi && R.chiuseOggi ? ' · ' : ''}${R.chiuseOggi ? `<b>${fmt(R.chiuseOggi)}</b> ${R.chiuseOggi === 1 ? 'chiusa' : 'chiuse'} per sempre` : ''} — il recupero è salito di <b>${pct(R.passiOggi, R.passiTot, 1)}</b></div>`
     : `<div class="rec-oggi rec-vuoto">Oggi il recupero non è ancora partito. Un test con il cursore delle nuove a zero e questa riga si riempie.</div>`;
+
+  // L'ultima giornata di lavoro, con i numeri che esistono da sempre: quanti ripassi
+  // e con che resa (ogni ripasso esatto è un passo), e le riconferme, che sono un'altra
+  // cosa — domande già superate, riviste a distanza — ma è la resa che decide l'esame.
+  const perc = v => (v === null || v === undefined) ? '—' : Math.round(v * 100) + '%';
+  const G = R.giornata;
+  const quandoG = G ? (G.k === 0 ? 'Oggi' : G.k === 1 ? 'Ieri'
+    : new Date(G.iso).toLocaleDateString('it-IT', {day: 'numeric', month: 'long'})) : '';
+  const ieri = G ? `<div class="rec-ieri">
+      <div class="rec-i-tit">${quandoG}${G.test ? ` · ${fmt(G.test)} ${G.test === 1 ? 'test' : 'test'}` : ''}</div>
+      ${G.rip ? `<div class="rec-i-riga"><span class="rec-i-et">Ripassi di domande sbagliate</span>
+        <span class="rec-i-val"><b>${fmt(G.rip)}</b> · ${perc(G.resaRip)} esatte · <b>${fmt(G.passi)} passi avanti</b> su ${fmt(R.passiTot)}</span></div>` : ''}
+      ${G.ric ? `<div class="rec-i-riga"><span class="rec-i-et">Riconferme a distanza</span>
+        <span class="rec-i-val"><b>${fmt(G.ric)}</b> · superate ${/^(8|11%|1%)/.test(perc(G.resaRic)) ? "all'" : 'al '}<b>${perc(G.resaRic)}</b></span></div>` : ''}
+      <p class="rec-i-nota">Ogni ripasso indovinato è un passo avanti — chiude una domanda o la porta a metà;
+        ogni ripasso sbagliato su una già a metà ne toglie uno, e il conto qui sopra lo scala.
+        Le riconferme sono un'altra cosa — domande già superate, riviste a distanza — ma sono quasi tutto quello che troverai il 15 ottobre.</p>
+    </div>` : '';
 
   // Come si sta muovendo: quanto sale in un giorno, in una settimana, e dove arriva
   // all'esame se il passo resta questo. Senza giornate misurate non si inventa nulla.
@@ -4844,6 +4893,7 @@ function renderRecupero(){
       <div class="rec-k rec-fatte"><b>${fmt(R.chiuse)}</b><span>chiuse<br>per sempre</span><i>${pct(R.chiuse, R.mai)} delle sbagliate</i></div>
     </div>
     ${oggi}
+    ${ieri}
     ${moto}
     <div class="rec-piano">${piano}</div>
     <div class="rec-arg">${righe}</div>
