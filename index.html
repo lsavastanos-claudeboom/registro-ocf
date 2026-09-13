@@ -27,7 +27,7 @@
    Prima erano monospazio maiuscolo spaziato: leggevano come le etichette di un
    pannello di controllo. Ora sono didascalie in tondo, nel colore dell'app. */
 .campo-tit, .sgr-tit, .mot-tit, .st-coach-tit, .st-az-tit, .st-prove-tit, .st-mossa-tit,
-.kpi .k-lab, .login-sub, .pjs-et, .rit-tit{
+.kpi .k-lab, .login-sub, .rit-tit{
   font-family:var(--f-testo) !important; text-transform:none !important;
   letter-spacing:.005em !important; font-size:.82rem !important; font-weight:600 !important;
 }
@@ -337,6 +337,61 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .st-su100{color:var(--nebbia); font-size:.86em; white-space:nowrap;}
 .st-stima{color:var(--nebbia); white-space:nowrap;}
 .chip-fuori{color:var(--nebbia); font-weight:400;}
+/* ---- il recupero degli errori ---- */
+.rec-testa{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.rec-testa h2{margin:0;}
+.rec-gg{font-size:.74rem; color:var(--nebbia); white-space:nowrap;}
+.rec-intro{font-size:.86rem; color:var(--nebbia); line-height:1.5; margin:8px 0 14px;}
+.rec-barra{display:flex; height:14px; border-radius:7px; overflow:hidden; background:var(--azz); margin-bottom:14px;}
+.rec-seg{height:100%;}
+.rec-seg.s-ok{background:var(--vidimato);}
+.rec-seg.s-meta{background:var(--ottone);}
+.rec-seg.s-ko{background:rgba(var(--ko-rgb),.45);}
+.rec-num{display:flex; gap:10px; flex-wrap:wrap;}
+.rec-k{flex:1 1 120px; border:1px solid var(--bordo); border-radius:var(--r-int); padding:10px 12px;
+  background:rgba(var(--velo),.04);}
+.rec-k b{display:block; font-family:var(--f-display); font-size:1.9rem; font-weight:800; line-height:1;
+  font-variant-numeric:tabular-nums; color:var(--testo);}
+.rec-k span{display:block; font-size:.72rem; color:var(--nebbia); line-height:1.35; margin-top:5px;}
+.rec-k.rec-hero{border-color:var(--ottone); background:var(--ottonebg);}
+.rec-k.rec-hero b{color:var(--ottone-t);}
+.rec-k.rec-hero span b{display:inline; font-size:inherit; color:var(--ottone-t); font-weight:800;}
+.rec-k.rec-fatte b{color:var(--vidimato-t);}
+.rec-avanz{display:flex; align-items:center; gap:16px; margin:12px 0 10px; padding:11px 13px;
+  border-radius:var(--r-int); background:var(--azz); border:1px solid var(--filo); flex-wrap:wrap;}
+.rec-av-num{flex:0 0 auto; text-align:center; min-width:96px;}
+.rec-av-num b{display:block; font-family:var(--f-display); font-weight:800; font-size:2.3rem; line-height:1;
+  color:var(--ottone-t); font-variant-numeric:tabular-nums;}
+.rec-av-num span{display:block; font-size:.72rem; color:var(--nebbia); margin-top:4px;}
+.rec-av-spieg{flex:1 1 260px; margin:0; font-size:.8rem; line-height:1.55; color:var(--nebbia);}
+.rec-av-spieg b{color:var(--testo);}
+.rec-k i{display:block; font-style:normal; font-size:.7rem; color:var(--nebbia); margin-top:6px;
+  padding-top:5px; border-top:1px solid var(--filo); font-variant-numeric:tabular-nums;}
+.rec-moto{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; font-size:.8rem; color:var(--nebbia);}
+.rec-moto span{padding:5px 10px; border-radius:999px; background:var(--azz); border:1px solid var(--filo);}
+.rec-moto b{color:var(--testo); font-variant-numeric:tabular-nums;}
+.rec-moto .rm-fine b{color:var(--ottone-t);}
+.rec-moto.rec-vuoto{display:block; padding:7px 11px; border-radius:var(--r-min); background:var(--azz); line-height:1.45;}
+.rec-quota{flex:0 0 42px; text-align:right; color:var(--ottone-t); font-weight:700; font-variant-numeric:tabular-nums;}
+.rec-oggi{margin-top:12px; font-size:.86rem; padding:8px 12px; border-radius:var(--r-min);
+  background:var(--vidibg); color:var(--testo);}
+.rec-oggi.rec-vuoto{background:var(--azz); color:var(--nebbia);}
+.rec-piano{margin-top:10px; font-size:.88rem; line-height:1.5;}
+.rec-piano p{margin:0;}
+.rec-arg{margin-top:14px; border-top:1px solid var(--filo); padding-top:10px;}
+.rec-riga{display:flex; align-items:center; gap:10px; padding:3px 0; font-size:.78rem;}
+.rec-nome{flex:0 0 120px; color:var(--testo);}
+.rec-mini{flex:1 1 60px; display:flex; height:7px; border-radius:4px; overflow:hidden;
+  background:rgba(var(--ko-rgb),.35);}
+.rec-mini i{display:block; height:100%;}
+.rec-mini .rm-ok{background:var(--vidimato);} .rec-mini .rm-meta{background:var(--ottone);}
+.rec-dati{flex:0 0 168px; text-align:right; white-space:nowrap; color:var(--nebbia); font-variant-numeric:tabular-nums;}
+.rec-dati b{color:var(--testo);}
+.rec-prima{margin:8px 0 0; padding:9px 11px; border-radius:10px; line-height:1.6;
+           background:rgba(var(--amb-rgb),.10); border:1px solid rgba(var(--amb-rgb),.30);}
+.rec-dure{margin:12px 0 0; font-size:.8rem; color:var(--nebbia); line-height:1.45;}
+@media(max-width:620px){ .rec-nome{flex-basis:74px;} .rec-dati{flex-basis:118px; font-size:.72rem;}
+  .rec-quota{flex-basis:34px; font-size:.74rem;} .rec-av-num{min-width:78px;} .rec-av-num b{font-size:1.9rem;} }
 .cop-coda{display:block; margin-top:4px; color:var(--nebbia); font-size:.9em;}
 .campo-tit-sub{color:var(--nebbia); font-weight:400;}
 .arg-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
@@ -1105,23 +1160,9 @@ b.dubbia{color:var(--ottone-t);}
 .pjv-box b{display:block; font-family:var(--f-display); font-size:1.5rem; font-weight:800; line-height:1;}
 .pjv-box span{display:block; margin-top:4px; font-size:.76rem; color:var(--nebbia); line-height:1.4;}
 .pjv-btn{margin-top:11px;}
-.pj-scala{margin-top:13px; padding-top:12px; border-top:1px solid rgba(var(--velo),.16);}
-.pjs-intro{margin:6px 0 10px; font-size:.88rem; line-height:1.55;}
-.pjs-riga{display:flex; align-items:baseline; gap:12px; width:100%; text-align:left; cursor:pointer;
   padding:9px 12px; margin-bottom:6px; border-radius:var(--r-int); font:inherit; font-size:.9rem;
   background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.14); color:var(--testo);
   transition:background .15s, border-color .15s;}
-.pjs-riga:hover{background:rgba(var(--velo),.10);}
-.pjs-riga.scelto{border-color:var(--azione); background:rgba(var(--azione-rgb),.12);}
-.pjs-riga.ok .pjs-obb{color:var(--vidimato-t);}
-.pjs-obb{font-family:var(--f-display); font-weight:800; font-size:1.15rem; min-width:52px;}
-.pjs-et{color:var(--nebbia); font-size:.84rem;}
-.pjs-num{margin-left:auto; white-space:nowrap;}
-.pjs-riga.oltre{opacity:.75;}
-.pjs-oltre{color:var(--ottone-t); font-weight:600;}
-.pjs-avviso{color:var(--ottone-t);}
-.pjs-nota{margin:8px 0 0; font-size:.8rem; color:var(--nebbia); line-height:1.5;}
-@media(max-width:520px){ .pjs-et{display:none;} }
 .pj-ipotesi{display:block; margin-top:8px; padding-top:8px; border-top:1px solid rgba(var(--velo),.14);
   font-size:.82rem; color:var(--nebbia); line-height:1.55;}
 .pj-ipotesi b{color:var(--inchiostro);}
@@ -1951,6 +1992,9 @@ b.dubbia{color:var(--ottone-t);}
         <div class="nota nota-chiara" style="margin-top:14px">I progressi si salvano da soli nel browser: chiudi e riapri e ritrovi tutto. Il file .json a fine test resta come copia di sicurezza (o per passare a un altro dispositivo, con <b>Carica progressi</b>).</div>
       </details>
     </div>
+
+    <!-- 2b · IL RECUPERO DEGLI ERRORI -->
+    <div class="card nascosto" id="card-recupero"></div>
 
     <!-- 3 · TEMATICHE -->
     <div class="card" id="card-tematiche">
@@ -4293,6 +4337,7 @@ function renderHome(){
   applicaFase();
   renderStato();
   renderAndamento();
+  renderRecupero();
   renderMaledette();
   renderTematiche();
   $('chk-autosave').checked = stato.autosave === true;
@@ -4659,6 +4704,148 @@ function fattorePunti(){
   const L = reseLivello();
   return {K: SIM_PER_LIVELLO[1]*1*L.f[1] + SIM_PER_LIVELLO[2]*2*L.f[2], L,
           scostamento: Math.round(SIM_PER_LIVELLO[1]*L.f[1] + 2*SIM_PER_LIVELLO[2]*L.f[2] - PUNTI_ESAME)};
+}
+
+// ====================== IL RECUPERO DEGLI ERRORI ======================
+// Una domanda sbagliata esce dal giro solo dopo DUE risposte esatte di fila. Per
+// questo il contatore delle aperte sta fermo per giorni mentre il lavoro c'e': le
+// domande a cui manca una sola risposta non si vedono da nessuna parte, e chi studia
+// ha l'impressione di non spostare niente. Qui si vedono: sono la strada gia' fatta.
+function statoRecupero(){
+  const oggi = oggiNum();
+  let mai = 0, aperte = 0, meta = 0, dure = 0, chiuse = 0, chiuseOggi = 0, metaOggi = 0;
+  const perArg = {};
+  QUESTIONS.forEach(q => {
+    const r = stato.risultati[q.n];
+    if(!r || !r.e) return;                       // mai sbagliata: non riguarda il recupero
+    mai++;
+    const a = perArg[q.t] || (perArg[q.t] = {arg: q.t, aperte: 0, meta: 0, chiuse: 0});
+    if(r.s === 'ko'){
+      aperte++; a.aperte++;
+      if((r.c || 0) >= 1){ meta++; a.meta++; if(r.gg === oggi) metaOggi++; }
+      if(r.e >= 3) dure++;
+    } else {
+      chiuse++; a.chiuse++;
+      if(r.gg === oggi) chiuseOggi++;
+    }
+  });
+  // il ritmo misurato: quante ne chiude al giorno. Il conteggio parte da quando
+  // e' stato aggiunto, quindi all'inizio c'e' solo oggi.
+  const gg = giorniAttiviRecenti(9).filter(g => typeof g.rec === 'number');
+  const ritmo = gg.length ? (gg.reduce((s, g) => s + g.rec, 0) / gg.length) : null;
+  // quanto manca, e quanto costa: una domanda a meta' vuole una risposta esatta,
+  // una da riprendere ne vuole due. Diviso la resa vera sui ripassi, fa le risposte
+  // che servono davvero.
+  const resa = Math.max(0.35, reseMisurate().rip.p);
+  const daZero = aperte - meta;
+  const risposteServono = Math.round((meta + daZero * 2) / resa);
+  const ggResti = Math.max(1, Math.round((new Date(isoCopertura()) - new Date(oggiISO())) / 86400000) + 1);
+  const alGiorno = Math.ceil(aperte / ggResti);
+  const ripassiAlGiorno = Math.ceil(risposteServono / ggResti);
+  const finisce = ritmo > 0 ? oggiPiuISO(Math.ceil(aperte / ritmo) - 1) : null;
+  // Il sotto-obiettivo che sta in piedi: chiudere le sole domande gia' a meta' strada.
+  // Una risposta esatta a testa, ed e' un numero che si guarda senza spaventarsi.
+  const metaAlGiorno = Math.ceil(meta / ggResti);
+  const metaRipassi = Math.ceil(meta / resa / ggResti);
+  // Il recupero si misura in PASSI, non in domande: ogni sbagliata ne vuole due
+  // (due risposte esatte di fila). Una a meta' ne ha fatto uno, una chiusa tutti e due.
+  // Cosi' il lavoro invisibile entra nella percentuale invece di sparire.
+  const passiTot = mai * 2;
+  const passiFatti = chiuse * 2 + meta;
+  const avanz = passiTot ? passiFatti / passiTot : 0;
+  const passiOggi = chiuseOggi * 2 + metaOggi;
+  const passiAlGiorno = gg.length
+    ? gg.reduce((s, g) => s + (g.rec || 0) * 2 + (g.met || 0), 0) / gg.length : null;
+  const settimana = passiAlGiorno !== null && passiTot ? 700 * passiAlGiorno / passiTot : null;
+  const allEsame = passiAlGiorno !== null && passiTot
+    ? Math.min(100, 100 * (passiFatti + passiAlGiorno * giorniAllEsame()) / passiTot) : null;
+  const arg = Object.values(perArg).sort((a, b) => b.aperte - a.aperte);
+  return {mai, aperte, meta, daZero, dure, chiuse, chiuseOggi, metaOggi, ritmo, gg: gg.length,
+          risposteServono, ggResti, alGiorno, ripassiAlGiorno, finisce, resa, arg,
+          metaAlGiorno, metaRipassi, passiTot, passiFatti, avanz, passiOggi,
+          passiAlGiorno, settimana, allEsame, scadenza: isoCopertura()};
+}
+
+function renderRecupero(){
+  const card = $('card-recupero'); if(!card) return;
+  const R = statoRecupero();
+  if(!R.mai){ card.classList.add('nascosto'); return; }
+  card.classList.remove('nascosto');
+  const fmt = fmtN;
+  const pc = n => R.mai ? (100 * n / R.mai) : 0;
+  const dataIt = iso => new Date(iso).toLocaleDateString('it-IT', {day: 'numeric', month: 'long'});
+
+  const pct = (n, d, dec) => d ? (100 * n / d).toLocaleString('it-IT', {minimumFractionDigits: dec || 0, maximumFractionDigits: dec || 0}) + '%' : '—';
+  const oggi = (R.chiuseOggi || R.metaOggi)
+    ? `<div class="rec-oggi"><b>Oggi:</b> ${R.metaOggi ? `<b>${fmt(R.metaOggi)}</b> ${R.metaOggi === 1 ? 'portata' : 'portate'} a metà strada` : ''}${R.metaOggi && R.chiuseOggi ? ' · ' : ''}${R.chiuseOggi ? `<b>${fmt(R.chiuseOggi)}</b> ${R.chiuseOggi === 1 ? 'chiusa' : 'chiuse'} per sempre` : ''} — il recupero è salito di <b>${pct(R.passiOggi, R.passiTot, 1)}</b></div>`
+    : `<div class="rec-oggi rec-vuoto">Oggi il recupero non è ancora partito. Un test con il cursore delle nuove a zero e questa riga si riempie.</div>`;
+
+  // Come si sta muovendo: quanto sale in un giorno, in una settimana, e dove arriva
+  // all'esame se il passo resta questo. Senza giornate misurate non si inventa nulla.
+  const moto = R.passiAlGiorno === null
+    ? `<div class="rec-moto rec-vuoto">Il ritmo del recupero — quanti punti percentuali al giorno — si misura dai prossimi test: i contatori sono partiti oggi.</div>`
+    : `<div class="rec-moto">
+        <span><b>+${pct(R.passiAlGiorno, R.passiTot, 1)}</b> al giorno</span>
+        <span><b>+${R.settimana.toLocaleString('it-IT', {maximumFractionDigits: 1})}%</b> a settimana</span>
+        <span class="rm-fine">al 15 ottobre saresti al <b>${R.allEsame.toLocaleString('it-IT', {maximumFractionDigits: 0})}%</b></span>
+      </div>`;
+
+  const inTempo = R.ritmo !== null && R.finisce && R.finisce <= R.scadenza;
+  // L'ordine conta più del totale: svuotare tutta la coda entro il consolidamento
+  // spesso non è realistico, e dirlo e basta non serve a nulla. Le domande a metà
+  // costano una risposta a testa: è il primo obiettivo, ed è un numero raggiungibile.
+  const priorita = `<p class="rec-prima"><b>Prima le ${fmt(R.meta)} a metà:</b> una risposta esatta a testa,
+      <b>${fmt(R.metaAlGiorno)} al giorno</b> da qui al ${dataIt(R.scadenza)} — circa ${fmt(R.metaRipassi)} ripassi al giorno
+      con la resa di adesso. Sono ${fmt(R.meta)} domande che escono dal giro definitivamente, e sono le meno care che hai.</p>`;
+  const piano = R.ritmo === null
+    ? `<p>Le aperte sono <b>${fmt(R.aperte)}</b>: chiuderle tutte entro il <b>${dataIt(R.scadenza)}</b>, quando comincia il consolidamento,
+       vorrebbe dire <b>${fmt(R.alGiorno)} al giorno</b> (circa ${fmt(R.ripassiAlGiorno)} ripassi). Il ritmo vero si misura dai prossimi giorni.</p>${priorita}`
+    : inTempo
+    ? `<p>Al ritmo di questi giorni — <b>${R.ritmo.toFixed(0)} chiuse al giorno</b> — la coda si svuota intorno al <b>${dataIt(R.finisce)}</b>,
+       in tempo per il consolidamento. Non serve altro che continuare.</p>`
+    : `<p>Al ritmo di questi giorni (<b>${R.ritmo.toFixed(1)} chiuse al giorno</b>) la coda intera si svuoterebbe ${R.finisce ? `il <b>${dataIt(R.finisce)}</b>` : 'dopo l\'esame'}:
+       chiuderle tutte entro il ${dataIt(R.scadenza)} chiederebbe ${fmt(R.alGiorno)} chiusure al giorno, e non è la strada.</p>${priorita}`;
+
+  const righe = R.arg.filter(a => a.aperte || a.chiuse).map(a => {
+    const tot = a.aperte + a.chiuse;
+    const p = (a.chiuse * 2 + a.meta) / (tot * 2);        // stessa misura in passi della barra grande
+    return `<div class="rec-riga">
+      <span class="rec-nome">${nomeBreve(a.arg)}</span>
+      <span class="rec-mini"><i class="rm-ok" style="width:${100*a.chiuse/tot}%"></i><i class="rm-meta" style="width:${100*a.meta/tot}%"></i></span>
+      <span class="rec-quota">${Math.round(p*100)}%</span>
+      <span class="rec-dati"><b>${fmt(a.aperte)}</b> aperte${a.meta ? ` · ${fmt(a.meta)} a metà` : ''}</span>
+    </div>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="rec-testa">
+      <h2><svg class="ic ic-g"><use href="#i-lucchetto"/></svg> Il recupero degli errori</h2>
+      <span class="rec-gg">${giorniAllEsame()} giorni all'esame</span>
+    </div>
+    <p class="rec-intro">Una domanda sbagliata esce dal giro dopo <b>due</b> risposte esatte di fila.
+      Per questo il numero delle aperte sembra fermo anche quando lavori: qui si vede anche
+      la strada fatta a metà, che è la parte che non si vedeva.</p>
+    <div class="rec-avanz">
+      <div class="rec-av-num"><b>${pct(R.passiFatti, R.passiTot)}</b><span>del recupero fatto</span></div>
+      <p class="rec-av-spieg">Ogni domanda sbagliata vale <b>due</b> passi — le due risposte esatte che servono per chiuderla.
+        Di ${fmt(R.passiTot)} passi ne hai fatti <b>${fmt(R.passiFatti)}</b>: ${fmt(R.chiuse)} domande chiuse (due passi ciascuna)
+        più ${fmt(R.meta)} arrivate a metà (un passo). Contate a domande sarebbe ${pct(R.chiuse, R.mai)}, e non sarebbe onesto.</p>
+    </div>
+    <div class="rec-barra" title="${fmt(R.mai)} domande sbagliate almeno una volta da quando hai cominciato">
+      <div class="rec-seg s-ok" style="width:${pc(R.chiuse)}%"></div>
+      <div class="rec-seg s-meta" style="width:${pc(R.meta)}%"></div>
+      <div class="rec-seg s-ko" style="width:${pc(R.daZero)}%"></div>
+    </div>
+    <div class="rec-num">
+      <div class="rec-k"><b>${fmt(R.daZero)}</b><span>da riprendere<br>da capo</span><i>${pct(R.daZero, R.mai)} delle sbagliate</i></div>
+      <div class="rec-k rec-hero"><b>${fmt(R.meta)}</b><span>a <b>una</b> risposta<br>dalla fine</span><i>${pct(R.meta, R.mai)} delle sbagliate</i></div>
+      <div class="rec-k rec-fatte"><b>${fmt(R.chiuse)}</b><span>chiuse<br>per sempre</span><i>${pct(R.chiuse, R.mai)} delle sbagliate</i></div>
+    </div>
+    ${oggi}
+    ${moto}
+    <div class="rec-piano">${piano}</div>
+    <div class="rec-arg">${righe}</div>
+    ${R.dure ? `<p class="rec-dure"><b>${fmt(R.dure)}</b> di queste le hai sbagliate tre volte o più: riproporle uguali non basta, vanno lette con spiegazione e trucco prima di riprovarci. Le trovi in <b>Ripasso</b>.</p>` : ''}`;
 }
 
 // ====================== SEI PRONTA? (sintesi delle simulazioni) ======================
@@ -5311,13 +5498,12 @@ function rispostePerDomanda(p1){
   return Math.max(2, Math.min(6, 1 + p1 * S1 + (1 - p1) * E0));
 }
 const OBIETTIVO_ESAME = 0.90;                 // traguardo predefinito
-const TRAGUARDI = [0.80, 0.85, 0.90];         // soglia · margine · sicurezza
 const SECONDI_DEFAULT = 20;                   // passo ipotizzato finché non è misurato
 const ZAVORRA_LETTURA = 1.25;                 // tempo in più per leggere le spiegazioni dopo un errore
 
-// Il traguardo non è una legge di natura: 80% è la soglia di superamento, 90% è
-// margine di sicurezza. Sceglierlo cambia quante domande servono ogni giorno,
-// quindi lo decide lei e l'obiettivo in cima si adegua.
+// Il traguardo resta quello predefinito: 90 punti, margine di sicurezza sopra la
+// soglia di 80. Restava memorizzato in stato.traguardo se in passato ne ha scelto
+// un altro, e quel valore viene rispettato.
 function traguardo(){
   const t = stato.traguardo;
   return (typeof t === 'number' && t >= 0.5 && t <= 0.99) ? t : OBIETTIVO_ESAME;
@@ -5648,49 +5834,6 @@ function renderVerifica(pr){
   </div>`;
 }
 
-// Quanto costa ogni traguardo, in domande al giorno e in minuti. È la domanda che
-// conta davvero — "quanto devo spingere?" — e finora bisognava chiederlo a mano.
-function scalaRitmi(pr){
-  const righe = TRAGUARDI.map(t => {
-    // Se una domanda riconfermata regge meno del traguardo, quel traguardo non si
-    // raggiunge nemmeno consolidando tutta la banca dati: dirlo è più utile che
-    // mostrare due righe con lo stesso numero.
-    // Il traguardo è un punteggio: va tradotto in quota di risposte esatte (diviso k)
-    // prima di confrontarlo con la tenuta di una domanda riconfermata.
-    const tq = Math.min(0.99, t / (pr.k || 1));
-    const oltreTenuta = pr.pRic <= tq;
-    const serve = oltreTenuta ? pr.N : Math.min(pr.N, pr.N * (tq - pr.pNuova) / (pr.pRic - pr.pNuova));
-    const mancanti = Math.max(0, serve - pr.acquisite);
-    const alGiorno = pr.gg > 0 ? Math.ceil(mancanti * pr.rpd / pr.gg) : 0;
-    return {t, pct: Math.round(t*100), alGiorno, tempo: tempoStimato(alGiorno), oltreTenuta,
-            scelto: Math.abs(t - pr.traguardo) < 0.001,
-            fattibile: !oltreTenuta && alGiorno <= pr.ritmo};
-  });
-  return righe;
-}
-
-function renderScala(pr){
-  if(!pr.ritmo) return '';                       // senza un ritmo misurato non c'è confronto da fare
-  const righe = scalaRitmi(pr);
-  const et = t => t.pct === 80 ? 'soglia di superamento' : t.pct === 90 ? 'margine di sicurezza' : 'con un po\' di margine';
-  return `<div class="pj-scala">
-    <div class="st-cop-tit">Quanto costa ogni traguardo</div>
-    <p class="pjs-intro">Al ritmo di adesso — <b>${pr.ritmo.toLocaleString('it-IT', {useGrouping:true})}</b> domande al giorno,
-      circa ${tempoStimato(pr.ritmo)} — arrivi a <b>${pr.previsto} punti</b>. Ecco cosa serve per salire.
-      Tocca una riga per scegliere il traguardo: l'obiettivo in cima si adegua.</p>
-    ${righe.map(r => `<button class="pjs-riga${r.scelto ? ' scelto' : ''}${r.fattibile ? ' ok' : ''}${r.oltreTenuta ? ' oltre' : ''}" data-trg="${r.t}">
-        <span class="pjs-obb">${r.pct} p.</span>
-        <span class="pjs-et">${et(r)}</span>
-        <span class="pjs-num">${r.oltreTenuta
-          ? `<span class="pjs-oltre">oltre la tenuta attuale (${Math.round(pr.pRic*100)}%)</span> · tutta la banca dati`
-          : `<b>${r.alGiorno.toLocaleString('it-IT', {useGrouping:true})}</b> al giorno · ${r.tempo}`}</span>
-      </button>`).join('')}
-    ${righe.some(r => r.oltreTenuta) ? `<p class="pjs-nota pjs-avviso">Le righe segnate «oltre la tenuta» chiedono più di quanto una domanda riconfermata regga oggi (${Math.round(pr.pRic*100)}%): non si raggiungono aggiungendo domande nuove, ma alzando la tenuta con più ripassi distanziati.</p>` : ''}
-    <p class="pjs-nota">I minuti sono sul tuo passo misurato di ${Math.round(secondiPerDomanda())} secondi a domanda,
-      più un quarto di tempo per leggere le spiegazioni dopo gli errori.</p>
-  </div>`;
-}
-
 // Spiega perché la proiezione non è ancora affidabile: con pochi dati il numero
 // oscilla di parecchio, e mostrarlo senza dirlo darebbe una falsa sicurezza.
 function notaProvvisoria(pr){
@@ -5817,7 +5960,6 @@ function renderStato(){
 </div>
       ${renderMotori(pr)}
       ${renderVerifica(pr)}
-      ${renderScala(pr)}
     </div>`;
 
   // --- sottoargomenti rimasti indietro ---
@@ -5847,11 +5989,6 @@ function renderStato(){
                  + `<div class="st-prove"><div class="st-prove-tit">Le prove</div>` + verdetto + rigaCop + `</div>`;
   const bs = $('st-sim'); if(bs) bs.onclick = avviaSimulazione;
   const bv = $('pjv-sim'); if(bv) bv.onclick = avviaSimulazione;
-  card.querySelectorAll('.pjs-riga').forEach(b => b.onclick = () => {
-    stato.traguardo = parseFloat(b.dataset.trg);
-    salvaLocale();
-    renderHome();
-  });
 }
 
 
@@ -7286,6 +7423,11 @@ function fineTest(){
   // - domanda mai sbagliata + risposta giusta -> archiviata subito
   // - domanda già sbagliata -> serve arrivare a 2 giuste dopo l'ultimo errore
   // - risposta sbagliata -> azzera il conteggio giuste e torna/resta nel giro
+  // Fotografia dello stato delle sbagliate PRIMA dell'aggiornamento: serve per contare
+  // quante si chiudono oggi e quante avanzano di un passo (la prima delle due giuste).
+  // Dopo i forEach qui sotto l'informazione è persa.
+  const primaKo = {};
+  risposte.forEach(q => { const r = stato.risultati[q.n]; if(r && r.s === 'ko') primaKo[q.n] = r.c || 0; });
   if(risposte.length) stato.nTest = (stato.nTest || 0) + 1;
   giuste.forEach(q => {
     const incerta = rispostaIncerta(q);
@@ -7335,6 +7477,16 @@ function fineTest(){
     const g = stato.giorni[oggiISO()] || {test:0, ok:0, ko:0};
     g.test++; g.ok += giuste.length; g.ko += errori.length;
     g.nuove = (g.nuove || 0) + nuoveViste;   // copertura: domande viste per la prima volta
+    // Recupero degli errori: quante sbagliate si sono chiuse oggi e quante hanno fatto
+    // il primo dei due passi. È l'avanzamento che il contatore delle «aperte» non mostra.
+    let rec = 0, met = 0;
+    Object.keys(primaKo).forEach(n => {
+      const r = stato.risultati[n]; if(!r) return;
+      if(r.s === 'ok') rec++;
+      else if((r.c || 0) > primaKo[n]) met++;
+    });
+    g.rec = (g.rec || 0) + rec;
+    g.met = (g.met || 0) + met;
     g.cls = g.cls || {};
     Object.keys(clsGiorno).forEach(k => { if(!g.cls[k]) g.cls[k] = {ok:0, ko:0}; });
     Object.keys(clsGiorno).forEach(k => { g.cls[k].ok += clsGiorno[k].ok; g.cls[k].ko += clsGiorno[k].ko; });
