@@ -1148,6 +1148,8 @@ b.dubbia{color:var(--ottone-t);}
 .mot-note{margin-top:3px; font-size:.82rem; color:var(--nebbia); line-height:1.5;}
 .mot-male{color:var(--lacca-t); font-weight:600;} .mot-bene{color:var(--vidimato-t); font-weight:600;}
 .mot-manca{color:var(--ottone-t); font-weight:600;}
+.mot-giorno{display:inline-block; margin-top:5px; padding-top:5px; border-top:1px dashed var(--filo);}
+.mot-giorno b{color:var(--testo);}
 .pj-num b{font-size:1.9rem;}
 .pj-verifica{margin-top:13px; padding:12px 14px; border-radius:14px;
   background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.16);}
@@ -5721,6 +5723,21 @@ function mediePerTest(){
           nRic: tot('ric'), nRip: tot('rip')};
 }
 
+// L'ultima giornata da sola, sulle riconferme: la media di sette giorni dice dove si è,
+// una giornata dice dove si sta andando. Confrontata con le giornate precedenti (la media
+// senza di lei) si vede se la resa sta salendo o scendendo.
+const MIN_RIC_GIORNO = 8;             // sotto, una giornata è rumore e non si mostra
+function ricUltimaGiornata(){
+  const gg = giorniAttiviRecenti(13).filter(g => g.cls && g.cls.ric && (g.cls.ric.ok + g.cls.ric.ko));
+  if(!gg.length) return null;
+  const u = gg[0], n = u.cls.ric.ok + u.cls.ric.ko;
+  if(n < MIN_RIC_GIORNO) return null;
+  let ok = 0, ko = 0;
+  gg.slice(1, 7).forEach(g => { ok += g.cls.ric.ok; ko += g.cls.ric.ko; });
+  const prima = (ok + ko) ? ok / (ok + ko) : null;
+  return {iso: u.iso, k: u.k, n, resa: u.cls.ric.ok / n, prima, nPrima: ok + ko};
+}
+
 // Quanti test al giorno servirebbero per finire di vedere tutta la banca dati entro
 // l'inizio del consolidamento: è il vincolo che nessun'altra cifra rende evidente.
 function testNecessari(pr){
@@ -5771,13 +5788,29 @@ function renderMotori(pr){
       : 'nessun test recente',
     m ? `Media delle ultime ${m.giorni} giornate: ${pct(m.giustePerTest/(m.giustePerTest+m.sbagliatePerTest))} di risposte esatte.` : ''));
 
+  // La giornata più recente accanto alla media: è l'unico modo per vedere se la resa
+  // sulle riconferme sta salendo, e su questa resa si decide l'esame.
+  const rug = ricUltimaGiornata();
+  const quando = rug ? (rug.k === 0 ? 'Oggi' : rug.k === 1 ? 'Ieri'
+    : 'Il ' + new Date(rug.iso).toLocaleDateString('it-IT', {day: 'numeric', month: 'long'})) : '';
+  // «l'87%», non «il 87%»: l'articolo si elide davanti a otto, undici e uno.
+  const art = v => (/^(8|11%|1%)/.test(v) ? "l'" : 'il ') + v;
+  const verso = rug && rug.prima !== null
+    ? (rug.resa - rug.prima >= 0.03 ? ` — <span class="mot-bene">sopra</span> ${art(pct(rug.prima))} delle giornate prima`
+      : rug.prima - rug.resa >= 0.03 ? ` — <span class="mot-male">sotto</span> ${art(pct(rug.prima))} delle giornate prima`
+      : ` — in linea con ${art(pct(rug.prima))} delle giornate prima`)
+    : '';
+  const rigaGiorno = rug
+    ? `<br><span class="mot-giorno">${quando}: <b>${n(rug.n)}</b> riconferme, superate ${/^(8|11%|1%)/.test(pct(rug.resa)) ? 'all\'' : 'al '}<b>${pct(rug.resa)}</b>${verso}.</span>`
+    : '';
+
   righe.push(riga(3, 'Riconferme — la resa che decide l\'esame',
     m && m.ricPerTest !== null && m.nRic
       ? `<b>${dec(m.ricPerTest)}</b> per test · ne azzecchi <b>${pct(m.resaRic)}</b>`
       : '<span class="mot-manca">da misurare</span>',
-    pr.rese.ricADistanza
+    (pr.rese.ricADistanza
       ? `Misurata su <b>${pr.rese.nLon}</b> riconferme a ${DISTANZA_VERA}+ test di distanza: è il dato che conta per il 15 ottobre.`
-      : `Il giorno dell'esame quasi tutte le domande saranno di questo tipo. Finora ci sono <b>${pr.rese.nLon}</b> riconferme a vera distanza (${DISTANZA_VERA}+ test): sotto le 30 la proiezione resta larga.`,
+      : `Il giorno dell'esame quasi tutte le domande saranno di questo tipo. Finora ci sono <b>${pr.rese.nLon}</b> riconferme a vera distanza (${DISTANZA_VERA}+ test): sotto le 30 la proiezione resta larga.`) + rigaGiorno,
     pr.rese.ricADistanza ? '' : 'attesa'));
 
   righe.push(riga(4, 'Ripassi delle sbagliate',
