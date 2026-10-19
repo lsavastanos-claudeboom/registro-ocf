@@ -5950,7 +5950,7 @@ function renderMotori(pr){
     m ? `<b>${dec(m.testGiorno)}</b> fatti · il passo è <b>${passoTxt}</b>`
       : 'nessun dato',
     tn ? `Tenendo il passo di ${passoTxt} test al giorno (${n(Pm.domObiettivo)} domande) le ${n(pr.nuoveRimaste)} mai viste finiscono il `
-         + `${Pm.isoFineAlTetto ? dataLunga(Pm.isoFineAlTetto) : 'oltre l\'esame'}. `
+         + `${Pm.isoFineAlPasso ? dataLunga(Pm.isoFineAlPasso) : 'oltre l\'esame'}. `
          + `Il minimo per non sforare il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})} sarebbe ${dec(tn.test)} test al giorno.`
        : `Banca dati coperta: da qui in avanti i test servono a confermare, non a scoprire.`,
     m && m.testGiorno < passoTest * 0.7 ? 'male' : ''));
@@ -6384,7 +6384,7 @@ function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 // Cambia quando cambia il MODO di calcolare l'obiettivo. L'obiettivo resta fermo
 // per tutta la giornata — deve, altrimenti balla mentre si risponde — ma se esce
 // una versione con un calcolo diverso quello di oggi va rifatto subito, non domani.
-const VERSIONE_PIANO = 5;
+const VERSIONE_PIANO = 6;
 // La firma del mix: se cambia (piano <-> scelta sua, o altre percentuali) l'obiettivo
 // di oggi va rifatto subito.
 function firmaMix(){ if(pianoAttivo()) return 'piano'; const m = mixScelto(); return m.n + '/' + m.k + '/' + m.r; }
@@ -6488,7 +6488,7 @@ function renderObiettivo(){
   const rigaPiano = inFaseFinale() ? '' : (() => {
     const scadC = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
     if(P.U === 0) return `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Banca dati coperta: da qui in avanti si consolida.</div>`;
-    if(!P.isoFineAlTetto) return `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Con il tuo mix non entrano domande nuove: le <b>${fmt(P.U)}</b> mai viste restano tali.</div>`;
+    if(!P.isoFineAlPasso) return `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Con il tuo mix non entrano domande nuove: le <b>${fmt(P.U)}</b> mai viste restano tali.</div>`;
     // Il passo scelto e il ritmo vero sono due cose diverse e vanno chiamate con
     // due nomi diversi: prima qui usciva "servono 3,3, ne stai facendo 3,3", che
     // messo cosi' non dice niente a nessuno.
@@ -6496,7 +6496,7 @@ function renderObiettivo(){
     const fa = P.ritmoAttuale
       ? (Math.round(P.ritmoAttuale / N_TEST * 10) / 10).toLocaleString('it-IT', {maximumFractionDigits:1})
       : 0;
-    const alPasso = dataLunga(P.isoFineAlTetto);
+    const alPasso = dataLunga(P.isoFineAlPasso);
     if(!P.ritmoAttuale) return `<div class="obh-piano">Il passo è di <b>${passo}</b> test al giorno: tenendolo, finisci le <b>${fmt(P.U)}</b> domande che restano il <b>${alPasso}</b>.</div>`;
     const quando = P.isoFineCopertura
       ? new Date(P.isoFineCopertura).toLocaleDateString('it-IT', {day:'numeric', month:'long'}) : null;
@@ -6537,7 +6537,8 @@ function prospettoPiano(){
         {n: fmtN(giorniAllEsame()), t: 'giorni all\'esame'},
         {n: fmtN(s.daRiconf), t: 'da riconfermare'},
         {n: fmtN(s.ko), t: 'ancora da recuperare'}],
-      messaggi: [{cls: 'bene', txt: `Le domande nuove sono chiuse dal ${scad}. ${pianoAttivo() ? 'Ogni test è fatto di <b>60% riconferme</b> e <b>40% sbagliate</b>.' : 'Il piano qui farebbe 60% riconferme e 40% sbagliate.'}`}]};
+      messaggi: [{cls: 'bene', txt: `Le domande nuove sono chiuse dal ${scad}. ${pianoAttivo() ? 'Ogni test è fatto di <b>60% riconferme</b> e <b>40% sbagliate</b>.' : 'Il piano qui farebbe 60% riconferme e 40% sbagliate.'}`},
+        {cls: '', txt: `L'obiettivo di oggi è <b>${fmtN(P.domObiettivo)}</b> domande: le sbagliate e le riconferme che restano, divise sui giorni fino all'esame. Si ricalcola ogni mattina (mai sotto ${OB_MIN}, mai sopra ${OB_MAX}).`}]};
   }
   if(P.U === 0){
     // copertura finita: le nuove hanno lasciato il posto alle riconferme
@@ -6549,7 +6550,7 @@ function prospettoPiano(){
         {n: fmtN(s.ko), t: 'da recuperare'}],
       messaggi: [
         {cls: 'bene', txt: `Hai incontrato <b>tutte</b> le ${fmtN(QUESTIONS.length)} domande. Da adesso il posto delle domande nuove lo prendono le <b>riconferme</b>.`},
-        {cls: '', txt: `Il tetto resta di <b>${TETTO_GIORNO}</b> domande al giorno. Dal ${scad} si passa alla fase finale, ${GG_CONSOLIDAMENTO} giorni di sole conferme.`}]};
+        {cls: '', txt: `L'obiettivo di oggi è <b>${fmtN(P.domObiettivo)}</b> domande: le sbagliate e le riconferme che restano, divise sui giorni fino all'esame. Si ricalcola ogni mattina. Dal ${scad} si passa alla fase finale, ${GG_CONSOLIDAMENTO} giorni di sole conferme.`}]};
   }
   // fase di copertura
   const quando = dataIt(P.isoFineCopertura);
@@ -6587,10 +6588,13 @@ function prospettoPiano(){
           : `, giusto in tempo per il ${scad}: non c'è margine, se salti un giorno lo perdi.`)});
   }
   // nel caso d'allarme la data al tetto e' gia' stata detta sopra: ripeterla confonde
-  if(semaforo !== 'allarme' && P.isoFineAlTetto) messaggi.push({cls: '', txt:
-    `Il passo è di <b>${TETTO_GIORNO} domande al giorno</b> (${Math.round(TETTO_GIORNO/N_TEST*10)/10} test): tenendolo, la banca dati finisce il <b>${alTetto}</b> `
-    + `e da lì il posto delle domande nuove passa alle <b>riconferme</b> — te lo scrivo qui quando succede. `
-    + `Il minimo per non sforare il ${scad} sarebbe <b>${fmtN(P.domCopAlGiorno)}</b> al giorno.`});
+  if(semaforo !== 'allarme' && P.isoFineAlPasso){
+    const trg = dataIt(P.trgCop);
+    messaggi.push({cls: P.sopraMax ? 'attenzione' : '', txt: (P.sopraMax
+        ? `Per vedere tutto entro il <b>${trg}</b> servirebbero <b>${fmtN(P.domTraguardo)}</b> domande al giorno, sopra il massimo di ${OB_MAX}: l'obiettivo resta a <b>${OB_MAX}</b> e la banca dati si chiude il <b>${dataIt(P.isoFineAlPasso)}</b>. `
+        : `L'obiettivo di oggi è <b>${fmtN(P.domObiettivo)} domande</b> (${P.testObiettivo} test): è quanto serve per vedere tutta la banca dati entro il <b>${trg}</b>, con qualche giorno di margine prima del ${scad}. `)
+      + `Si ricalcola ogni mattina: se un giorno ne fai di più, nei giorni dopo scende; se ne fai di meno, sale (mai sotto ${OB_MIN}, mai sopra ${OB_MAX}).`});
+  }
   return {fase: 'Copertura', semaforo,
     titolo: `Oggi ogni test porta ${P.nuovePerTest} domande nuove`,
     voci, messaggi};
@@ -6680,7 +6684,14 @@ function lavoroResiduo(){
 }
 // Il tetto giornaliero: cinque test. Oltre non si chiede, anche quando il conto
 // direbbe di piu': un obiettivo irraggiungibile smette di guidare e basta.
-const TETTO_GIORNO = 240;   // circa tre ore: quattro test da 60
+// L'obiettivo del giorno e' dinamico: ogni mattina si ricalcola sul lavoro che resta e
+// sui giorni di studio rimasti. Se un giorno ne fa di piu', i giorni dopo scende; se ne fa
+// di meno, sale. Resta sempre fra OB_MIN e OB_MAX: un obiettivo irraggiungibile smette di guidare.
+const OB_MIN = 120;                       // due test
+const OB_MAX = 300;                       // cinque test, circa tre ore e tre quarti
+const TETTO_GIORNO = OB_MAX;
+// Entro questa data la banca dati va vista tutta: tre giorni di margine prima del ripasso finale.
+const TRAGUARDO_COPERTURA = '2026-11-05';
 // il piano di oggi: quanto serve, quanto sta facendo, e se basta
 function piano(){
   const L = lavoroResiduo();
@@ -6722,11 +6733,21 @@ function piano(){
   const nuoveAlTetto = Math.round(TETTO_GIORNO * qOggi);
   const isoFineAlTetto = fineCoperturaA(L.U, TETTO_GIORNO);
   const ggAlTetto = isoFineAlTetto ? giorniFra(oggiISO(), isoFineAlTetto) + 1 : 0;
-  // L'OBIETTIVO DI OGGI: il passo scelto, tre ore al giorno, finche' c'e' da coprire.
-  // Si abbassa solo quando quello che resta e' meno di una giornata.
-  const domObiettivo = L.U > 0
-    ? Math.min(TETTO_GIORNO, Math.max(N_TEST, qOggi > 0 ? Math.ceil(L.U / qOggi) : TETTO_GIORNO))
-    : Math.min(TETTO_GIORNO, Math.max(N_TEST, dom));
+  // L'OBIETTIVO DI OGGI, dinamico.
+  // Finche' restano domande mai viste: quante domande al giorno servono per vederle tutte
+  // entro il traguardo, con la quota di nuove di ogni giorno (fase o mix scelto).
+  // Dopo: le sbagliate e le riconferme che restano, divise sui giorni di studio fino all'esame.
+  const trgCop = oggiISO() <= TRAGUARDO_COPERTURA ? TRAGUARDO_COPERTURA : cop;
+  const sommaTrg = giorniStudio(oggiISO(), trgCop).reduce((acc, d) => acc + quotaNuoveGiorno(d), 0);
+  const domTraguardo = L.U > 0 ? (sommaTrg > 0 ? Math.ceil(L.U / sommaTrg) : Infinity) : 0;
+  const ggEsame = Math.max(1, giorniStudio(oggiISO(), DATA_ESAME).length);
+  const domConsolida = Math.ceil((L.K * L.costi.eK + L.R * L.costi.eR) / ggEsame);
+  const inCopertura = L.U > 0 && !inFaseFinale();
+  const domGrezzo = (inCopertura && isFinite(domTraguardo)) ? domTraguardo : domConsolida;
+  const domObiettivo = Math.max(OB_MIN, Math.min(OB_MAX, isFinite(domGrezzo) ? domGrezzo : OB_MAX));
+  const sopraMax = domGrezzo > OB_MAX;
+  // tenendo l'obiettivo di oggi tutti i giorni, quando si finisce di vedere la banca dati
+  const isoFineAlPasso = fineCoperturaA(L.U, domObiettivo);
   const testObiettivo = Math.round(domObiettivo / N_TEST * 10) / 10;
   // quante domande mai viste incontra davvero in un giorno, misurate
   const conNuove = recenti.filter(g => g.nuove !== undefined);
@@ -6747,6 +6768,7 @@ function piano(){
           domCopAlGiorno, domCopNecessarie, oltreIlTetto, tetto: TETTO_GIORNO,
           domObiettivo, testObiettivo,
           nuoveAlTetto, ggAlTetto, isoFineAlTetto,
+          trgCop, domTraguardo, domConsolida, inCopertura, sopraMax, isoFineAlPasso,
           ritmoNuove, ggAllaCopertura, isoFineCopertura, coperturaInTempo,
           inLinea: ritmo >= dom,
           copribile: Math.min(1, (L.C + (QUESTIONS.length - L.C) *
@@ -7987,7 +8009,7 @@ function renderCalendario(){
   el.innerHTML = html;
   const scad = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
   $('cal-intro').innerHTML =
-    `Ogni casella dice quante domande servono quel giorno per arrivare con la banca dati coperta entro il <b>${scad}</b>. `
+    `Ogni casella dice quante domande servono quel giorno per vedere tutta la banca dati entro il <b>${dataLunga(TRAGUARDO_COPERTURA)}</b>. `
     + `Sulle giornate passate c'è invece quello che è stato fatto davvero. `
     + `Se un giorno salta il lavoro non sparisce: si ridistribuisce sui giorni rimasti, e il numero qui sopra sale.`;
   const saltati = C.celle.filter(c => c.stato === 'saltato').length;
@@ -8007,10 +8029,10 @@ function renderCalendario(){
       ? `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni e la banca dati è tutta vista almeno una volta. `
         + `Servono <b>${fmtN(P.domandeAlGiorno)}</b> domande al giorno (<b>${P.testAlGiorno}</b> test) per consolidarla.`
       : `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni e <b>${fmtN(P.U)}</b> domande mai viste. `
-        + `Il passo è di <b>${fmtN(P.domObiettivo)}</b> domande al giorno (<b>${P.testObiettivo}</b> test), `
-        + `perché oggi ogni test da ${N_TEST} ne porta <b>${P.nuovePerTest}</b> di nuove${notaNuoveProssimaFase()}: `
-        + (P.isoFineAlTetto ? `tenendolo, la banca dati si chiude il <b>${dataLunga(P.isoFineAlTetto)}</b>. ` : `con questo mix la banca dati non si chiude. `)
-        + `Il minimo per non sforare sarebbe ${fmtN(P.domCopAlGiorno)} al giorno.`)
+        + `Per vederle tutte entro il <b>${dataLunga(P.trgCop)}</b> servono <b>${fmtN(P.domObiettivo)}</b> domande al giorno (<b>${P.testObiettivo}</b> test): `
+        + `oggi ogni test da ${N_TEST} ne porta <b>${P.nuovePerTest}</b> di nuove${notaNuoveProssimaFase()}. `
+        + (P.isoFineAlPasso ? `Tenendo questo passo la banca dati si chiude il <b>${dataLunga(P.isoFineAlPasso)}</b>. ` : `Con questo mix la banca dati non si chiude. `)
+        + `Il numero si ricalcola ogni mattina: se un giorno ne fai di più, nei giorni dopo scende; se ne fai di meno, sale.`)
     + ` Dopo il ${scad} non si aprono più domande nuove: i <b>${GG_CONSOLIDAMENTO} giorni</b> fino all'esame servono a confermare quelle già incontrate.<br>`
     + `Finora: <b>${fatti}</b> ${fatti === 1 ? 'giornata piena' : 'giornate piene'}, `
     + `<b>${parziali}</b> a mezzo servizio, <b>${saltati}</b> saltate.`
@@ -8635,14 +8657,13 @@ function renderMixImpatto(){
       : 'Niente domande nuove, come prevede il piano per questi ultimi giorni.');
   } else if(!m.n){
     riga.push(`<span class="mix-male">Con le nuove a zero le <b>${fmtN(P.U)}</b> domande mai viste restano tali.</span> `
-      + (Q.isoFineAlTetto ? `Col piano le finiresti il <b>${dataLunga(Q.isoFineAlTetto)}</b>.` : ''));
+      + (Q.isoFineAlPasso ? `Col piano le finiresti il <b>${dataLunga(Q.isoFineAlPasso)}</b>.` : ''));
   } else {
-    const fine = P.isoFineAlTetto, fineP = Q.isoFineAlTetto;
+    const fine = P.isoFineAlPasso;
     const tardi = !fine || fine > cop;
     riga.push(`Con il tuo mix un test porta <b>${P.nuovePerTest}</b> domande nuove (col piano oggi <b>${Q.nuovePerTest}</b>). `
-      + `Facendo ${TETTO_GIORNO} domande al giorno vedi tutta la banca dati `
-      + (fine ? `il <b>${dataLunga(fine)}</b>` : 'oltre l\'esame')
-      + (fineP ? ` (col piano il ${dataLunga(fineP)})` : '') + '. '
+      + `Per vedere tutta la banca dati entro il ${dataLunga(P.trgCop)} servono <b>${fmtN(P.domTraguardo)}</b> domande al giorno (col piano ${fmtN(Q.domTraguardo)}). `
+      + (P.sopraMax ? `Sono più del massimo di ${OB_MAX}: l'obiettivo resta a ${OB_MAX} e finisci ${fine ? `il <b>${dataLunga(fine)}</b>` : 'oltre l\'esame'}. ` : '')
       + (tardi
         ? `<span class="mix-male">È dopo il ${dataLunga(cop)}, quando inizia il ripasso finale: qualche domanda arriverebbe all'esame mai vista.</span>`
         : `<span class="mix-bene">Arrivi in tempo per il ripasso finale.</span>`));
