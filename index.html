@@ -422,7 +422,62 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .mix-torna{color:var(--inchiostro2); text-decoration:none; white-space:nowrap;
   border-bottom:1px solid currentColor; padding-bottom:1px;}
 .mix-torna:hover{color:var(--azione);}
-#mix-label b:last-child, #mix-label b.rosso{color:var(--lacca-t);}
+/* ---------- il pannello del mix: piano o scelta sua ---------- */
+.mix-v2{display:block; padding:12px 14px;}
+.mix-capo{display:flex; align-items:center; justify-content:space-between; gap:8px 12px; flex-wrap:wrap; margin-bottom:10px;}
+.mix-tit{font-family:var(--f-display); font-weight:700; font-size:.95rem; color:var(--testo);}
+.mix-modo{display:inline-flex; padding:3px; border-radius:999px; background:rgba(var(--velo),.07); border:1px solid var(--bordo);}
+.mix-tab{border:0; background:none; color:var(--nebbia); font:600 .8rem var(--f-testo); padding:7px 13px; border-radius:999px; cursor:pointer; transition:background .15s, color .15s;}
+.mix-tab.on{background:var(--azione); color:var(--su-accento);}
+.mix-tab:not(.on):hover{color:var(--testo);}
+.mix-tab:focus-visible, .af-btn:focus-visible{outline:2px solid var(--azione); outline-offset:2px;}
+.mix-fasi{list-style:none; margin:0 0 8px; padding:0; display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;}
+.mix-fasi li{border-top:3px solid rgba(var(--velo),.16); padding:6px 2px 0; font-size:.7rem; color:var(--nebbia);
+  line-height:1.3; display:flex; flex-direction:column; gap:1px;}
+.mix-fasi li b{color:var(--testo); font-weight:600; font-size:.76rem;}
+.mix-fasi li.ora{border-top-color:var(--azione);}
+.mix-fasi li.ora .mf-n{color:var(--inchiostro2); font-weight:700;}
+.mix-fasi li.fatta{opacity:.55;}
+.mf-n{text-transform:uppercase; letter-spacing:.07em; font-size:.6rem;}
+.mf-d{font-family:var(--f-mono); font-size:.64rem;}
+.mix-cosa{font-size:.8rem; line-height:1.5; margin:0 0 10px; color:var(--testo);}
+.mix-barra{display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; background:rgba(var(--velo),.08);}
+.mix-barra i{display:block; min-width:3px;}
+.mx-nuove{background:var(--nuova);} .mx-sbagl{background:var(--lacca);}
+.mx-ric{background:var(--ottone-pieno);} .mx-ripe{background:var(--vidimato);}
+.mix-leg{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:.76rem; color:var(--nebbia); margin:7px 0 8px;}
+.mix-leg b{color:var(--testo); font-family:var(--f-mono);}
+.mix-leg-tot{margin-left:auto;}
+.mix-tab-mat{width:100%; border-collapse:collapse; font-size:.76rem;}
+.mix-tab-mat th, .mix-tab-mat td{padding:5px 3px; text-align:center; border-bottom:1px solid var(--filo); font-weight:400;}
+.mix-tab-mat thead th{color:var(--nebbia); font-size:.66rem; white-space:nowrap;}
+.mix-tab-mat thead th span{margin-left:3px;}
+.mix-tab-mat thead th:first-child, .mix-tab-mat tbody th{text-align:left;}
+.mix-tab-mat tbody th{color:var(--testo); font-weight:600; white-space:nowrap;}
+.mix-tab-mat tbody th small{color:var(--nebbia); font-weight:400; font-family:var(--f-mono); margin-left:2px;}
+.mix-tab-mat td{font-family:var(--f-mono); color:var(--testo);}
+.mix-tab-mat td.zero{color:var(--nebbia); opacity:.55;}
+@media (max-width:380px){ .mix-tab-mat thead th span{display:none;} }
+.mix-cursori{margin:0 0 10px;}
+.mix-cur{display:grid; grid-template-columns:minmax(96px, 130px) 1fr 44px; align-items:center; gap:8px; font-size:.82rem; color:var(--testo);}
+.mix-cur input[type=range]{width:100%; accent-color:var(--azione); height:30px; cursor:pointer;}
+.mix-cur output{text-align:right; font-family:var(--f-mono); font-weight:600;}
+.mix-aiuto, .mix-scarto{font-size:.76rem; line-height:1.45; color:var(--nebbia); margin:6px 0 0;}
+.mix-impatto{font-size:.8rem; line-height:1.5; color:var(--testo); background:rgba(var(--velo),.05);
+  border-radius:var(--r-min); padding:9px 11px; margin:10px 0 0;}
+.mix-male{color:var(--lacca-t);} .mix-bene{color:var(--vidimato-t);}
+.mix-glossario{margin-top:9px; font-size:.76rem; color:var(--nebbia);}
+.mix-glossario summary{cursor:pointer;}
+.mix-glossario dl{display:grid; grid-template-columns:auto 1fr; gap:4px 10px; margin:7px 0;}
+.mix-glossario dt{color:var(--testo); font-weight:600; white-space:nowrap;}
+.mix-glossario dd{margin:0;}
+.mix-glossario p{margin:4px 0 0;}
+.af-d{color:var(--nebbia); font-size:.8rem;}
+.af-azioni{display:flex; gap:8px; flex-wrap:wrap; margin-top:9px;}
+.af-btn{border:1px solid var(--bordo); background:var(--foglio); color:var(--testo); border-radius:999px;
+  padding:7px 15px; font:600 .8rem var(--f-testo); cursor:pointer;}
+.af-btn.af-pieno{background:var(--azione); color:var(--su-accento); border-color:var(--azione);}
+.prs-torna{color:inherit; font-weight:600;}
 
 /* ---------- quiz: la scheda-domanda ---------- */
 .qbar{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:.78rem;
@@ -1011,9 +1066,9 @@ table.riep thead th{position:sticky; top:0; z-index:1;}
 :root[data-tema="chiaro"] .ob-hero{background:rgba(var(--ombra),.05);}
 .obh-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:7px;}
 .obh-piano{margin-top:10px; padding-top:9px; border-top:1px solid var(--filo); font-size:.85rem;
-  color:var(--nebbia); display:flex; align-items:baseline; gap:7px; line-height:1.45;}
+  color:var(--nebbia); display:block; line-height:1.45;}
 .obh-piano b{color:var(--testo);}
-.obh-piano .ic{width:15px; height:15px; flex:none; transform:translateY(2px);}
+.obh-piano .ic{width:15px; height:15px; margin-right:4px; vertical-align:-2px;}
 .obh-piano.ok{color:var(--vidimato-t);} .obh-piano.ok b{color:var(--vidimato-t);}
 .obh-piano.male{color:var(--ottone-t);} .obh-piano.male b{color:var(--ottone-t);}
 .obh-tit{font-family:var(--f-display); font-weight:700; font-size:.95rem; color:var(--testo);}
@@ -1920,25 +1975,35 @@ b.dubbia{color:var(--ottone-t);}
           </button>
         </div>
       </div>
-      <div class="mix-box mix-tre">
-        <div class="mix-testa">
-          <span class="mix-guida" id="mix-guida"></span>
-          <a href="#" class="mix-torna nascosto" id="mix-piano">torna al piano</a>
+      <div class="mix-box mix-v2" id="mix-box">
+        <div class="mix-capo">
+          <span class="mix-tit">Il prossimo test</span>
+          <div class="mix-modo" role="radiogroup" aria-label="Chi decide come è fatto il test">
+            <button type="button" class="mix-tab on" id="mix-tab-piano" role="radio" aria-checked="true">Segui il piano</button>
+            <button type="button" class="mix-tab" id="mix-tab-mio" role="radio" aria-checked="false">Scelgo io</button>
+          </div>
         </div>
-        <div class="mix-riga"><span class="mini mix-nome"><i class="stato-p sp-nuova"></i> Nuove</span>
-          <input type="range" id="mix-nuove" min="0" max="100" step="5" value="70" title="Percentuale di domande mai viste">
-          <b class="mini mix-val" id="mix-val-n">70%</b></div>
-        <div class="mix-riga"><span class="mini mix-nome"><i class="stato-p sp-aperta"></i> Sbagliate</span>
-          <input type="range" id="mix-ko" min="0" max="100" step="5" value="30" title="Percentuale di domande sbagliate da recuperare">
-          <b class="mini mix-val rosso" id="mix-val-k">30%</b></div>
-        <div class="mix-riga"><span class="mini mix-nome"><i class="stato-p sp-salda"></i> Già indovinate <span title="Domande già superate e riconfermate, riproposte per non dimenticarle: tornano dopo 5 test, poi 10, poi 15. Le riconferme di primo giro hanno invece una quota riservata a parte.">ⓘ</span></span>
-          <span class="mini spazio"></span>
-          <b class="mini mix-val verde" id="mix-val-v">0%</b></div>
-        <div class="mix-riga mix-ris nascosto" id="mix-riconferme">
-          <span class="mini mix-nome"><i class="stato-p sp-attesa"></i> Da riconfermare <span title="Domande viste una volta sola: tornano una seconda volta a distanza prima di poter contare come sapute. Hanno una quota riservata, indipendente dai cursori.">ⓘ</span></span>
-          <span class="mini spazio"></span>
-          <b class="mini mix-val verde" id="mix-val-r">0%</b></div>
-        <span class="nascosto" id="mix-label"></span>
+        <div id="mix-fasi"></div>
+        <div id="mix-cursori" class="mix-cursori nascosto">
+          <div class="mix-cur"><label for="mix-n"><i class="stato-p sp-nuova"></i> Nuove</label>
+            <input type="range" id="mix-n" min="0" max="100" step="5" value="30"><output id="mix-n-v" for="mix-n">30%</output></div>
+          <div class="mix-cur"><label for="mix-k"><i class="stato-p sp-aperta"></i> Sbagliate</label>
+            <input type="range" id="mix-k" min="0" max="100" step="5" value="60"><output id="mix-k-v" for="mix-k">60%</output></div>
+          <div class="mix-cur"><label for="mix-r"><i class="stato-p sp-attesa"></i> Da riconfermare</label>
+            <input type="range" id="mix-r" min="0" max="100" step="5" value="10"><output id="mix-r-v" for="mix-r">10%</output></div>
+          <p class="mix-aiuto">Le tre voci fanno sempre 100%: se ne alzi una, le altre due scendono. Valgono per tutte le materie, e le domande restano divise per materia come all'esame.</p>
+        </div>
+        <div id="mix-esito"></div>
+        <div id="mix-impatto" class="nascosto"></div>
+        <details class="mix-glossario"><summary>Cosa vuol dire ogni voce</summary>
+          <dl>
+            <dt><i class="stato-p sp-nuova"></i> Nuove</dt><dd>domande mai viste.</dd>
+            <dt><i class="stato-p sp-aperta"></i> Sbagliate</dt><dd>sbagliate e non ancora recuperate. Escono prima quelle sbagliate più volte e quelle da 2 punti.</dd>
+            <dt><i class="stato-p sp-attesa"></i> Da riconfermare</dt><dd>indovinate una volta sola: tornano a distanza per vedere se reggono.</dd>
+            <dt><i class="stato-p sp-salda"></i> Ripescate</dt><dd>già sapute e ferme da tempo: si riprendono per controllare che non siano state dimenticate.</dd>
+          </dl>
+          <p>Se in una materia mancano domande pronte di un tipo, il posto passa agli altri tipi: il test resta sempre di 60.</p>
+        </details>
       </div>
       <details class="dett"><summary><svg class="ic"><use href="#i-dispensa"/></svg> Scegli gli argomenti</summary>
         <div id="lista-argomenti"></div>
@@ -4813,7 +4878,7 @@ function renderRecupero(){
   const pct = (n, d, dec) => d ? (100 * n / d).toLocaleString('it-IT', {minimumFractionDigits: dec || 0, maximumFractionDigits: dec || 0}) + '%' : '—';
   const oggi = (R.chiuseOggi || R.metaOggi)
     ? `<div class="rec-oggi"><b>Oggi:</b> ${R.metaOggi ? `<b>${fmt(R.metaOggi)}</b> ${R.metaOggi === 1 ? 'portata' : 'portate'} a metà strada` : ''}${R.metaOggi && R.chiuseOggi ? ' · ' : ''}${R.chiuseOggi ? `<b>${fmt(R.chiuseOggi)}</b> ${R.chiuseOggi === 1 ? 'chiusa' : 'chiuse'} per sempre` : ''} — il recupero è salito di <b>${pct(R.passiOggi, R.passiTot, 1)}</b></div>`
-    : `<div class="rec-oggi rec-vuoto">Oggi il recupero non è ancora partito. Un test con il cursore delle nuove a zero e questa riga si riempie.</div>`;
+    : `<div class="rec-oggi rec-vuoto">Oggi il recupero non è ancora partito. Basta un test con qualche sbagliata dentro e questa riga si riempie.</div>`;
 
   // L'ultima giornata di lavoro, con i numeri che esistono da sempre: quanti ripassi
   // e con che resa (ogni ripasso esatto è un passo), e le riconferme, che sono un'altra
@@ -4958,23 +5023,31 @@ function allenaSottoargomento(arg, idx){
 // Nell'ultimo tratto macinare domande nuove è controproducente: si consolida ciò che si sa
 // e si chiudono le sbagliate. L'app cambia passo da sola e lo dichiara.
 const GG_CONSOLIDAMENTO = 10;
-function faseStudio(){ return giorniAllEsame() <= GG_CONSOLIDAMENTO ? 'consolidamento' : 'accumulo'; }
-
+// L'avviso di fase: compare una volta all'inizio di ogni fase e resta finche' non lo
+// chiude. Se il mix lo sta scegliendo lei, le dice cosa farebbe adesso il piano e le
+// offre di tornarci con un tasto: le sue percentuali non si toccano da sole.
 function applicaFase(){
   const avviso = $('avviso-fase'); if(!avviso) return;
-  if(faseStudio() !== 'consolidamento'){ avviso.classList.add('nascosto'); return; }
-  const chiave = 'cons-' + DATA_ESAME;
-  if(stato.faseApplicata !== chiave){          // una sola volta: poi i cursori restano tuoi
-    stato.faseApplicata = chiave;
-    stato.mixNuove = 0; stato.mixKo = 60;      // 0% nuove · 60% sbagliate · 40% già viste da riconfermare
-    salvaLocale();
-    if(typeof aggiornaMixLabel === 'function') aggiornaMixLabel();
+  if(oggiISO() > DATA_ESAME || oggiISO() < INIZIO_CICLO || stato.faseAvvisata === faseDel()){
+    avviso.classList.add('nascosto'); return;
   }
+  const f = faseOggi();
+  const periodo = `${dataBreve(f.dal)} – ${dataBreve(f.al)}`;
+  const m = mixScelto();
   avviso.classList.remove('nascosto');
-  avviso.innerHTML = `<b><svg class="ic"><use href="#i-mirino"/></svg> Fase di consolidamento</b> — mancano ${giorniAllEsame()} giorni: `
-    + `l'app ha azzerato le domande nuove e spostato il mix su <b>60% sbagliate · 40% da riconfermare</b>. `
-    + `Ora conta chiudere gli errori e confermare quello che sai, non aggiungere materiale nuovo. `
-    + `Puoi comunque cambiare i cursori quando vuoi.`;
+  avviso.innerHTML = pianoAttivo()
+    ? `<b><svg class="ic"><use href="#i-mirino"/></svg> Fase ${f.n} di 3 · ${f.nome}</b> <span class="af-d">(${periodo})</span><br>`
+      + `${f.cosa} I test si compongono da soli: trovi il dettaglio per materia nel riquadro "Il prossimo test".`
+      + `<div class="af-azioni"><button type="button" class="af-btn" data-af="ok">Ho capito</button></div>`
+    : `<b><svg class="ic"><use href="#i-mirino"/></svg> Il piano è nella fase ${f.n} · ${f.nome}</b> <span class="af-d">(${periodo})</span><br>`
+      + `${f.cosa} Adesso stai usando il tuo mix: <b>${m.n}% nuove · ${m.k}% sbagliate · ${m.r}% da riconfermare</b>.`
+      + `<div class="af-azioni"><button type="button" class="af-btn af-pieno" data-af="piano">Segui il piano</button>`
+      + `<button type="button" class="af-btn" data-af="ok">Tengo il mio mix</button></div>`;
+  avviso.querySelectorAll('[data-af]').forEach(b => b.onclick = () => {
+    stato.faseAvvisata = faseDel();
+    if(b.dataset.af === 'piano') stato.pianoAuto = true;
+    aggiornaDopoMix();
+  });
 }
 
 // ---------- letture dei giorni di studio ----------
@@ -5678,7 +5751,7 @@ function proiezioneEsame(){
   // se lo storico non ha ancora il dettaglio delle domande nuove, lo stimo dalla quota del mix
   const ritmoNuove = conNuove.length
     ? Math.round(conNuove.reduce((a,g) => a + (g.nuove||0), 0) / conNuove.length)
-    : Math.round(ritmo * (pianoAttivo() ? QUOTA_NUOVE : mixNuove() / 100));
+    : Math.round(ritmo * quotaNuoveGiorno(oggiISO()));
   const ritmoNuoveStimato = conNuove.length === 0;
 
   const gg = giorniAllEsame();          // giorni totali
@@ -5687,7 +5760,8 @@ function proiezioneEsame(){
   // Vincolo delle due fasi: una domanda mai vista può essere acquisita solo se la si
   // incontra entro l'inizio del consolidamento. Gli ultimi 10 giorni servono a chiudere
   // ciò che è già stato aperto, non ad aprire materiale nuovo.
-  const nuoveRaggiungibili = inFaseFinale() ? 0 : Math.min(nuoveRimaste, ritmoNuove * ggCop);
+  const nuoveFuture = inFaseFinale() ? 0 : nuoveFinoA(ritmo, isoCopertura());   // con la quota di ogni fase
+  const nuoveRaggiungibili = Math.min(nuoveRimaste, nuoveFuture);
   const tettoDaFase = inLavorazione + nuoveRaggiungibili;      // quante se ne possono ancora superare
   const tettoDaTempo = (ritmo * gg) / rpd;                     // quante il ritmo consente
   const acquisibili = Math.max(0, Math.min(tettoDaFase, tettoDaTempo));
@@ -5695,7 +5769,7 @@ function proiezioneEsame(){
 
   // Composizione della banca dati il giorno dell'esame
   const viste = N - nuoveRimaste;
-  const vistePreviste = Math.min(N, viste + (inFaseFinale() ? 0 : ritmoNuove * ggCop));
+  const vistePreviste = Math.min(N, viste + nuoveFuture);
   const okFinali = Math.min(vistePreviste, okFam + acquisibili);
   const koFinali = Math.max(0, vistePreviste - okFinali);
   const maiFinali = Math.max(0, N - vistePreviste);
@@ -5794,21 +5868,17 @@ function ricUltimaGiornata(){
 // l'inizio del consolidamento: è il vincolo che nessun'altra cifra rende evidente.
 function testNecessari(pr){
   if(inFaseFinale() || pr.ggCop <= 0 || pr.nuoveRimaste <= 0) return null;
-  const nuoveAlG = Math.ceil(pr.nuoveRimaste / pr.ggCop);
-  // quante domande nuove porta davvero un test: con il piano attivo e' la quota
-  // del piano, con i cursori a mano e' quella scelta a mano
-  const s = statiPool(QUESTIONS);
-  const nuovePerTest = Math.max(1, pianoAttivo() ? composizionePiano(s).nNew : composizione(s, false).nNew);
-  return {nuoveAlG, nuovePerTest, test: nuoveAlG / nuovePerTest};
+  const P = piano();
+  if(!isFinite(P.domCopNecessarie)) return null;
+  return {nuovePerTest: P.nuovePerTest, test: P.domCopNecessarie / N_TEST,
+          nuoveAlG: Math.round(P.domCopNecessarie * P.nuovePerTest / N_TEST)};
 }
 
 function fineCopertura(pr){
-  if(!pr.ritmoNuove || pr.nuoveRimaste <= 0) return null;
-  const gg = Math.ceil(pr.nuoveRimaste / pr.ritmoNuove);
-  const iso = oggiPiuISO(gg - 1);         // oggi e' gia' il primo dei giorni contati
-  const d = new Date(iso);
-  const scarto = Math.round((d - new Date(isoCopertura())) / 86400000);
-  return {gg, data: d.toLocaleDateString('it-IT', {day:'numeric', month:'short'}), iso, scarto};
+  if(!pr.ritmo || pr.nuoveRimaste <= 0) return null;
+  const iso = fineCoperturaA(pr.nuoveRimaste, pr.ritmo);
+  if(!iso) return null;
+  return {gg: giorniFra(oggiISO(), iso) + 1, data: dataBreve(iso), iso, scarto: giorniFra(isoCopertura(), iso)};
 }
 
 // I cinque numeri da cui la proiezione dipende davvero. Metterli in chiaro è l'unico
@@ -5830,9 +5900,9 @@ function renderMotori(pr){
   righe.push(riga(1, 'Copertura della banca dati',
     `<b>${n(pr.viste)}</b> viste su ${n(pr.N)} · <b>${n(pr.acquisite)}</b> già consolidate`,
     fc ? (fc.scarto > 0
-        ? `A ${n(pr.ritmoNuove)} domande nuove al giorno finisci il <b>${fc.data}</b>: <span class="mot-male">${fc.scarto} giorni oltre il termine</span> per lasciare 10 giorni di ripasso.`
-        : `A ${n(pr.ritmoNuove)} domande nuove al giorno finisci il <b>${fc.data}</b>: <span class="mot-bene">in tempo</span>, con ${Math.abs(fc.scarto)} giorni di margine.`)
-      : 'Ritmo sulle domande nuove non ancora misurabile.',
+        ? `Al ritmo di ${n(pr.ritmo)} domande al giorno, con il mix ${pianoAttivo() ? 'del piano' : 'che hai scelto'}, finisci il <b>${fc.data}</b>: <span class="mot-male">${fc.scarto} giorni oltre il termine</span> per lasciare ${GG_CONSOLIDAMENTO} giorni di ripasso.`
+        : `Al ritmo di ${n(pr.ritmo)} domande al giorno, con il mix ${pianoAttivo() ? 'del piano' : 'che hai scelto'}, finisci il <b>${fc.data}</b>: <span class="mot-bene">in tempo</span>, con ${Math.abs(fc.scarto)} giorni di margine.`)
+      : (pr.ritmo ? 'Con il mix di adesso la banca dati non si chiude: mancano le domande nuove.' : 'Ritmo non ancora misurabile.'),
     fc && fc.scarto > 0 ? 'male' : ''));
 
   righe.push(riga(2, 'Come va un test',
@@ -5880,7 +5950,7 @@ function renderMotori(pr){
     m ? `<b>${dec(m.testGiorno)}</b> fatti · il passo è <b>${passoTxt}</b>`
       : 'nessun dato',
     tn ? `Tenendo il passo di ${passoTxt} test al giorno (${n(Pm.domObiettivo)} domande) le ${n(pr.nuoveRimaste)} mai viste finiscono il `
-         + `${new Date(Pm.isoFineAlTetto).toLocaleDateString('it-IT',{day:'numeric',month:'long'})}. `
+         + `${Pm.isoFineAlTetto ? dataLunga(Pm.isoFineAlTetto) : 'oltre l\'esame'}. `
          + `Il minimo per non sforare il ${new Date(isoCopertura()).toLocaleDateString('it-IT',{day:'numeric',month:'long'})} sarebbe ${dec(tn.test)} test al giorno.`
        : `Banca dati coperta: da qui in avanti i test servono a confermare, non a scoprire.`,
     m && m.testGiorno < passoTest * 0.7 ? 'male' : ''));
@@ -6314,15 +6384,18 @@ function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 // Cambia quando cambia il MODO di calcolare l'obiettivo. L'obiettivo resta fermo
 // per tutta la giornata — deve, altrimenti balla mentre si risponde — ma se esce
 // una versione con un calcolo diverso quello di oggi va rifatto subito, non domani.
-const VERSIONE_PIANO = 4;
+const VERSIONE_PIANO = 5;
+// La firma del mix: se cambia (piano <-> scelta sua, o altre percentuali) l'obiettivo
+// di oggi va rifatto subito.
+function firmaMix(){ if(pianoAttivo()) return 'piano'; const m = mixScelto(); return m.n + '/' + m.k + '/' + m.r; }
 function targetOggi(domandeAlGiorno){
   const oggi = oggiISO();
   if(!stato.piano || stato.piano.giorno !== oggi || !(stato.piano.target > 0)
      || stato.piano.esame !== DATA_ESAME || stato.piano.unita !== (pianoAttivo() ? 'copertura' : 'domande')
-     || stato.piano.v !== VERSIONE_PIANO
+     || stato.piano.v !== VERSIONE_PIANO || stato.piano.mix !== firmaMix()
      || stato.piano.traguardo !== traguardo()){        // cambiare traguardo deve cambiare l'obiettivo, subito
     stato.piano = {giorno: oggi, esame: DATA_ESAME, unita: pianoAttivo() ? 'copertura' : 'domande',
-                   v: VERSIONE_PIANO,
+                   v: VERSIONE_PIANO, mix: firmaMix(),
                    traguardo: traguardo(), target: Math.max(1, domandeAlGiorno)};
     salvaLocale();
   }
@@ -6369,9 +6442,10 @@ function renderObiettivo(){
   // punto e' l'unico lavoro rimasto.
   // passa comunque da targetOggi: l'obiettivo si fissa una volta al giorno e non
   // deve ballare mentre lei risponde
-  const alGiorno = pianoAttivo()
-    ? targetOggi(P.domObiettivo)
-    : targetOggi(pr.alGiorno || Math.ceil(mancanti / giorniCopertura()));
+  // Lo stesso calcolo con il piano e con il mix scelto da lei: cambia la quota di
+  // nuove per test, e quindi il passo e la data in cui si chiude la banca dati.
+  const riposo = eGiornoRiposo(oggiISO());
+  const alGiorno = targetOggi(P.domObiettivo);
   const nTestGiorno = Math.max(1, Math.round(alGiorno / N_TEST));
   const fmt = fmtN;
   const scadCopBreve = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
@@ -6379,13 +6453,27 @@ function renderObiettivo(){
     tile('<svg class="ic"><use href="#i-calcolo"/></svg>', 'ico-blu', fmt(P.U), 'domande ancora mai viste',
          P.U === 0
            ? `<div class="kd su">✔ banca dati coperta — restano ${fmt(Math.max(0, pr.serveAcquisite - pr.acquisite))} domande da consolidare</div>`
-           : `<div class="kd pari">da vedere tutte entro il ${scadCopBreve} · ${fmt(P.testCopertura)} test, ${P.nuovePerTest} domande nuove per test</div>`) +
+           : `<div class="kd pari">da vedere tutte entro il ${scadCopBreve} · oggi ${P.nuovePerTest} nuove per test</div>`) +
     tile('<svg class="ic"><use href="#i-curva"/></svg>', 'ico-giallo', fmt(alGiorno), `domande da affrontare oggi (${gg === 1 ? 'ultimo giorno' : gg + ' giorni all\'esame'})`,
          `<div class="kd pari">≈ ${nTestGiorno} test da ${N_TEST} · domani si ricalcola sul residuo</div>`) +
     tile('<svg class="ic"><use href="#i-bandiera"/></svg>', 'ico-verde', `${fmt(oggiFatte)}/${fmt(alGiorno)}`, 'domande fatte oggi / obiettivo',
          oggiFatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>'
                                : `<div class="kd pari">ne mancano ${fmt(alGiorno - oggiFatte)}</div>`);
 
+  // La domenica e' il giorno di riposo: niente obiettivo, e se fa un test conta lo stesso.
+  if(riposo){
+    el.innerHTML =
+      tile('<svg class="ic"><use href="#i-calcolo"/></svg>', 'ico-blu', fmt(P.U), 'domande ancora mai viste',
+           `<div class="kd pari">da vedere tutte entro il ${scadCopBreve}</div>`) +
+      tile('<svg class="ic"><use href="#i-curva"/></svg>', 'ico-giallo', '—', 'domenica: giorno di riposo',
+           `<div class="kd pari">domani si riparte · ${gg} giorni all'esame</div>`) +
+      tile('<svg class="ic"><use href="#i-bandiera"/></svg>', 'ico-verde', fmt(oggiFatte), 'domande fatte oggi',
+           '<div class="kd pari">oggi non c\'è un obiettivo</div>');
+    $('ob-hero').innerHTML = `
+      <div class="obh-top"><span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> Oggi è domenica<span class="obh-trg">giorno di riposo</span></span></div>
+      <div class="obh-piano">Il piano oggi non chiede niente. ${oggiFatte ? `Hai fatto comunque <b>${fmt(oggiFatte)}</b> domande: contano lo stesso.` : 'Se ti va di fare un test, conta lo stesso.'}</div>`;
+    return;
+  }
   // ---- striscia obiettivo sempre visibile, in cima alla card Allenati ----
   const restano = Math.max(0, alGiorno - oggiFatte);
   const pctOb = Math.min(100, Math.round(100 * oggiFatte / alGiorno));
@@ -6397,9 +6485,10 @@ function renderObiettivo(){
   // La riga del piano parla di copertura: quanti test al giorno servono per
   // incontrare tutte le domande entro la scadenza, quanti se ne stanno facendo,
   // e in che giorno si finisce il giro al ritmo di adesso.
-  const rigaPiano = (!pianoAttivo() || inFaseFinale()) ? '' : (() => {
+  const rigaPiano = inFaseFinale() ? '' : (() => {
     const scadC = new Date(isoCopertura()).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
     if(P.U === 0) return `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Banca dati coperta: da qui in avanti si consolida.</div>`;
+    if(!P.isoFineAlTetto) return `<div class="obh-piano male"><svg class="ic"><use href="#i-avviso"/></svg> Con il tuo mix non entrano domande nuove: le <b>${fmt(P.U)}</b> mai viste restano tali.</div>`;
     // Il passo scelto e il ritmo vero sono due cose diverse e vanno chiamate con
     // due nomi diversi: prima qui usciva "servono 3,3, ne stai facendo 3,3", che
     // messo cosi' non dice niente a nessuno.
@@ -6407,7 +6496,7 @@ function renderObiettivo(){
     const fa = P.ritmoAttuale
       ? (Math.round(P.ritmoAttuale / N_TEST * 10) / 10).toLocaleString('it-IT', {maximumFractionDigits:1})
       : 0;
-    const alPasso = new Date(P.isoFineAlTetto).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
+    const alPasso = dataLunga(P.isoFineAlTetto);
     if(!P.ritmoAttuale) return `<div class="obh-piano">Il passo è di <b>${passo}</b> test al giorno: tenendolo, finisci le <b>${fmt(P.U)}</b> domande che restano il <b>${alPasso}</b>.</div>`;
     const quando = P.isoFineCopertura
       ? new Date(P.isoFineCopertura).toLocaleDateString('it-IT', {day:'numeric', month:'long'}) : null;
@@ -6420,7 +6509,7 @@ function renderObiettivo(){
   })();
   $('ob-hero').innerHTML = `
     <div class="obh-top">
-      <span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo di oggi<span class="obh-trg">${pianoAttivo() ? 'per coprire tutto' : 'per ' + trgTesto(traguardo())}</span></span>
+      <span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo di oggi<span class="obh-trg">${pianoAttivo() ? 'per coprire tutto' : 'con il tuo mix'}</span></span>
       ${capofase}
     </div>
     <div class="obh-riga">
@@ -6448,7 +6537,7 @@ function prospettoPiano(){
         {n: fmtN(giorniAllEsame()), t: 'giorni all\'esame'},
         {n: fmtN(s.daRiconf), t: 'da riconfermare'},
         {n: fmtN(s.ko), t: 'ancora da recuperare'}],
-      messaggi: [{cls: 'bene', txt: `Le domande nuove sono chiuse dal ${scad}. Ogni test è fatto di <b>60% riconferme</b> e <b>40% recuperi</b>.`}]};
+      messaggi: [{cls: 'bene', txt: `Le domande nuove sono chiuse dal ${scad}. ${pianoAttivo() ? 'Ogni test è fatto di <b>60% riconferme</b> e <b>40% sbagliate</b>.' : 'Il piano qui farebbe 60% riconferme e 40% sbagliate.'}`}]};
   }
   if(P.U === 0){
     // copertura finita: le nuove hanno lasciato il posto alle riconferme
@@ -6459,7 +6548,7 @@ function prospettoPiano(){
         {n: fmtN(s.daRiconf), t: 'da riconfermare'},
         {n: fmtN(s.ko), t: 'da recuperare'}],
       messaggi: [
-        {cls: 'bene', txt: `Hai incontrato <b>tutte</b> le ${fmtN(QUESTIONS.length)} domande. Da adesso il posto delle domande nuove lo prendono le <b>riconferme</b>: ogni test è <b>70% da riconfermare · 30% da recuperare</b>.`},
+        {cls: 'bene', txt: `Hai incontrato <b>tutte</b> le ${fmtN(QUESTIONS.length)} domande. Da adesso il posto delle domande nuove lo prendono le <b>riconferme</b>.`},
         {cls: '', txt: `Il tetto resta di <b>${TETTO_GIORNO}</b> domande al giorno. Dal ${scad} si passa alla fase finale, ${GG_CONSOLIDAMENTO} giorni di sole conferme.`}]};
   }
   // fase di copertura
@@ -6471,7 +6560,10 @@ function prospettoPiano(){
     {n: fmtN(P.giorni), t: `giorni fino al ${scad}`}];
   const messaggi = [];
   let semaforo = 'ok';
-  if(P.oltreIlTetto){
+  if(!isFinite(P.domCopNecessarie)){
+    semaforo = 'attenzione';
+    messaggi.push({cls: 'attenzione', txt: `<b>Con il tuo mix la banca dati non si chiude:</b> non entrano domande nuove e ne restano <b>${fmtN(P.U)}</b> mai viste. Alza le nuove o torna al piano.`});
+  } else if(P.oltreIlTetto){
     semaforo = 'allarme';
     messaggi.push({cls: 'allarme', txt:
       `<b>Bisogna intervenire.</b> Per finire la banca dati entro il ${scad} servirebbero <b>${fmtN(P.domCopNecessarie)}</b> domande al giorno, `
@@ -6495,18 +6587,24 @@ function prospettoPiano(){
           : `, giusto in tempo per il ${scad}: non c'è margine, se salti un giorno lo perdi.`)});
   }
   // nel caso d'allarme la data al tetto e' gia' stata detta sopra: ripeterla confonde
-  if(semaforo !== 'allarme') messaggi.push({cls: '', txt:
+  if(semaforo !== 'allarme' && P.isoFineAlTetto) messaggi.push({cls: '', txt:
     `Il passo è di <b>${TETTO_GIORNO} domande al giorno</b> (${Math.round(TETTO_GIORNO/N_TEST*10)/10} test): tenendolo, la banca dati finisce il <b>${alTetto}</b> `
     + `e da lì il posto delle domande nuove passa alle <b>riconferme</b> — te lo scrivo qui quando succede. `
     + `Il minimo per non sforare il ${scad} sarebbe <b>${fmtN(P.domCopAlGiorno)}</b> al giorno.`});
   return {fase: 'Copertura', semaforo,
-    titolo: `Ogni test: ${P.nuovePerTest} domande nuove e ${N_TEST - P.nuovePerTest} di recupero`,
+    titolo: `Oggi ogni test porta ${P.nuovePerTest} domande nuove`,
     voci, messaggi};
 }
 function renderProspetto(){
   const el = $('card-prospetto'); if(!el) return;
-  if(!pianoAttivo() || oggiISO() > DATA_ESAME){ el.classList.add('nascosto'); return; }
+  if(oggiISO() > DATA_ESAME){ el.classList.add('nascosto'); return; }
   const p = prospettoPiano();
+  // chi decide il mix si vede anche qui, e col mix suo c'e' la strada per tornare al piano
+  p.fase = pianoAttivo() ? `Piano · fase ${faseOggi().n} di 3` : 'Mix scelto da te';
+  if(!pianoAttivo()){
+    const m = mixScelto();
+    p.messaggi.unshift({cls: '', txt: `Stai usando il tuo mix (<b>${m.n}% nuove · ${m.k}% sbagliate · ${m.r}% da riconfermare</b>): i conti qui sotto sono fatti con quello. <a href="#" class="prs-torna" data-torna-piano>Torna al piano</a>`});
+  }
   el.classList.remove('nascosto');
   el.classList.toggle('pr-allarme', p.semaforo === 'allarme');
   el.classList.toggle('pr-attenzione', p.semaforo === 'attenzione');
@@ -6515,6 +6613,8 @@ function renderProspetto(){
     + `<span class="prs-fase">${p.fase}</span></div>`
     + `<div class="prs-griglia">${p.voci.map(v => `<div class="prs-voce"><b>${v.n}</b><span>${v.t}</span></div>`).join('')}</div>`
     + p.messaggi.map(m => `<div class="prs-msg ${m.cls}">${m.txt}</div>`).join('');
+  const torna = el.querySelector('[data-torna-piano]');
+  if(torna) torna.onclick = e => { e.preventDefault(); stato.pianoAuto = true; aggiornaDopoMix(); };
 }
 
 function argomentiSelezionati(){
@@ -6604,40 +6704,39 @@ function piano(){
   // e nei giorni che restano quasi mai ci sta. Coprirla — cioe' incontrare almeno
   // una volta ogni domanda — costa molto meno, e ha una data di fine calcolabile.
   // L'app deve dire tutte e due le cose senza confonderle.
-  const nuovePerTest = Math.max(1, Math.round(N_TEST * QUOTA_NUOVE));
-  const testCopertura = Math.ceil(L.U / nuovePerTest);           // test che mancano per finire il giro
-  const testCopAlGiorno = L.U > 0 ? testCopertura / gg : 0;
+  // La quota di nuove cambia con la fase (e con il mix, se lo sceglie lei): la
+  // copertura si conta giorno per giorno, domeniche escluse.
+  const cop = isoCopertura();
+  const studio = giorniStudio(oggiISO(), cop);
+  const sommaQuote = studio.reduce((acc, d) => acc + quotaNuoveGiorno(d), 0);   // in "test equivalenti"
+  const qOggi = quotaNuoveGiorno(oggiISO());
+  const nuovePerTest = Math.round(N_TEST * qOggi);
+  const testCopertura = nuovePerTest > 0 ? Math.ceil(L.U / nuovePerTest) : 0;
   // Il fabbisogno vero, e quello che si chiede davvero: sopra il tetto giornaliero
-  // non si va, perche' un obiettivo che non si puo' fare non e' un obiettivo. Se il
-  // fabbisogno supera il tetto vuol dire che il piano non regge piu' da solo, e
-  // l'app lo deve dire invece di alzare in silenzio l'asticella.
-  const domCopNecessarie = L.U > 0 ? Math.ceil(testCopAlGiorno * N_TEST) : 0;
+  // non si va. Se il fabbisogno supera il tetto l'app lo deve dire.
+  const domCopNecessarie = L.U > 0 ? (sommaQuote > 0 ? Math.ceil(L.U / sommaQuote) : Infinity) : 0;
+  const testCopAlGiorno = isFinite(domCopNecessarie) ? domCopNecessarie / N_TEST : 0;
   const domCopAlGiorno = Math.min(TETTO_GIORNO, domCopNecessarie);
-  const oltreIlTetto = domCopNecessarie > TETTO_GIORNO;
+  const oltreIlTetto = isFinite(domCopNecessarie) && domCopNecessarie > TETTO_GIORNO;
   // tenendo il tetto ogni giorno, quando finirebbe la copertura
-  const nuoveAlTetto = Math.max(1, Math.round(TETTO_GIORNO * QUOTA_NUOVE));
-  const ggAlTetto = L.U > 0 ? Math.ceil(L.U / nuoveAlTetto) : 0;
-  const isoFineAlTetto = L.U > 0 ? oggiPiuISO(ggAlTetto - 1) : oggiISO();
-
-  // L'OBIETTIVO DI OGGI. Non e' il minimo che basterebbe per arrivare in tempo:
-  // e' il ritmo scelto, 300 domande al giorno, tutti i giorni finche' c'e' da
-  // coprire. Si abbassa solo quando quello che resta e' meno di una giornata.
+  const nuoveAlTetto = Math.round(TETTO_GIORNO * qOggi);
+  const isoFineAlTetto = fineCoperturaA(L.U, TETTO_GIORNO);
+  const ggAlTetto = isoFineAlTetto ? giorniFra(oggiISO(), isoFineAlTetto) + 1 : 0;
+  // L'OBIETTIVO DI OGGI: il passo scelto, tre ore al giorno, finche' c'e' da coprire.
+  // Si abbassa solo quando quello che resta e' meno di una giornata.
   const domObiettivo = L.U > 0
-    ? Math.min(TETTO_GIORNO, Math.max(N_TEST, Math.ceil(L.U / QUOTA_NUOVE)))
+    ? Math.min(TETTO_GIORNO, Math.max(N_TEST, qOggi > 0 ? Math.ceil(L.U / qOggi) : TETTO_GIORNO))
     : Math.min(TETTO_GIORNO, Math.max(N_TEST, dom));
   const testObiettivo = Math.round(domObiettivo / N_TEST * 10) / 10;
   // quante domande mai viste incontra davvero in un giorno, misurate
   const conNuove = recenti.filter(g => g.nuove !== undefined);
   const ritmoNuove = conNuove.length
     ? Math.round(conNuove.reduce((a, g) => a + (g.nuove || 0), 0) / conNuove.length)
-    : Math.round(ritmo * QUOTA_NUOVE);
-  // il giorno in cui la copertura finisce, al ritmo di adesso
-  // giorni di studio che servono, oggi compreso: se ne servono 28 e oggi e' il primo,
-  // l'ultimo e' fra 27 giorni, non fra 28. Senza il -1 la data usciva sballata di uno.
-  const ggAllaCopertura = (L.U > 0 && ritmoNuove > 0) ? Math.ceil(L.U / ritmoNuove) : 0;
-  const isoFineCopertura = L.U === 0 ? oggiISO()
-                         : (ritmoNuove > 0 ? oggiPiuISO(ggAllaCopertura - 1) : null);
-  const coperturaInTempo = L.U === 0 || (ritmoNuove > 0 && ggAllaCopertura <= gg);
+    : Math.round(ritmo * qOggi);
+  // il giorno in cui la copertura finisce al ritmo di adesso, con la quota di ogni fase
+  const isoFineCopertura = L.U === 0 ? oggiISO() : (ritmo > 0 ? fineCoperturaA(L.U, ritmo) : null);
+  const ggAllaCopertura = (L.U > 0 && isoFineCopertura) ? giorniFra(oggiISO(), isoFineCopertura) + 1 : 0;
+  const coperturaInTempo = L.U === 0 || (!!isoFineCopertura && isoFineCopertura <= cop);
 
   return {...L, giorni: gg, domandeAlGiorno: dom, testAlGiorno: Math.ceil(testGiorno*10)/10,
           ritmoAttuale: ritmo, testRimasti,
@@ -6682,85 +6781,123 @@ function quoteArgomento(sel, quante){
   sel.forEach(a => { if(out[a] === undefined) out[a] = 0; });
   return out;
 }
-const QUOTA_NUOVE = 0.70, QUOTA_RIC = 0.00, QUOTA_RIP = 0.30;
+const QUOTA_NUOVE = 0.70, QUOTA_RIP = 0.30;
 const CODA_RIC = 0.60, CODA_RIP = 0.40;
 // Una fetta di ogni test va a domande lasciate ferme a lungo. Servono a misurare
 // quanto dimentica: senza queste, le fasce a 3 e 7 giorni restano vuote e la
 // tenuta a settimane resta un'ipotesi invece di un dato.
 const SONDE = 4;
-// Quota di domande nuove per materia e per fase. Nella prima settimana del nuovo
-// giro (fino al 26 ottobre) si lavora soprattutto sulle sbagliate, con Matematica
-// in testa; poi si copre il resto della banca dati entro l'inizio del consolidamento.
-// Matematica tiene sempre più spazio per i ripassi: è la materia che all'esame del
-// 15 ottobre è costata 13 dei 27 punti persi.
-function quotaNuoveOggi(arg){
-  const mat = arg === 'Matematica ed economia finanziaria';
-  if(oggiISO() <= FINE_FASE_MAT) return mat ? 0.25 : 0.45;
-  return mat ? 0.50 : QUOTA_NUOVE;
+const MATEMATICA = 'Matematica ed economia finanziaria';
+
+// ============ IL MIX DEL TEST ============
+// Una sola fonte per la composizione di un test. La usano il test vero, il pannello
+// del mix, l'obiettivo del giorno, il prospetto, il calendario e la proiezione: se il
+// mix cambia — perche' cambia la fase o perche' lo sceglie lei — cambia tutto insieme.
+// Prima c'erano due conti diversi (uno per il test, uno per i numeri a schermo) e
+// quello che si leggeva non era quello che usciva.
+function isoPiu(iso, n){
+  const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
 }
-function composizionePiano(s, quante, arg){
-  const N = quante || N_TEST;
-  const qNuove = arg ? quotaNuoveOggi(arg) : QUOTA_NUOVE;
-  const qRip = arg ? 1 - qNuove : QUOTA_RIP;
-  const P = piano();
-  const q = f => Math.round(N * f);
-  const finale = P.immissioneChiusa;
-  // Quando la banca dati e' tutta vista almeno una volta, il posto della copertura
-  // passa alle riconferme: la proporzione resta 70/30, ma il 70 non e' piu' materiale
-  // nuovo, e' quello che ha incontrato una volta sola e va riportato a galla.
-  const coperturaFinita = !finale && s.nuove === 0;
-  let nNew = (finale || coperturaFinita) ? 0 : Math.min(s.nuove, q(qNuove));
-  let nRic = Math.min(s.ricEleg || 0, q(finale ? CODA_RIC : (coperturaFinita ? qNuove : QUOTA_RIC)));
-  let nRip = Math.min(s.koEleg || 0, q(finale ? CODA_RIP : qRip));
-  // Se una coda e' a secco i posti liberi si riassegnano in ordine di priorita':
-  // prima la copertura, poi gli errori da recuperare, poi le riconferme.
+// Le tre fasi del piano verso l'esame.
+function fasiPiano(){
+  const cop = isoCopertura();
+  return [
+    {id: 'mat', n: 1, nome: 'Lacune di Matematica', dal: INIZIO_CICLO, al: FINE_FASE_MAT,
+     cosa: 'Si lavora soprattutto sulle domande sbagliate. In Matematica sette domande su dieci sono da recuperare, nelle altre materie poco meno della metà.'},
+    {id: 'banca', n: 2, nome: 'Tutta la banca dati', dal: isoPiu(FINE_FASE_MAT, 1), al: cop,
+     cosa: 'Si vedono le domande mai incontrate: nelle altre materie sette su dieci sono nuove, in Matematica metà nuove e metà da recuperare.'},
+    {id: 'ripasso', n: 3, nome: 'Ripasso totale', dal: isoPiu(cop, 1), al: DATA_ESAME,
+     cosa: 'Niente più domande nuove: 60% riconferme e 40% sbagliate, per arrivare all\'esame con tutto fresco.'}];
+}
+function faseDel(iso){
+  iso = iso || oggiISO();
+  if(iso <= FINE_FASE_MAT) return 'mat';
+  if(iso <= isoCopertura()) return 'banca';
+  return 'ripasso';
+}
+function faseOggi(){ const id = faseDel(); return fasiPiano().find(f => f.id === id); }
+function dataBreve(iso){ return new Date(iso + 'T12:00:00').toLocaleDateString('it-IT', {day: 'numeric', month: 'short'}); }
+function dataLunga(iso){ return new Date(iso + 'T12:00:00').toLocaleDateString('it-IT', {day: 'numeric', month: 'long'}); }
+
+// Le quote del piano per una materia in un dato giorno: n nuove, k sbagliate, r riconferme.
+// Matematica tiene sempre piu' spazio per i ripassi: all'esame del 15 ottobre e' costata
+// 13 dei 27 punti persi.
+function quotePianoMateria(arg, iso){
+  const f = faseDel(iso), mat = arg === MATEMATICA;
+  if(f === 'ripasso') return {n: 0, k: CODA_RIP, r: CODA_RIC};
+  if(f === 'mat') return mat ? {n: .30, k: .70, r: 0} : {n: .55, k: .45, r: 0};
+  return mat ? {n: .50, k: .50, r: 0} : {n: QUOTA_NUOVE, k: QUOTA_RIP, r: 0};
+}
+function pianoAttivo(){ return stato.pianoAuto !== false; }
+// Il mix scelto da lei: tre percentuali (nuove, sbagliate, da riconfermare) che fanno
+// sempre 100 e valgono uguali per tutte le materie.
+function mixScelto(){
+  let n = stato.mixNuove, k = stato.mixKo, r = stato.mixRic;
+  const ok = v => typeof v === 'number' && v >= 0 && v <= 100;
+  if(!ok(n)) n = 30;
+  if(!ok(k)) k = 60;
+  if(!ok(r)) r = Math.max(0, 100 - n - k);   // salvataggi vecchi: il resto andava alle "gia' indovinate"
+  const t = (n + k + r) || 1;
+  n = Math.round(100 * n / t); k = Math.round(100 * k / t);
+  return {n, k, r: Math.max(0, 100 - n - k)};
+}
+function mixNuove(){ return mixScelto().n; }
+function mixKo(){ return mixScelto().k; }
+function mixRic(){ return mixScelto().r; }
+function quoteMateria(arg, iso){
+  if(pianoAttivo()) return quotePianoMateria(arg, iso);
+  const m = mixScelto();
+  return {n: m.n / 100, k: m.k / 100, r: m.r / 100};
+}
+// Esegue fn come se fosse attivo il piano: serve per confrontare il mix scelto da lei
+// con quello che farebbe il piano.
+function conPiano(fn){
+  const prima = stato.pianoAuto;
+  stato.pianoAuto = true;
+  try { return fn(); } finally { stato.pianoAuto = prima; }
+}
+
+// La composizione di un blocco di N domande di una materia, dato lo stato del suo materiale.
+function composizioneMateria(s, N, arg, iso){
+  const auto = pianoAttivo();
+  const fase = faseDel(iso);
+  const q = quoteMateria(arg, iso);
+  let pn = q.n, pr = q.r;
+  // Col piano: finita la banca dati di una materia, il posto delle nuove passa alle riconferme.
+  if(auto && s.nuove === 0 && pn > 0){ pr += pn; pn = 0; }
+  // Si arrotondano due voci e la terza prende il resto: cosi' il blocco fa sempre N.
+  let nNew = Math.round(N * pn);
+  let nRic = Math.min(N - nNew, Math.round(N * pr));
+  let nRip = N - nNew - nRic;
+  nNew = Math.min(nNew, s.nuove);
+  nRic = Math.min(nRic, s.ricEleg || 0);
+  nRip = Math.min(nRip, s.koEleg || 0);
+  // Se una coda e' a secco, i posti liberi passano alle altre: prima le nuove (solo se
+  // il mix ne prevede: con le nuove a zero restano a zero), poi le sbagliate, poi le riconferme.
   let vuoti = N - nNew - nRic - nRip;
-  const versa = (avanti, disponibili) => {
-    const n = Math.max(0, Math.min(vuoti, disponibili));
-    vuoti -= n; return avanti + n;
+  const versa = (attuale, disponibili) => {
+    const x = Math.max(0, Math.min(vuoti, disponibili - attuale));
+    vuoti -= x; return attuale + x;
   };
-  if(!finale) nNew = versa(nNew, s.nuove - nNew);
-  if(coperturaFinita){
-    // finita la copertura, i posti liberi vanno prima alle riconferme: sono loro
-    // che hanno preso il posto delle domande nuove
-    nRic = versa(nRic, (s.ricEleg || 0) - nRic);
-    nRip = versa(nRip, (s.koEleg || 0) - nRip);
-  } else {
-    nRip = versa(nRip, (s.koEleg || 0) - nRip);
-    nRic = versa(nRic, (s.ricEleg || 0) - nRic);
-  }
-  // Il mantenimento aspetta: finche' restano domande mai viste, da confermare o
-  // da recuperare, ogni posto speso su una gia' consolidata e' un posto tolto
-  // alla copertura — e una probabilita' in piu' di rimandarla a zero.
-  const terrenoScoperto = (s.nuove > 0) || (s.ko > 0) || (s.daRiconf > 0);
-  // Negli ultimi dieci giorni il ripasso di cio' che e' gia' chiuso e' solo un
-  // rischio: se si rompe qualcosa non c'e' piu' tempo per rimetterlo a posto.
-  const nVin = (terrenoScoperto || inFaseFinale()) ? 0 : Math.min(s.okEleg || 0, vuoti);
-  // Le sonde escono SOLO dalla quota di copertura: costano quattro domande su
-  // sessanta e in cambio dicono se quello che ha imparato regge a settimane.
-  // Non toccano mai gli errori ne' le riconferme, e nella coda finale non
-  // servono piu': li' si sta gia' ripassando tutto quello che e' aperto.
+  const nuoveAmmesse = pn > 0;
+  if(nuoveAmmesse) nNew = versa(nNew, s.nuove);
+  nRip = versa(nRip, s.koEleg || 0);
+  nRic = versa(nRic, s.ricEleg || 0);
+  // Le gia' consolidate: col piano solo quando non resta nient'altro da fare (e mai
+  // negli ultimi dieci giorni); col mix scelto da lei riempiono i posti rimasti.
+  const terrenoScoperto = (nuoveAmmesse && s.nuove > 0) || (s.ko > 0) || (s.daRiconf > 0);
+  const nVin = (auto && (terrenoScoperto || fase === 'ripasso')) ? 0 : Math.min(s.okEleg || 0, vuoti);
+  // Le sonde escono SOLO dalla quota delle nuove e solo col piano: costano poche
+  // domande e dicono se quello che ha imparato regge a settimane.
   let nSonda = 0;
-  if(!finale && !inFaseFinale()){
-    // le sonde in proporzione alla dimensione del blocco
-    const q_s = Math.max(1, Math.round(SONDE * N / N_TEST));
-    nSonda = Math.min(q_s, s.sonde || 0, nNew);
+  if(auto && fase !== 'ripasso'){
+    const qs = Math.max(1, Math.round(SONDE * N / N_TEST));
+    nSonda = Math.min(qs, s.sonde || 0, nNew);
     nNew -= nSonda;
   }
   return {nRip, nNew, nVin, nRic, nSonda};
 }
-function pianoAttivo(){ return stato.pianoAuto !== false; }
-
-function mixNuove(){
-  const m = stato.mixNuove;
-  return (typeof m === 'number' && m >= 0 && m <= 100) ? m : 70;
-}
-function mixKo(){
-  let k = stato.mixKo;
-  if(typeof k !== 'number' || k < 0 || k > 100) k = 100 - mixNuove();
-  return Math.min(k, 100 - mixNuove());
-}
-function mixVinte(){ return 100 - mixNuove() - mixKo(); }
 // una domanda già indovinata torna proponibile dopo 5 test; a ogni consolidamento riuscito l'attesa si allunga (10, poi 15)
 function vintaProponibile(r){
   const perGiorni = scadutaAGiorni(r);
@@ -6771,27 +6908,79 @@ function vintaProponibile(r){
   const soglia = Math.min(15, 5 * ((r.v || 0) + 1));
   return (stato.nTest || 0) - (r.u || 0) >= soglia;
 }
-
-// Fino a un quarto del test è riservato alle riconferme in scadenza: una domanda
-// vista una volta sola non si può considerare acquisita, e questa quota lo garantisce
-// senza togliere spazio alle quote scelte con i cursori.
-const QUOTA_RICONFERME = 0.25;
-function composizione(s, soloErr, quante, arg){
+function composizione(s, soloErr, quante, arg, iso){
   const N = quante === undefined ? N_TEST : quante;
-  if(soloErr) return {nRip: Math.min(N, s.ko), nNew: 0, nVin: 0, nRic: 0};
-  if(pianoAttivo()) return composizionePiano(s, N, arg);
-  const nRic = Math.min(s.ricEleg || 0, Math.round(N * QUOTA_RICONFERME));
-  const resto = N - nRic;
-  let nVin = Math.min(s.okEleg || 0, Math.round(resto * mixVinte() / 100));
-  let nRip = Math.min(s.koEleg, Math.round(resto * mixKo() / 100));
-  let nNew = Math.min(s.nuove, resto - nRip - nVin);
-  nRip = Math.min(s.koEleg, resto - nNew - nVin);
-  nVin = Math.min(s.okEleg || 0, resto - nNew - nRip);
-  return {nRip, nNew, nVin, nRic};
+  if(soloErr) return {nRip: Math.min(N, s.ko), nNew: 0, nVin: 0, nRic: 0, nSonda: 0};
+  return composizioneMateria(s, N, arg, iso);
+}
+
+// Il prossimo test, materia per materia: e' quello che il pannello mostra e quello che
+// avviaTest estrae (stesse quote, stessa funzione).
+const NOMI_BREVI = {
+  'Diritto mercato finanziario': 'Mercato', [MATEMATICA]: 'Matematica',
+  'Diritto privato e commerciale': 'Privato', 'Diritto tributario': 'Tributario',
+  'Diritto previdenziale e assicurativo': 'Previdenza'};
+function nomeBreve(a){ return NOMI_BREVI[a] || a.split(' ')[0]; }
+function mixTest(sel, iso){
+  sel = sel || argomentiSelezionati();
+  const quote = quoteArgomento(sel, N_TEST);
+  const chk = $('chk-solo-errori');
+  const soloErr = !!(chk && chk.checked);
+  const righe = [], tot = {nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
+  STRUTTURA_ESAME.forEach(([a]) => {
+    if(!sel.includes(a)) return;
+    const pool = QUESTIONS.filter(q => q.t === a && nelPool(q, sel));
+    const c = composizione(statiPool(pool), soloErr, quote[a] || 0, a, iso);
+    const n = c.nNew + c.nRip + c.nRic + c.nVin + c.nSonda;
+    righe.push({a, nome: nomeBreve(a), quota: quote[a] || 0, ...c, n});
+    ['nNew', 'nRip', 'nRic', 'nVin', 'nSonda'].forEach(k => tot[k] += c[k]);
+    tot.n += n;
+  });
+  return {righe, tot, soloErr};
+}
+
+// Quante domande mai viste porta un test da 60 in un dato giorno, con le code piene.
+// Serve a proiettare in avanti: la quota cambia con la fase (o con il mix scelto).
+const CODE_PIENE = {nuove: 1e9, ko: 1e9, koEleg: 1e9, ricEleg: 1e9, okEleg: 1e9, daRiconf: 1e9, sonde: 1e9};
+function quotaNuoveGiorno(iso){
+  const sel = STRUTTURA_ESAME.map(x => x[0]);
+  const quote = quoteArgomento(sel, N_TEST);
+  let n = 0;
+  sel.forEach(a => { n += composizioneMateria(CODE_PIENE, quote[a] || 0, a, iso).nNew; });
+  return n / N_TEST;
+}
+// I giorni di studio fra due date, domeniche escluse.
+function giorniStudio(daIso, aIso){
+  const out = [];
+  for(let d = daIso, i = 0; d <= aIso && i < 400; d = isoPiu(d, 1), i++) if(!eGiornoRiposo(d)) out.push(d);
+  return out;
+}
+// Quante domande nuove si incontrano facendo domAlGiorno domande in ogni giorno di studio fino ad aIso.
+function nuoveFinoA(domAlGiorno, aIso){
+  return giorniStudio(oggiISO(), aIso).reduce((s, d) => s + domAlGiorno * quotaNuoveGiorno(d), 0);
+}
+// Il giorno in cui si finiscono di vedere U domande facendone domAlGiorno al giorno.
+// Oltre la scadenza della copertura il piano non apre piu' nuove: per dire "quando
+// finiresti" si tiene la quota dell'ultimo giorno di copertura.
+function fineCoperturaA(U, domAlGiorno){
+  if(U <= 0) return oggiISO();
+  if(!(domAlGiorno > 0)) return null;
+  const cop = isoCopertura();
+  let resto = U, d = oggiISO();
+  for(let i = 0; i < 400; i++, d = isoPiu(d, 1)){
+    if(eGiornoRiposo(d)) continue;
+    const q = quotaNuoveGiorno(d <= cop ? d : cop);
+    if(q <= 0 && d > cop) return null;
+    resto -= domAlGiorno * q;
+    if(resto <= 0) return d;
+  }
+  return null;
+}
+function giorniFra(daIso, aIso){
+  return Math.round((new Date(aIso + 'T00:00:00Z') - new Date(daIso + 'T00:00:00Z')) / 86400000);
 }
 
 function aggiornaNota(){
-  if(typeof aggiornaQuotaRiconferme === 'function') aggiornaQuotaRiconferme();
   const sel = argomentiSelezionati();
   const pool = QUESTIONS.filter(q => nelPool(q, sel));
   const s = statiPool(pool);
@@ -6801,6 +6990,7 @@ function aggiornaNota(){
   const disponibili = soloErr ? s.ko
     : (s.koEleg + s.nuove + (s.okEleg || 0) + (s.ricEleg || 0)) || (s.tot - s.nuove);
   $('btn-avvia').disabled = disponibili === 0;
+  if(typeof renderMix === 'function') renderMix();
   if(pool.length === 0){ $('nota-pool').textContent = 'Seleziona almeno un argomento.'; return; }
   if(disponibili === 0){
     const pausate = s.ko - s.koEleg;
@@ -6811,19 +7001,16 @@ function aggiornaNota(){
         : 'Hai superato tutte le domande di questi argomenti! Azzera i progressi per ricominciare.');
     return;
   }
-  const c = composizione(s, soloErr);
-  $('mix-nuove').disabled = soloErr;
-  $('mix-ko').disabled = soloErr;
+  // La composizione del prossimo test e' gia' nel pannello del mix: qui restano solo
+  // le cose che il pannello non dice (pause e filtri).
   const inPausa = s.ko - s.koEleg;
   const filtri = argFiltrati(sel);
   const notaSa = filtri.length
     ? ' Filtro sottoargomenti attivo: ' + filtri.map(f => `${f.a.split(' ')[0]} ${f.on}/${f.tot}`).join(', ') + '.'
     : '';
   $('nota-pool').textContent = (soloErr
-    ? `Prossimo test: ${c.nRip} domande, tutte dal ripasso (${s.ko} da recuperare in questi argomenti).`
-    : `Prossimo test: ${c.nRip + c.nNew + (c.nVin || 0)} domande — ${c.nNew} nuove + ${c.nRip} sbagliate` +
-      ((c.nVin || mixVinte()) ? ` + ${c.nVin || 0} già indovinate` : '') + '.'
-      + (inPausa ? ` ${inPausa} sbagliate sono in pausa: torneranno dopo qualche altro test (ripasso distanziato ogni 4-5 test).` : '')) + notaSa;
+    ? `Prossimo test: solo sbagliate (${s.ko} da recuperare in questi argomenti).`
+    : (inPausa ? `${inPausa} sbagliate sono in pausa: tornano più avanti, è il ripasso distanziato.` : '')) + notaSa;
 }
 
 // ---------- similarità per parole chiave e tematiche (1-3 parole) ----------
@@ -7775,6 +7962,12 @@ function calendarioPiano(){
   }
   return {celle, piano: P, fineCop, fineEsame, oggi};
 }
+// Se domani cambia la quota di nuove (cambio di fase), il calendario lo dice.
+function notaNuoveProssimaFase(){
+  if(!pianoAttivo() || faseDel() !== 'mat') return '';
+  const dal = isoPiu(FINE_FASE_MAT, 1);
+  return ` (dal ${dataLunga(dal)} salgono a ${Math.round(N_TEST * quotaNuoveGiorno(dal))})`;
+}
 function renderCalendario(){
   const el = $('cal-griglia'); if(!el) return;
   const C = calendarioPiano(), P = C.piano;
@@ -7815,8 +8008,8 @@ function renderCalendario(){
         + `Servono <b>${fmtN(P.domandeAlGiorno)}</b> domande al giorno (<b>${P.testAlGiorno}</b> test) per consolidarla.`
       : `Da oggi al ${scad} restano <b>${P.giorni}</b> giorni e <b>${fmtN(P.U)}</b> domande mai viste. `
         + `Il passo è di <b>${fmtN(P.domObiettivo)}</b> domande al giorno (<b>${P.testObiettivo}</b> test), `
-        + `perché ogni test da ${N_TEST} ne porta <b>${P.nuovePerTest}</b> di nuove e ${N_TEST - P.nuovePerTest} di recupero: `
-        + `tenendolo, la banca dati si chiude il <b>${new Date(P.isoFineAlTetto).toLocaleDateString('it-IT',{day:'numeric',month:'long'})}</b>. `
+        + `perché oggi ogni test da ${N_TEST} ne porta <b>${P.nuovePerTest}</b> di nuove${notaNuoveProssimaFase()}: `
+        + (P.isoFineAlTetto ? `tenendolo, la banca dati si chiude il <b>${dataLunga(P.isoFineAlTetto)}</b>. ` : `con questo mix la banca dati non si chiude. `)
         + `Il minimo per non sforare sarebbe ${fmtN(P.domCopAlGiorno)} al giorno.`)
     + ` Dopo il ${scad} non si aprono più domande nuove: i <b>${GG_CONSOLIDAMENTO} giorni</b> fino all'esame servono a confermare quelle già incontrate.<br>`
     + `Finora: <b>${fatti}</b> ${fatti === 1 ? 'giornata piena' : 'giornate piene'}, `
@@ -8348,89 +8541,169 @@ $('chk-solo-aperte').onchange = renderRipasso;
 $('chk-solo-errori').onchange = aggiornaNota;
 $('chk-autosave').onchange = () => { stato.autosave = $('chk-autosave').checked; salvaLocale(); };
 $('amore-chiudi').onclick = () => $('velo-amore').classList.add('nascosto');
-// Il quarto riservato alle riconferme non passa dai cursori: va dichiarato,
-// altrimenti le percentuali mostrate non corrispondono al test reale.
-// Come sarebbe composto il prossimo test secondo il piano automatico, in percentuale:
-// serve a far vedere sui cursori quello che il piano sta davvero facendo, invece di
-// una posizione che non c'entra niente con il test che parte.
-function quotePiano(){
-  const s = statiPool(QUESTIONS.filter(q => nelPool(q, argomentiSelezionati())));
-  const c = composizionePiano(s, N_TEST);
-  const tot = (c.nNew + c.nRip + c.nRic + c.nVin + (c.nSonda || 0)) || N_TEST;
-  const pc = n => Math.round(100 * n / tot);
-  return {nuove: pc(c.nNew), ko: pc(c.nRip), vinte: pc(c.nVin + (c.nSonda || 0)), c};
+// ---------- il pannello del mix: "Segui il piano" oppure "Scelgo io" ----------
+// Due modi, e deve essere chiaro quale e' acceso. Col piano il pannello spiega la fase
+// e mostra il test che uscira'; scegliendo lei, tre cursori (nuove, sbagliate, da
+// riconfermare) che valgono per tutte le materie, con l'effetto sul programma.
+// In tutti e due i casi barra e tabella sono calcolate dalla stessa funzione che
+// estrae il test: quello che si legge e' quello che esce.
+const VOCI_MIX = [
+  {k: 'nNew',   nome: 'Nuove',           breve: 'Nuove',   cls: 'sp-nuova',  seg: 'mx-nuove'},
+  {k: 'nRip',   nome: 'Sbagliate',       breve: 'Sbagl.',  cls: 'sp-aperta', seg: 'mx-sbagl'},
+  {k: 'nRic',   nome: 'Da riconfermare', breve: 'Riconf.', cls: 'sp-attesa', seg: 'mx-ric'},
+  {k: 'nRipe',  nome: 'Ripescate',       breve: 'Ripesc.', cls: 'sp-salda',  seg: 'mx-ripe'}];
+function vociRiga(c){ return {nNew: c.nNew, nRip: c.nRip, nRic: c.nRic, nRipe: (c.nSonda || 0) + (c.nVin || 0)}; }
+
+function renderMixFasi(){
+  const el = $('mix-fasi'); if(!el) return;
+  if(!pianoAttivo()){ el.innerHTML = ''; el.classList.add('nascosto'); return; }
+  el.classList.remove('nascosto');
+  const f = faseOggi();
+  const prima = oggiISO() < INIZIO_CICLO;
+  el.innerHTML =
+    `<ol class="mix-fasi">${fasiPiano().map(x => {
+        const st = x.id === f.id && !prima ? 'ora' : (x.al < oggiISO() ? 'fatta' : '');
+        return `<li class="${st}"><span class="mf-n">Fase ${x.n}</span><b>${x.nome}</b>`
+          + `<span class="mf-d">${dataBreve(x.dal)} – ${dataBreve(x.al)}</span></li>`;
+      }).join('')}</ol>`
+    + `<p class="mix-cosa"><b>Oggi: fase ${f.n}.</b> ${f.cosa}</p>`;
 }
 
-function aggiornaQuotaRiconferme(){
-  const riga = $('mix-riconferme'); if(!riga) return;
+function renderMixCursori(){
+  const el = $('mix-cursori'); if(!el) return;
   const auto = pianoAttivo();
-  const s = statiPool(QUESTIONS.filter(q => nelPool(q, argomentiSelezionati())));
-  const nRic = auto ? composizionePiano(s, N_TEST).nRic
-                    : Math.min(s.ricEleg || 0, Math.round(N_TEST * QUOTA_RICONFERME));
-  riga.classList.toggle('nascosto', nRic === 0);
-  if(nRic) $('mix-val-r').textContent = Math.round(100 * nRic / N_TEST) + '%';
-  const resto = N_TEST - nRic;
-  // Il conto «la percentuale si applica al resto» vale solo quando comandano i cursori:
-  // col piano attivo le percentuali mostrate sono gia' quelle del test che parte.
-  [['n', mixNuove()], ['k', mixKo()], ['v', mixVinte()]].forEach(([k, q]) => {
-    const el = $('mix-val-' + k); if(!el) return;
-    el.title = (!auto && nRic) ? `≈ ${Math.round(resto * q / 100)} domande su ${N_TEST}: la percentuale si applica alle ${resto} non riservate` : '';
+  el.classList.toggle('nascosto', auto);
+  if(auto) return;
+  const m = mixScelto();
+  [['n', m.n], ['k', m.k], ['r', m.r]].forEach(([k, v]) => {
+    const inp = $('mix-' + k);
+    if(inp && document.activeElement !== inp) inp.value = v;
+    $('mix-' + k + '-v').textContent = v + '%';
   });
 }
 
-function aggiornaMixLabel(){
-  // Due modi, e si deve vedere quale e' in funzione: o comanda il piano — e allora i
-  // cursori mostrano le sue quote — oppure comanda lei. Prima i cursori si muovevano
-  // senza che nessuno li leggesse: sembravano un comando e non lo erano.
-  const auto = pianoAttivo();
-  const q = auto ? quotePiano() : {nuove: mixNuove(), ko: mixKo(), vinte: mixVinte()};
-  $('mix-nuove').value = q.nuove;
-  $('mix-ko').value = q.ko;
-  $('mix-val-n').textContent = q.nuove + '%';
-  $('mix-val-k').textContent = q.ko + '%';
-  $('mix-val-v').textContent = q.vinte + '%';
-  $('mix-label').innerHTML = `<b>${q.nuove}%</b> nuove · <b class="rosso">${q.ko}%</b> sbagliate · <b>${q.vinte}%</b> vinte`;
-  const g = $('mix-guida');
-  if(g) g.innerHTML = auto
-    ? 'Mix deciso dal <b>piano</b> — sposta un cursore per decidere tu'
-    : 'Mix <b>scelto da te</b>';
-  const btn = $('mix-piano');
-  if(btn) btn.classList.toggle('nascosto', auto);
-  aggiornaQuotaRiconferme();
-}
-// Muovere un cursore vuol dire prendere il comando: il piano si fa da parte.
-function prendiIlComando(){
-  if(pianoAttivo()){
-    const q = quotePiano();            // si parte da dove stava il piano, non da un salto
-    stato.mixNuove = q.nuove;
-    stato.mixKo = Math.min(q.ko, 100 - q.nuove);
-    stato.pianoAuto = false;
+function renderMixEsito(){
+  const el = $('mix-esito'); if(!el) return;
+  const M = mixTest();
+  const T = vociRiga(M.tot), tot = M.tot.n || 1;
+  const barra = VOCI_MIX.filter(v => T[v.k] > 0)
+    .map(v => `<i class="${v.seg}" style="flex:${T[v.k]}" title="${v.nome}: ${T[v.k]}"></i>`).join('');
+  const leg = VOCI_MIX.filter(v => T[v.k] > 0 || v.k !== 'nRipe')
+    .map(v => `<span><i class="stato-p ${v.cls}"></i> <b>${T[v.k]}</b> ${v.nome.toLowerCase()}</span>`).join('');
+  const cella = n => n ? `<td>${n}</td>` : '<td class="zero">–</td>';
+  const tab = `<table class="mix-tab-mat">
+      <thead><tr><th>Materia</th>${VOCI_MIX.map(v => `<th><i class="stato-p ${v.cls}"></i><span>${v.breve}</span></th>`).join('')}</tr></thead>
+      <tbody>${M.righe.map(r => { const v = vociRiga(r);
+        return `<tr><th>${r.nome} <small>${r.n}</small></th>${VOCI_MIX.map(x => cella(v[x.k])).join('')}</tr>`; }).join('')}</tbody>
+    </table>`;
+  // Se scegliendo lei i numeri non tornano con le percentuali, e' perche' in qualche
+  // materia mancano domande pronte: va detto, altrimenti sembra un errore.
+  let scarto = '';
+  if(!pianoAttivo() && !M.soloErr){
+    const m = mixScelto();
+    const atteso = {nNew: m.n, nRip: m.k, nRic: m.r};
+    const diverso = ['nNew', 'nRip', 'nRic'].some(k => Math.abs(Math.round(tot * atteso[k] / 100) - M.tot[k]) >= 2);
+    if(diverso) scarto = `<p class="mix-scarto">I numeri non sono esattamente le tue percentuali: in qualche materia non ci sono abbastanza domande pronte di un tipo, e i posti passano agli altri.</p>`;
   }
+  el.innerHTML = (M.soloErr
+      ? `<p class="mix-scarto">È spuntato <b>Solo domande sbagliate</b>: il test è fatto solo di sbagliate. Togli la spunta (in "Scegli gli argomenti") per tornare al mix.</p>`
+      : '')
+    + `<div class="mix-barra" role="img" aria-label="Composizione del prossimo test">${barra}</div>`
+    + `<div class="mix-leg">${leg}<span class="mix-leg-tot">su ${M.tot.n}</span></div>`
+    + tab + scarto;
+  // anche il bottone dice com'e' fatto il test che parte
+  const sub = document.querySelector('#btn-avvia .sub-lungo');
+  if(sub) sub.textContent = M.soloErr ? `${M.tot.n} domande · solo sbagliate`
+    : `${M.tot.n} domande · ${T.nNew} nuove, ${T.nRip} sbagliate, ${T.nRic + T.nRipe} da riprendere`;
 }
-$('mix-nuove').oninput = () => {
-  const v = +$('mix-nuove').value;
-  prendiIlComando();
-  stato.mixNuove = v;
-  if(stato.mixKo > 100 - stato.mixNuove) stato.mixKo = 100 - stato.mixNuove;
-  aggiornaMixLabel();
-  aggiornaNota();
+
+function renderMixImpatto(){
+  const el = $('mix-impatto'); if(!el) return;
+  if(pianoAttivo()){ el.innerHTML = ''; el.classList.add('nascosto'); return; }
+  el.classList.remove('nascosto');
+  const P = piano();
+  const Q = conPiano(() => piano());
+  const cop = isoCopertura();
+  const m = mixScelto();
+  const f = faseOggi();
+  const riga = [];
+  if(P.U === 0){
+    riga.push('La banca dati è già tutta vista: il tuo mix decide solo quanto spazio dare a sbagliate e riconferme.');
+  } else if(f.id === 'ripasso'){
+    riga.push(m.n > 0
+      ? `In questi giorni il piano non mette domande nuove. Con il tuo mix ne vedi <b>${P.nuovePerTest}</b> per test: va bene solo se ti mancano poche domande.`
+      : 'Niente domande nuove, come prevede il piano per questi ultimi giorni.');
+  } else if(!m.n){
+    riga.push(`<span class="mix-male">Con le nuove a zero le <b>${fmtN(P.U)}</b> domande mai viste restano tali.</span> `
+      + (Q.isoFineAlTetto ? `Col piano le finiresti il <b>${dataLunga(Q.isoFineAlTetto)}</b>.` : ''));
+  } else {
+    const fine = P.isoFineAlTetto, fineP = Q.isoFineAlTetto;
+    const tardi = !fine || fine > cop;
+    riga.push(`Con il tuo mix un test porta <b>${P.nuovePerTest}</b> domande nuove (col piano oggi <b>${Q.nuovePerTest}</b>). `
+      + `Facendo ${TETTO_GIORNO} domande al giorno vedi tutta la banca dati `
+      + (fine ? `il <b>${dataLunga(fine)}</b>` : 'oltre l\'esame')
+      + (fineP ? ` (col piano il ${dataLunga(fineP)})` : '') + '. '
+      + (tardi
+        ? `<span class="mix-male">È dopo il ${dataLunga(cop)}, quando inizia il ripasso finale: qualche domanda arriverebbe all'esame mai vista.</span>`
+        : `<span class="mix-bene">Arrivi in tempo per il ripasso finale.</span>`));
+  }
+  el.innerHTML = `<p class="mix-impatto"><b>Effetto sul programma.</b> ${riga.join(' ')} L'obiettivo di oggi e il prospetto qui sotto sono già calcolati con il tuo mix.</p>`;
+}
+
+function renderMix(){
+  const auto = pianoAttivo();
+  const tp = $('mix-tab-piano'), tm = $('mix-tab-mio');
+  if(!tp || !tm) return;
+  tp.classList.toggle('on', auto); tm.classList.toggle('on', !auto);
+  tp.setAttribute('aria-checked', String(auto)); tm.setAttribute('aria-checked', String(!auto));
+  renderMixFasi();
+  renderMixCursori();
+  renderMixEsito();
+  renderMixImpatto();
+}
+// compatibilita': altre parti dell'app chiamano ancora questo nome
+function aggiornaMixLabel(){ renderMix(); }
+
+// Dopo un cambio di mix si ricalcola tutto quello che ne dipende.
+function aggiornaDopoMix(){
   salvaLocale();
-};
-$('mix-ko').oninput = () => {
-  const v = +$('mix-ko').value;
-  prendiIlComando();
-  stato.mixKo = Math.min(v, 100 - mixNuove());
-  aggiornaMixLabel();
   aggiornaNota();
-  salvaLocale();
-};
-$('mix-piano').onclick = (e) => {
-  e.preventDefault();
-  stato.pianoAuto = true;
-  salvaLocale();
-  aggiornaMixLabel();
-  aggiornaNota();
-};
+  renderObiettivo();
+  renderProspetto();
+  applicaFase();
+  if(typeof renderStato === 'function') renderStato();
+}
+// Tre percentuali che fanno 100: se ne muove una, le altre due si dividono il resto
+// mantenendo la proporzione che avevano fra loro.
+function impostaMix(chiave, v){
+  const m = mixScelto();
+  v = Math.max(0, Math.min(100, Math.round(v / 5) * 5));
+  const altri = ['n', 'k', 'r'].filter(x => x !== chiave);
+  const resto = 100 - v, somma = m[altri[0]] + m[altri[1]];
+  let a = somma ? Math.round(resto * m[altri[0]] / somma / 5) * 5 : (altri[0] === 'k' ? resto : 0);
+  a = Math.min(resto, a);
+  const nuovo = {[chiave]: v, [altri[0]]: a, [altri[1]]: resto - a};
+  stato.mixNuove = nuovo.n; stato.mixKo = nuovo.k; stato.mixRic = nuovo.r;
+}
+// Passando a "Scelgo io" si parte dal test che il piano farebbe oggi, non da un salto.
+function prendiIlComando(){
+  if(!pianoAttivo()) return;
+  const t = mixTest(argomentiSelezionati()).tot;
+  const tot = t.n || N_TEST;
+  const r5 = x => Math.round(100 * x / tot / 5) * 5;
+  let n = r5(t.nNew + t.nSonda), r = r5(t.nRic + t.nVin);
+  if(n + r > 100) r = 100 - n;
+  stato.mixNuove = n; stato.mixRic = r; stato.mixKo = 100 - n - r;
+  stato.pianoAuto = false;
+}
+$('mix-tab-piano').onclick = () => { if(pianoAttivo()) return; stato.pianoAuto = true; aggiornaDopoMix(); };
+$('mix-tab-mio').onclick = () => { if(!pianoAttivo()) return; prendiIlComando(); aggiornaDopoMix(); };
+['n', 'k', 'r'].forEach(k => {
+  const inp = $('mix-' + k);
+  // mentre si trascina si aggiornano solo cursori, barra e tabella; il resto al rilascio
+  inp.oninput = () => { impostaMix(k, +inp.value); renderMixCursori(); renderMixEsito(); };
+  inp.onchange = () => { impostaMix(k, +inp.value); aggiornaDopoMix(); };
+});
 $('btn-avvia').onclick = avviaTest;
 $('btn-prossima').onclick = prossima;
 $('btn-abbandona').onclick = () => conferma('Terminare il test adesso? Le domande già risposte vengono registrate, le altre no.', fineTest);
