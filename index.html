@@ -75,6 +75,7 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 .cal-g.oggi{border-color:var(--azione); border-width:2px; background:rgba(var(--azione-rgb),.10);}
 .cal-g.oggi .cal-v{color:var(--inchiostro2);}
 .cal-g.finale{background:rgba(var(--velo),.06); border-style:dashed;}
+.cal-g.riposo{opacity:.55;}
 .cal-leg{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:.74rem; color:var(--nebbia);}
 .cal-leg span{display:inline-flex; align-items:center; gap:6px;}
 .cal-leg i{width:11px; height:11px; border-radius:3px; display:inline-block; border:1px solid var(--filo);}
@@ -3854,6 +3855,7 @@ b.dubbia{color:var(--ottone-t);}
         <span><i style="background:var(--laccabg); border-color:rgba(var(--ko-rgb),.30)"></i> saltata</span>
         <span><i style="border-color:var(--azione); border-width:2px"></i> oggi</span>
         <span><i style="border-style:dashed"></i> ultimi 10 giorni: solo consolidamento</span>
+        <span><i style="opacity:.55"></i> domenica: riposo</span>
       </div>
       <div class="cal-riass" id="cal-riass"></div>
     </div>
@@ -4828,7 +4830,7 @@ function renderRecupero(){
         <span class="rec-i-val"><b>${fmt(G.ric)}</b> · superate ${/^(8|11%|1%)/.test(perc(G.resaRic)) ? "all'" : 'al '}<b>${perc(G.resaRic)}</b></span></div>` : ''}
       <p class="rec-i-nota">Ogni ripasso indovinato è un passo avanti — chiude una domanda o la porta a metà;
         ogni ripasso sbagliato su una già a metà ne toglie uno, e il conto qui sopra lo scala.
-        Le riconferme sono un'altra cosa — domande già superate, riviste a distanza — ma sono quasi tutto quello che troverai il 15 ottobre.</p>
+        Le riconferme sono un'altra cosa — domande già superate, riviste a distanza — ma sono quasi tutto quello che troverai il ${ESAME_BREVE}.</p>
     </div>` : '';
 
   // Come si sta muovendo: quanto sale in un giorno, in una settimana, e dove arriva
@@ -4838,7 +4840,7 @@ function renderRecupero(){
     : `<div class="rec-moto">
         <span><b>+${pct(R.passiAlGiorno, R.passiTot, 1)}</b> al giorno</span>
         <span><b>+${R.settimana.toLocaleString('it-IT', {maximumFractionDigits: 1})}%</b> a settimana</span>
-        <span class="rm-fine">al 15 ottobre saresti al <b>${R.allEsame.toLocaleString('it-IT', {maximumFractionDigits: 0})}%</b></span>
+        <span class="rm-fine">al ${ESAME_BREVE} saresti al <b>${R.allEsame.toLocaleString('it-IT', {maximumFractionDigits: 0})}%</b></span>
       </div>`;
 
   const inTempo = R.ritmo !== null && R.finisce && R.finisce <= R.scadenza;
@@ -5859,7 +5861,7 @@ function renderMotori(pr){
       ? `<b>${dec(m.ricPerTest)}</b> per test · ne azzecchi <b>${pct(m.resaRic)}</b>`
       : '<span class="mot-manca">da misurare</span>',
     (pr.rese.ricADistanza
-      ? `Misurata su <b>${pr.rese.nLon}</b> riconferme a ${DISTANZA_VERA}+ test di distanza: è il dato che conta per il 15 ottobre.`
+      ? `Misurata su <b>${pr.rese.nLon}</b> riconferme a ${DISTANZA_VERA}+ test di distanza: è il dato che conta per il ${ESAME_BREVE}.`
       : `Il giorno dell'esame quasi tutte le domande saranno di questo tipo. Finora ci sono <b>${pr.rese.nLon}</b> riconferme a vera distanza (${DISTANZA_VERA}+ test): sotto le 30 la proiezione resta larga.`) + rigaGiorno,
     pr.rese.ricADistanza ? '' : 'attesa'));
 
@@ -5896,7 +5898,7 @@ function renderVerifica(pr){
       <p>Il numero qui sopra è un calcolo, non una misura: sale man mano che copri la banca dati,
         anche se i punteggi dei tuoi test restano fermi. L'unico modo per sapere se è realistico
         è la <b>simulazione d'esame</b>: 60 domande pescate a caso dalle ${fmtN(bancaUfficiale().length)} della banca ufficiale, con la
-        struttura del bando e i valori veri (20 da 1 punto, 40 da 2), esattamente come il 15 ottobre. Quel punteggio dice quanti punti prenderesti oggi.</p>
+        struttura del bando e i valori veri (20 da 1 punto, 40 da 2), esattamente come il ${ESAME_BREVE}. Quel punteggio dice quanti punti prenderesti oggi.</p>
       <button class="btn-p pjv-btn" id="pjv-sim">Fai una simulazione →</button>
     </div>`;
   }
@@ -6019,7 +6021,7 @@ function renderStato(){
   const fmt = fmtN;
   const rigaProiezione = `
     <div class="st-proiezione ${pr.datiScarsi ? 'provvisoria' : (pr.raggiungibile ? 'bene' : 'male')}">
-      <div class="st-cop-tit">Proiezione al 15 ottobre${pr.datiScarsi ? '<span class="pj-tag">stima provvisoria</span>' : ''}</div>
+      <div class="st-cop-tit">Proiezione al ${ESAME_BREVE}${pr.datiScarsi ? '<span class="pj-tag">stima provvisoria</span>' : ''}</div>
       <div class="pj-riga">
         <div class="pj-num"><b>${pr.previstoMin}–${pr.previstoMax}<i>punti</i></b><span>previsti all'esame, su 100 (si passa con ${SOGLIA_PUNTI}) — una forbice, non un numero secco: si stringe man mano che le misure si accumulano. Sono ${pr.rispostePreviste}% di risposte esatte, pesate per quanto vale ogni domanda</span></div>
         <div class="pj-meta">
@@ -6279,7 +6281,15 @@ function sottoBlocco(){
     </div>`;
 }
 
-const DATA_ESAME = '2026-10-14';   // ultimo giorno di test: mercoledì 14 ottobre (esame giovedì 15)
+const DATA_ESAME = '2026-11-18';   // ultimo giorno di test: mercoledì 18 novembre (esame giovedì 19)
+const ESAME_BREVE = '19 novembre', ESAME_GIORNO = 'giovedì 19 novembre';
+// Il secondo giro di preparazione parte il 19 ottobre. La prima settimana è dedicata
+// alle lacune di Matematica: poche domande nuove, molti ripassi di quelle sbagliate.
+const INIZIO_CICLO = '2026-10-19';
+const FINE_FASE_MAT = '2026-10-26';
+// La domenica è il giorno di riposo: nel calendario non conta come giornata saltata.
+const GIORNO_RIPOSO = 0;   // 0 = domenica (getUTCDay)
+function eGiornoRiposo(iso){ return new Date(iso).getUTCDay() === GIORNO_RIPOSO; }
 function giorniAllEsame(){
   const ms = new Date(DATA_ESAME) - new Date(oggiISO());
   return Math.max(1, Math.round(ms / 86400000) + 1);   // giorni di studio, oggi compreso
@@ -6339,8 +6349,8 @@ function renderObiettivo(){
   const scad = new Date(DATA_ESAME).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
   const scadCop = new Date(isoCopertura()).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
   $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame!'
-    : inFaseFinale() ? `— ultimi ${gg} giorni: si consolida, niente materiale nuovo · esame giovedì 15 ottobre`
-    : `— tutte le domande viste entro ${scadCop} (${giorniCopertura()} giorni), poi 10 giorni di consolidamento · esame giovedì 15 ottobre`;
+    : inFaseFinale() ? `— ultimi ${gg} giorni: si consolida, niente materiale nuovo · esame ${ESAME_GIORNO}`
+    : `— tutte le domande viste entro ${scadCop} (${giorniCopertura()} giorni), poi ${GG_CONSOLIDAMENTO} giorni di consolidamento · esame ${ESAME_GIORNO}`;
   // "Finita" vuol dire davvero finita: niente di nuovo, niente da recuperare
   // e nessuna conferma ancora in sospeso.
   const prTest = proiezioneEsame();
@@ -6570,7 +6580,7 @@ function lavoroResiduo(){
 }
 // Il tetto giornaliero: cinque test. Oltre non si chiede, anche quando il conto
 // direbbe di piu': un obiettivo irraggiungibile smette di guidare e basta.
-const TETTO_GIORNO = 300;
+const TETTO_GIORNO = 240;   // circa tre ore: quattro test da 60
 // il piano di oggi: quanto serve, quanto sta facendo, e se basta
 function piano(){
   const L = lavoroResiduo();
@@ -6678,8 +6688,20 @@ const CODA_RIC = 0.60, CODA_RIP = 0.40;
 // quanto dimentica: senza queste, le fasce a 3 e 7 giorni restano vuote e la
 // tenuta a settimane resta un'ipotesi invece di un dato.
 const SONDE = 4;
-function composizionePiano(s, quante){
+// Quota di domande nuove per materia e per fase. Nella prima settimana del nuovo
+// giro (fino al 26 ottobre) si lavora soprattutto sulle sbagliate, con Matematica
+// in testa; poi si copre il resto della banca dati entro l'inizio del consolidamento.
+// Matematica tiene sempre più spazio per i ripassi: è la materia che all'esame del
+// 15 ottobre è costata 13 dei 27 punti persi.
+function quotaNuoveOggi(arg){
+  const mat = arg === 'Matematica ed economia finanziaria';
+  if(oggiISO() <= FINE_FASE_MAT) return mat ? 0.25 : 0.45;
+  return mat ? 0.50 : QUOTA_NUOVE;
+}
+function composizionePiano(s, quante, arg){
   const N = quante || N_TEST;
+  const qNuove = arg ? quotaNuoveOggi(arg) : QUOTA_NUOVE;
+  const qRip = arg ? 1 - qNuove : QUOTA_RIP;
   const P = piano();
   const q = f => Math.round(N * f);
   const finale = P.immissioneChiusa;
@@ -6687,9 +6709,9 @@ function composizionePiano(s, quante){
   // passa alle riconferme: la proporzione resta 70/30, ma il 70 non e' piu' materiale
   // nuovo, e' quello che ha incontrato una volta sola e va riportato a galla.
   const coperturaFinita = !finale && s.nuove === 0;
-  let nNew = (finale || coperturaFinita) ? 0 : Math.min(s.nuove, q(QUOTA_NUOVE));
-  let nRic = Math.min(s.ricEleg || 0, q(finale ? CODA_RIC : (coperturaFinita ? QUOTA_NUOVE : QUOTA_RIC)));
-  let nRip = Math.min(s.koEleg || 0, q(finale ? CODA_RIP : QUOTA_RIP));
+  let nNew = (finale || coperturaFinita) ? 0 : Math.min(s.nuove, q(qNuove));
+  let nRic = Math.min(s.ricEleg || 0, q(finale ? CODA_RIC : (coperturaFinita ? qNuove : QUOTA_RIC)));
+  let nRip = Math.min(s.koEleg || 0, q(finale ? CODA_RIP : qRip));
   // Se una coda e' a secco i posti liberi si riassegnano in ordine di priorita':
   // prima la copertura, poi gli errori da recuperare, poi le riconferme.
   let vuoti = N - nNew - nRic - nRip;
@@ -6754,10 +6776,10 @@ function vintaProponibile(r){
 // vista una volta sola non si può considerare acquisita, e questa quota lo garantisce
 // senza togliere spazio alle quote scelte con i cursori.
 const QUOTA_RICONFERME = 0.25;
-function composizione(s, soloErr, quante){
+function composizione(s, soloErr, quante, arg){
   const N = quante === undefined ? N_TEST : quante;
   if(soloErr) return {nRip: Math.min(N, s.ko), nNew: 0, nVin: 0, nRic: 0};
-  if(pianoAttivo()) return composizionePiano(s, N);
+  if(pianoAttivo()) return composizionePiano(s, N, arg);
   const nRic = Math.min(s.ricEleg || 0, Math.round(N * QUOTA_RICONFERME));
   const resto = N - nRic;
   let nVin = Math.min(s.okEleg || 0, Math.round(resto * mixVinte() / 100));
@@ -7060,7 +7082,8 @@ function avviaTest(){
   // ---------------------------------------------------------------------
   const prioritaKo = q => {
     const r = stato.risultati[q.n];
-    return r.e + ((stato.nTest || 0) - (r.u || 0)) / 50 + Math.random() * 0.9;
+    // le domande da 2 punti passano avanti: all'esame valgono il doppio
+    return r.e + (livelloQ(q) === 2 ? 1.5 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 50 + Math.random() * 0.9;
   };
   function selezionaDa(sotto, quante, gia){
     if(quante <= 0 || !sotto.length) return [];
@@ -7072,7 +7095,7 @@ function avviaTest(){
       ripasso = sotto.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ko' && proponibile(r); });
       ripasso.sort((a, b) => prioritaKo(b) - prioritaKo(a));
     }
-    const c = composizione(statiPool(sotto), soloErr, quante);
+    const c = composizione(statiPool(sotto), soloErr, quante, sotto[0] && sotto[0].t);
     const scelte = ripasso.slice(0, c.nRip);
     if(c.nNew) scelte.push(...selezionaNuoveBilanciate(sotto.filter(q => !stato.risultati[q.n]), c.nNew, sel));
     if(c.nRic){
@@ -7722,8 +7745,7 @@ function calendarioPiano(){
   const fineEsame = Math.floor(new Date(DATA_ESAME).getTime() / 86400000);
   // il primo giorno mostrato: l'inizio della settimana della prima giornata di studio
   const giorniFatti = Object.keys(stato.giorni).sort();
-  const primo = giorniFatti.length
-    ? Math.floor(new Date(giorniFatti[0]).getTime() / 86400000) : oggi;
+  const primo = Math.floor(new Date(INIZIO_CICLO).getTime() / 86400000);
   const daGg = Math.min(primo, oggi);
   const celle = [];
   for(let n = daGg; n <= fineEsame; n++){
@@ -7737,9 +7759,11 @@ function calendarioPiano(){
     // di oggi, che e' la misura onesta di "quanto ci vuole"
     // L'obiettivo di una casella e' quello della copertura, lo stesso numero che
     // compare in cima alla schermata: le due cose devono dire la stessa cosa.
-    const obiettivo = finale ? 0 : P.domObiettivo;
+    const riposo = eGiornoRiposo(iso);
+    const obiettivo = (finale || riposo) ? 0 : P.domObiettivo;
     let stt;
     if(n === oggi) stt = 'oggi';
+    else if(riposo && !fatte) stt = 'riposo';
     else if(futuro) stt = finale ? 'finale' : 'futuro';
     else if(finale) stt = 'finale';
     else if(!fatte) stt = 'saltato';
@@ -7758,9 +7782,9 @@ function renderCalendario(){
   let html = DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
   for(let i = 0; i < C.celle[0].dow; i++) html += '<div class="cal-g vuoto"></div>';
   C.celle.forEach(c => {
-    const val = c.finale ? '—' : (c.futuro || c.stato === 'oggi'
+    const val = c.stato === 'riposo' ? '—' : c.finale ? '—' : (c.futuro || c.stato === 'oggi'
       ? fmtN(c.obiettivo) : fmtN(c.fatte));
-    const sotto = c.finale ? 'consolidamento'
+    const sotto = c.stato === 'riposo' ? 'riposo' : c.finale ? 'consolidamento'
       : c.futuro ? `${Math.max(1, Math.round(c.obiettivo / N_TEST))} test`
       : c.stato === 'oggi' ? `fatte ${fmtN(c.fatte)}`
       : (c.fatte ? `${Math.max(1, Math.round(c.fatte / N_TEST))} test` : 'niente');
@@ -8879,7 +8903,7 @@ const Pier = (() => {
     {min: 0, posa: 'a-sdraiato', frasi: [
       '<b>{p}%</b>. Giornata storta, capita anche a me con le pallina. Domani si riprova.',
       '<b>{p}%</b>: le {ko} sbagliate valgono più delle giuste, perché adesso le sai dove sono.',
-      'Vieni qui. <b>{p}%</b> oggi non dice niente su ottobre. Facciamone un altro corto.']}];
+      'Vieni qui. <b>{p}%</b> oggi non dice niente su novembre. Facciamone un altro corto.']}];
 
   const globale = window;
   const $$ = id => document.getElementById(id);
