@@ -5760,7 +5760,7 @@ function proiezioneEsame(){
   // Vincolo delle due fasi: una domanda mai vista può essere acquisita solo se la si
   // incontra entro l'inizio del consolidamento. Gli ultimi 10 giorni servono a chiudere
   // ciò che è già stato aperto, non ad aprire materiale nuovo.
-  const nuoveFuture = inFaseFinale() ? 0 : nuoveFinoA(ritmo, isoCopertura());   // con la quota di ogni fase
+  const nuoveFuture = nuoveFinoA(ritmo, DATA_ESAME);   // con la quota di ogni fase, ripasso compreso
   const nuoveRaggiungibili = Math.min(nuoveRimaste, nuoveFuture);
   const tettoDaFase = inLavorazione + nuoveRaggiungibili;      // quante se ne possono ancora superare
   const tettoDaTempo = (ritmo * gg) / rpd;                     // quante il ritmo consente
@@ -6422,7 +6422,7 @@ function renderObiettivo(){
   const scad = new Date(DATA_ESAME).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
   const scadCop = new Date(isoCopertura()).toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
   $('ob-countdown').textContent = oggiISO() > DATA_ESAME ? '— in bocca al lupo per l\'esame!'
-    : inFaseFinale() ? `— ultimi ${gg} giorni: si consolida, niente materiale nuovo · esame ${ESAME_GIORNO}`
+    : inFaseFinale() ? `— ultimi ${gg} giorni: ripasso, con le ultime domande nuove · esame ${ESAME_GIORNO}`
     : `— tutte le domande viste entro ${scadCop} (${giorniCopertura()} giorni), poi ${GG_CONSOLIDAMENTO} giorni di consolidamento · esame ${ESAME_GIORNO}`;
   // "Finita" vuol dire davvero finita: niente di nuovo, niente da recuperare
   // e nessuna conferma ancora in sospeso.
@@ -6532,12 +6532,12 @@ function prospettoPiano(){
   const s = statiPool(QUESTIONS);
   if(inFaseFinale()){
     return {fase: 'Consolidamento', semaforo: 'ok',
-      titolo: 'Ultimi giorni: si conferma, non si apre',
+      titolo: 'Ultimi giorni: si ripassa e si chiudono le ultime nuove',
       voci: [
         {n: fmtN(giorniAllEsame()), t: 'giorni all\'esame'},
         {n: fmtN(s.daRiconf), t: 'da riconfermare'},
         {n: fmtN(s.ko), t: 'ancora da recuperare'}],
-      messaggi: [{cls: 'bene', txt: `Le domande nuove sono chiuse dal ${scad}. ${pianoAttivo() ? 'Ogni test è fatto di <b>60% riconferme</b> e <b>40% sbagliate</b>.' : 'Il piano qui farebbe 60% riconferme e 40% sbagliate.'}`},
+      messaggi: [{cls: 'bene', txt: `Dal ${dataIt(isoPiu(isoCopertura(), 1))} si ripassa. ${pianoAttivo() ? (s.nuove > 0 ? `Ogni test è fatto di <b>40% sbagliate</b>, circa <b>43% riconferme</b> e <b>10 domande nuove</b>, finché le mai viste (<b>${fmtN(s.nuove)}</b>) non finiscono.` : 'Le mai viste sono finite: ogni test è <b>60% riconferme</b> e <b>40% sbagliate</b>.') : 'Il piano qui farebbe 40% sbagliate, il resto riconferme e qualche nuova.'}`},
         {cls: '', txt: `L'obiettivo di oggi è <b>${fmtN(P.domObiettivo)}</b> domande: le sbagliate e le riconferme che restano, divise sui giorni fino all'esame. Si ricalcola ogni mattina (mai sotto ${OB_MIN}, mai sopra ${OB_MAX}).`}]};
   }
   if(P.U === 0){
@@ -6804,7 +6804,8 @@ function quoteArgomento(sel, quante){
   return out;
 }
 const QUOTA_NUOVE = 0.70, QUOTA_RIP = 0.30;
-const CODA_RIC = 0.60, CODA_RIP = 0.40;
+// Ripasso finale: 10 domande su 60 restano nuove, finché ce ne sono di mai viste (deciso il 4 novembre).
+const CODA_NEW = 1 / 6, CODA_RIC = 0.60 - CODA_NEW, CODA_RIP = 0.40;
 // Una fetta di ogni test va a domande lasciate ferme a lungo. Servono a misurare
 // quanto dimentica: senza queste, le fasce a 3 e 7 giorni restano vuote e la
 // tenuta a settimane resta un'ipotesi invece di un dato.
@@ -6830,7 +6831,7 @@ function fasiPiano(){
     {id: 'banca', n: 2, nome: 'Tutta la banca dati', dal: isoPiu(FINE_FASE_MAT, 1), al: cop,
      cosa: 'Si vedono le domande mai incontrate: nelle altre materie sette su dieci sono nuove, in Matematica metà nuove e metà da recuperare.'},
     {id: 'ripasso', n: 3, nome: 'Ripasso totale', dal: isoPiu(cop, 1), al: DATA_ESAME,
-     cosa: 'Niente più domande nuove: 60% riconferme e 40% sbagliate, per arrivare all\'esame con tutto fresco.'}];
+     cosa: 'Si ripassa: in ogni test 40% sbagliate, circa 43% riconferme e 10 domande nuove su 60, per smaltire le ultime mai viste. Quando le mai viste finiscono, il loro posto passa alle riconferme.'}];
 }
 function faseDel(iso){
   iso = iso || oggiISO();
@@ -6847,7 +6848,7 @@ function dataLunga(iso){ return new Date(iso + 'T12:00:00').toLocaleDateString('
 // 13 dei 27 punti persi.
 function quotePianoMateria(arg, iso){
   const f = faseDel(iso), mat = arg === MATEMATICA;
-  if(f === 'ripasso') return {n: 0, k: CODA_RIP, r: CODA_RIC};
+  if(f === 'ripasso') return {n: CODA_NEW, k: CODA_RIP, r: CODA_RIC};
   if(f === 'mat') return mat ? {n: .30, k: .70, r: 0} : {n: .55, k: .45, r: 0};
   return mat ? {n: .50, k: .50, r: 0} : {n: QUOTA_NUOVE, k: QUOTA_RIP, r: 0};
 }
@@ -8653,8 +8654,8 @@ function renderMixImpatto(){
     riga.push('La banca dati è già tutta vista: il tuo mix decide solo quanto spazio dare a sbagliate e riconferme.');
   } else if(f.id === 'ripasso'){
     riga.push(m.n > 0
-      ? `In questi giorni il piano non mette domande nuove. Con il tuo mix ne vedi <b>${P.nuovePerTest}</b> per test: va bene solo se ti mancano poche domande.`
-      : 'Niente domande nuove, come prevede il piano per questi ultimi giorni.');
+      ? `In questi giorni il piano mette circa 10 domande nuove per test. Con il tuo mix ne vedi <b>${P.nuovePerTest}</b>.`
+      : 'Con il tuo mix nessuna domanda nuova: il piano in questi giorni ne mette circa 10 per test.');
   } else if(!m.n){
     riga.push(`<span class="mix-male">Con le nuove a zero le <b>${fmtN(P.U)}</b> domande mai viste restano tali.</span> `
       + (Q.isoFineAlPasso ? `Col piano le finiresti il <b>${dataLunga(Q.isoFineAlPasso)}</b>.` : ''));
