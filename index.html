@@ -6959,6 +6959,22 @@ function mixTest(sel, iso){
     ['nNew', 'nRip', 'nRic', 'nVin', 'nSonda'].forEach(k => tot[k] += c[k]);
     tot.n += n;
   });
+  // Mix scelto con il 100% di nuove: solo domande mai viste, da qualunque materia ne
+  // abbia ancora (come fa avviaTest). Le materie finite cedono il posto alle altre.
+  if(!soloErr && !pianoAttivo() && mixScelto().n === 100){
+    const disp = {};
+    righe.forEach(r => { disp[r.a] = QUESTIONS.filter(q => q.t === r.a && nelPool(q, sel) && !stato.risultati[q.n]).length; });
+    const totNuove = Object.values(disp).reduce((s, v) => s + v, 0);
+    if(totNuove >= N_TEST){
+      righe.forEach(r => { r.nNew = Math.min(r.quota, disp[r.a]); r.nRip = r.nRic = r.nVin = r.nSonda = 0; });
+      let vuoti = N_TEST - righe.reduce((s, r) => s + r.nNew, 0);
+      righe.slice().sort((x, y) => y.quota - x.quota).forEach(r => {
+        const x = Math.min(vuoti, disp[r.a] - r.nNew); r.nNew += x; vuoti -= x;
+      });
+      Object.keys(tot).forEach(k => tot[k] = 0);
+      righe.forEach(r => { r.n = r.nNew; tot.nNew += r.nNew; tot.n += r.n; });
+    }
+  }
   return {righe, tot, soloErr};
 }
 
@@ -7283,6 +7299,11 @@ function avviaTest(){
   const sel = argomentiSelezionati();
   const pool = QUESTIONS.filter(q => nelPool(q, sel));
   const soloErr = $('chk-solo-errori').checked;
+  // Mix scelto da lei con il 100% di nuove: il test prende solo domande mai viste,
+  // da qualunque materia ne abbia ancora, e non bilancia i livelli. Serve a finire
+  // la banca dati il prima possibile. Se le nuove non bastano, il resto si riempie
+  // come al solito.
+  let soloNuove = !soloErr && !pianoAttivo() && mixScelto().n === 100;
   // ---------------------------------------------------------------------
   // Il test ha la forma dell'esame: le domande si dividono fra gli argomenti
   // con le stesse quote della prova vera (24 diritto del mercato finanziario,
@@ -7297,6 +7318,10 @@ function avviaTest(){
   };
   function selezionaDa(sotto, quante, gia){
     if(quante <= 0 || !sotto.length) return [];
+    if(soloNuove){
+      const mai = sotto.filter(q => !stato.risultati[q.n] && !(gia && gia.has(q.n)));
+      return mai.length ? selezionaNuoveBilanciate(mai, Math.min(quante, mai.length), sel).slice(0, quante) : [];
+    }
     let ripasso;
     if(soloErr){
       ripasso = shuffle(sotto.filter(q => stato.risultati[q.n] && stato.risultati[q.n].s === 'ko'));
@@ -7371,7 +7396,7 @@ function avviaTest(){
   // Se un argomento non riesce a riempire la sua quota (finito il materiale),
   // i posti avanzati vanno agli altri, in ordine di quota d'esame.
   let vuoti = N_TEST - domande.length;
-  if(vuoti > 0){
+  const riempi = () => {
     const ordine = sel.slice().sort((x, y) => (quote[y] || 0) - (quote[x] || 0));
     for(const a of ordine){
       if(vuoti <= 0) break;
@@ -7380,9 +7405,14 @@ function avviaTest(){
       extra.forEach(q => { domande.push(q); presi.add(q.n); });
       vuoti -= extra.length;
     }
-  }
+  };
+  if(vuoti > 0) riempi();
+  const tuttoNuove = soloNuove;
+  // nuove finite: i posti rimasti si riempiono con le regole di sempre
+  if(vuoti > 0 && soloNuove){ soloNuove = false; riempi(); }
   // il mix dei livelli come all'esame: 20 domande da 1 punto e 40 da 2
-  if(domande.length === N_TEST) bilanciaLivelli(domande, pool);
+  // (non con il 100% di nuove: li' conta finire la banca dati)
+  if(domande.length === N_TEST && !tuttoNuove) bilanciaLivelli(domande, pool);
   shuffle(domande);
   let tag = sel.length === ARGOMENTI.length ? 'Tutti' : sel.map(a => a.split(' ')[0] + ' ' + (a.split(' ')[1]||'')).join(', ');
   const filtriTag = argFiltrati(sel);
