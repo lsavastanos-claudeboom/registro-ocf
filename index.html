@@ -6806,6 +6806,34 @@ function quoteArgomento(sel, quante){
 const QUOTA_NUOVE = 0.70, QUOTA_RIP = 0.30;
 // Ripasso finale: 10 domande su 60 restano nuove, finché ce ne sono di mai viste (deciso il 4 novembre).
 const CODA_NEW = 1 / 6, CODA_RIC = 0.60 - CODA_NEW, CODA_RIP = 0.40;
+// Ripasso finale, dal 9 novembre (deciso il 9 novembre): le nuove sono 10 per test in
+// tutto, non 10 divise fra le materie. Si prendono prima da Matematica, poi dalle
+// materie che ne hanno di piu'. Solo domande della banca ufficiale: quelle fuori banca
+// all'esame non escono. I posti si tolgono al ripasso di Mercato (la quota piu' grande),
+// cosi' il ripasso di Matematica resta intero.
+const NUOVE_RIPASSO = 10;
+let _ripNuove = null;        // {materia: nuove} mentre si compone un test del ripasso
+function nuoveRipasso(sel){
+  if(!pianoAttivo() || faseDel() !== 'ripasso') return null;
+  const disp = {};
+  sel.forEach(a => { disp[a] = QUESTIONS.filter(q => q.t === a && nelPool(q, sel) && !stato.risultati[q.n] && !fuoriBanca(q)).length; });
+  const ordine = sel.slice().sort((x, y) => ((y === MATEMATICA) - (x === MATEMATICA)) || (disp[y] - disp[x]));
+  let resto = NUOVE_RIPASSO; const n = {};
+  ordine.forEach(a => { const x = Math.min(resto, disp[a]); n[a] = x; resto -= x; });
+  return n;
+}
+// Le quote per materia del prossimo test: quelle dell'esame, piu' lo spostamento del ripasso.
+function quoteTest(sel){
+  const quote = quoteArgomento(sel, N_TEST);
+  const rn = nuoveRipasso(sel);
+  if(!rn) return {quote, rn: null};
+  const q2 = Object.assign({}, quote);
+  let tot = 0;
+  sel.forEach(a => { q2[a] = (quote[a] || 0) + rn[a]; tot += rn[a]; });
+  const donatore = sel.slice().sort((x, y) => (quote[y] || 0) - (quote[x] || 0))[0];
+  if(donatore) q2[donatore] = Math.max(0, q2[donatore] - tot);
+  return {quote: q2, rn};
+}
 // Una fetta di ogni test va a domande lasciate ferme a lungo. Servono a misurare
 // quanto dimentica: senza queste, le fasce a 3 e 7 giorni restano vuote e la
 // tenuta a settimane resta un'ipotesi invece di un dato.
@@ -6887,6 +6915,12 @@ function composizioneMateria(s, N, arg, iso){
   const fase = faseDel(iso);
   const q = quoteMateria(arg, iso);
   let pn = q.n, pr = q.r;
+  if(_ripNuove && auto && fase === 'ripasso' && N > 0){
+    // le nuove sono gia' decise per tutto il test; il resto si divide come nel ripasso
+    const nn = Math.min(N, _ripNuove[arg] || 0);
+    pn = nn / N;
+    pr = (1 - pn) * CODA_RIC / (CODA_RIC + CODA_RIP);
+  }
   // Col piano: finita la banca dati di una materia, il posto delle nuove passa alle riconferme.
   if(auto && s.nuove === 0 && pn > 0){ pr += pn; pn = 0; }
   // Si arrotondano due voci e la terza prende il resto: cosi' il blocco fa sempre N.
@@ -6946,14 +6980,17 @@ const NOMI_BREVI = {
 function nomeBreve(a){ return NOMI_BREVI[a] || a.split(' ')[0]; }
 function mixTest(sel, iso){
   sel = sel || argomentiSelezionati();
-  const quote = quoteArgomento(sel, N_TEST);
   const chk = $('chk-solo-errori');
   const soloErr = !!(chk && chk.checked);
+  const qt = soloErr ? {quote: quoteArgomento(sel, N_TEST), rn: null} : quoteTest(sel);
+  const quote = qt.quote;
   const righe = [], tot = {nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
   STRUTTURA_ESAME.forEach(([a]) => {
     if(!sel.includes(a)) return;
     const pool = QUESTIONS.filter(q => q.t === a && nelPool(q, sel));
-    const c = composizione(statiPool(pool), soloErr, quote[a] || 0, a, iso);
+    _ripNuove = qt.rn;
+    let c;
+    try { c = composizione(statiPool(pool), soloErr, quote[a] || 0, a, iso); } finally { _ripNuove = null; }
     const n = c.nNew + c.nRip + c.nRic + c.nVin + c.nSonda;
     righe.push({a, nome: nomeBreve(a), quota: quote[a] || 0, ...c, n});
     ['nNew', 'nRip', 'nRic', 'nVin', 'nSonda'].forEach(k => tot[k] += c[k]);
@@ -7332,7 +7369,7 @@ function avviaTest(){
     }
     const c = composizione(statiPool(sotto), soloErr, quante, sotto[0] && sotto[0].t);
     const scelte = ripasso.slice(0, c.nRip);
-    if(c.nNew) scelte.push(...selezionaNuoveBilanciate(sotto.filter(q => !stato.risultati[q.n]), c.nNew, sel));
+    if(c.nNew) scelte.push(...selezionaNuoveBilanciate(sotto.filter(q => !stato.risultati[q.n] && !(_ripNuove && fuoriBanca(q))), c.nNew, sel));
     if(c.nRic){
       const ric = sotto.filter(q => { const r = stato.risultati[q.n]; return r && r.s === 'ok' && (r.k || r.p) && vintaProponibile(r); });
       ric.sort((a,b) => ((stato.nTest||0)-(stato.risultati[b.n].u||0)) - ((stato.nTest||0)-(stato.risultati[a.n].u||0)));
@@ -7383,7 +7420,9 @@ function avviaTest(){
     const visti = gia || new Set();
     return scelte.filter(q => !visti.has(q.n)).slice(0, quante);
   }
-  const quote = quoteArgomento(sel, N_TEST);
+  const qt = soloErr ? {quote: quoteArgomento(sel, N_TEST), rn: null} : quoteTest(sel);
+  const quote = qt.quote;
+  _ripNuove = qt.rn;
   const domande = [];
   const presi = new Set();
   const resa = {};
@@ -7410,6 +7449,7 @@ function avviaTest(){
   const tuttoNuove = soloNuove;
   // nuove finite: i posti rimasti si riempiono con le regole di sempre
   if(vuoti > 0 && soloNuove){ soloNuove = false; riempi(); }
+  _ripNuove = null;
   // il mix dei livelli come all'esame: 20 domande da 1 punto e 40 da 2
   // (non con il 100% di nuove: li' conta finire la banca dati)
   if(domande.length === N_TEST && !tuttoNuove) bilanciaLivelli(domande, pool);
