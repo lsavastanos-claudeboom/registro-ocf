@@ -6812,6 +6812,16 @@ const CODA_NEW = 1 / 6, CODA_RIC = 0.60 - CODA_NEW, CODA_RIP = 0.40;
 // all'esame non escono. I posti si tolgono al ripasso di Mercato (la quota piu' grande),
 // cosi' il ripasso di Matematica resta intero.
 const NUOVE_RIPASSO = 10;
+// Ultimi giorni (deciso il 12 novembre): fra le sbagliate di Matematica passano per prime
+// quelle da 2 punti di Fondi, Titoli obbligazionari e Valutazione delle obbligazioni,
+// che da sole sono quasi meta' delle sbagliate da 2 punti. La forma del test non cambia:
+// cambia solo quali sbagliate di Matematica riempiono i posti del ripasso.
+const SA_PRIORITARI = ['Fondi comuni di investimento', 'Titoli obbligazionari', 'Valutazione delle obbligazioni'];
+function prioritaria(q){
+  if(!q || q.t !== MATEMATICA || livelloQ(q) !== 2) return false;
+  const c = SOTTO[MATEMATICA]; const j = c && c.map ? c.map[q.n] : undefined;
+  return j !== undefined && SA_PRIORITARI.includes(c.SA[j]);
+}
 let _ripNuove = null;        // {materia: nuove} mentre si compone un test del ripasso
 function nuoveRipasso(sel){
   if(!pianoAttivo() || faseDel() !== 'ripasso') return null;
@@ -7351,7 +7361,7 @@ function avviaTest(){
   const prioritaKo = q => {
     const r = stato.risultati[q.n];
     // le domande da 2 punti passano avanti: all'esame valgono il doppio
-    return r.e + (livelloQ(q) === 2 ? 1.5 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 50 + Math.random() * 0.9;
+    return (prioritaria(q) ? 100 : 0) + r.e + (livelloQ(q) === 2 ? 1.5 : 0) + ((stato.nTest || 0) - (r.u || 0)) / 50 + Math.random() * 0.9;
   };
   function selezionaDa(sotto, quante, gia){
     if(quante <= 0 || !sotto.length) return [];
@@ -7503,7 +7513,7 @@ function bilanciaLivelli(domande, pool){
     const troppo = conta(1) > vuole[1] ? 1 : 2;
     const serve = troppo === 1 ? 2 : 1;
     const uscenti = domande.filter(q => livelloQ(q) === troppo)
-      .sort((a, b) => ORDINE_SACRIFICIO[classeDi(a)] - ORDINE_SACRIFICIO[classeDi(b)]);
+      .sort((a, b) => (ORDINE_SACRIFICIO[classeDi(a)] - ORDINE_SACRIFICIO[classeDi(b)]) || (prioritaria(a) - prioritaria(b)));
     let fatto = false;
     for(const via of uscenti){
       const cl = classeDi(via);
