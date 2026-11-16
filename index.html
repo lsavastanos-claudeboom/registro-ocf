@@ -6537,7 +6537,7 @@ function prospettoPiano(){
         {n: fmtN(giorniAllEsame()), t: 'giorni all\'esame'},
         {n: fmtN(s.daRiconf), t: 'da riconfermare'},
         {n: fmtN(s.ko), t: 'ancora da recuperare'}],
-      messaggi: [{cls: 'bene', txt: `Dal ${dataIt(isoPiu(isoCopertura(), 1))} si ripassa. ${pianoAttivo() ? (s.nuove > 0 ? `Ogni test è fatto di <b>40% sbagliate</b>, circa <b>43% riconferme</b> e <b>10 domande nuove</b>, finché le mai viste (<b>${fmtN(s.nuove)}</b>) non finiscono.` : 'Le mai viste sono finite: ogni test è <b>60% riconferme</b> e <b>40% sbagliate</b>.') : 'Il piano qui farebbe 40% sbagliate, il resto riconferme e qualche nuova.'}`},
+      messaggi: [{cls: 'bene', txt: `Dal ${dataIt(isoPiu(isoCopertura(), 1))} si ripassa. ${ripassoComeEsame() ? 'Dal 16 novembre ogni test è <b>come l\'esame</b>: 60 domande da tutta la banca, con le quote per materia e per punti della prova vera. Le domande che non vedi da più giorni escono più spesso.' : pianoAttivo() ? (s.nuove > 0 ? `Ogni test è fatto di <b>40% sbagliate</b>, circa <b>43% riconferme</b> e <b>10 domande nuove</b>, finché le mai viste (<b>${fmtN(s.nuove)}</b>) non finiscono.` : 'Le mai viste sono finite: ogni test è <b>60% riconferme</b> e <b>40% sbagliate</b>.') : 'Il piano qui farebbe 40% sbagliate, il resto riconferme e qualche nuova.'}`},
         {cls: '', txt: `L'obiettivo di oggi è <b>${fmtN(P.domObiettivo)}</b> domande: le sbagliate e le riconferme che restano, divise sui giorni fino all'esame. Si ricalcola ogni mattina (mai sotto ${OB_MIN}, mai sopra ${OB_MAX}).`}]};
   }
   if(P.U === 0){
@@ -6812,6 +6812,46 @@ const CODA_NEW = 1 / 6, CODA_RIC = 0.60 - CODA_NEW, CODA_RIP = 0.40;
 // all'esame non escono. I posti si tolgono al ripasso di Mercato (la quota piu' grande),
 // cosi' il ripasso di Matematica resta intero.
 const NUOVE_RIPASSO = 10;
+// Ultimi giorni (deciso il 16 novembre): ogni test del piano e' fatto come l'esame.
+// 60 domande della banca ufficiale con le quote per materia (24, 19, 6, 6, 5) e per livello
+// (20 da 1 punto, 40 da 2), pescate da tutta la banca come la simulazione. In piu' le
+// domande che non vede da piu' giorni escono piu' spesso; quelle viste oggi quasi mai.
+const RIPASSO_ESAME_DAL = '2026-11-16';
+function ripassoComeEsame(sel){
+  if(!pianoAttivo() || faseDel() !== 'ripasso' || oggiISO() < RIPASSO_ESAME_DAL) return false;
+  sel = sel || argomentiSelezionati();
+  return STRUTTURA_ESAME.every(([a]) => sel.includes(a)) && !argFiltrati(sel).length;
+}
+function pesoDistanza(q){
+  const r = stato.risultati[q.n];
+  if(!r) return 6;
+  const g = giorniDa(r);
+  if(g === null) return 10;
+  return g === 0 ? 0.2 : 1 + g;          // 1 giorno fa: 2 · una settimana fa: 8
+}
+function pescaPesata(arr, k){
+  return arr.map(q => ({q, key: Math.pow(Math.random(), 1 / pesoDistanza(q))}))
+            .sort((a, b) => b.key - a.key).slice(0, k).map(x => x.q);
+}
+function componiComeEsame(){
+  const domande = [];
+  const avanzo = {1: 0, 2: 0};
+  STRUTTURA_ESAME.forEach(([arg, n]) => {
+    const pool = QUESTIONS.filter(q => q.t === arg && !fuoriBanca(q));
+    const q = quoteLivello(n);
+    [1, 2].forEach(L => {
+      const vuole = q[L] + avanzo[L];
+      const presi = pescaPesata(pool.filter(x => livelloQ(x) === L), vuole);
+      avanzo[L] = vuole - presi.length;
+      domande.push(...presi);
+    });
+  });
+  const dentro = new Set(domande.map(q => q.n));
+  const manca = STRUTTURA_ESAME.reduce((a, [, n]) => a + n, 0) - domande.length;
+  if(manca > 0) domande.push(...pescaPesata(QUESTIONS.filter(q => !fuoriBanca(q) && !dentro.has(q.n)), manca));
+  return shuffle(domande);
+}
+
 // Ultimi giorni (deciso il 12 novembre): fra le sbagliate di Matematica passano per prime
 // quelle da 2 punti di Fondi, Titoli obbligazionari e Valutazione delle obbligazioni,
 // che da sole sono quasi meta' delle sbagliate da 2 punti. La forma del test non cambia:
@@ -6869,7 +6909,7 @@ function fasiPiano(){
     {id: 'banca', n: 2, nome: 'Tutta la banca dati', dal: isoPiu(FINE_FASE_MAT, 1), al: cop,
      cosa: 'Si vedono le domande mai incontrate: nelle altre materie sette su dieci sono nuove, in Matematica metà nuove e metà da recuperare.'},
     {id: 'ripasso', n: 3, nome: 'Ripasso totale', dal: isoPiu(cop, 1), al: DATA_ESAME,
-     cosa: 'Si ripassa: in ogni test 40% sbagliate, circa 43% riconferme e 10 domande nuove su 60, per smaltire le ultime mai viste. Quando le mai viste finiscono, il loro posto passa alle riconferme.'}];
+     cosa: 'Si ripassa: in ogni test 40% sbagliate, circa 43% riconferme e 10 domande nuove su 60, per smaltire le ultime mai viste. Quando le mai viste finiscono, il loro posto passa alle riconferme. Dal 16 novembre ogni test è come l\'esame, e le domande che non vedi da più giorni escono più spesso.'}];
 }
 function faseDel(iso){
   iso = iso || oggiISO();
@@ -6992,6 +7032,21 @@ function mixTest(sel, iso){
   sel = sel || argomentiSelezionati();
   const chk = $('chk-solo-errori');
   const soloErr = !!(chk && chk.checked);
+  if(!soloErr && ripassoComeEsame(sel)){
+    // test come l'esame: si mostra una pescata d'esempio, divisa per stato delle domande
+    const D = componiComeEsame();
+    const righe = [], tot = {nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
+    STRUTTURA_ESAME.forEach(([a, quota]) => {
+      const r = {a, nome: nomeBreve(a), quota, nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
+      D.filter(q => q.t === a).forEach(q => {
+        const c = classeDi(q);
+        const k = c === 'nuova' ? 'nNew' : c === 'rip' ? 'nRip' : c === 'ric' ? 'nRic' : 'nVin';
+        r[k]++; r.n++; tot[k]++; tot.n++;
+      });
+      righe.push(r);
+    });
+    return {righe, tot, soloErr, comeEsame: true};
+  }
   const qt = soloErr ? {quote: quoteArgomento(sel, N_TEST), rn: null} : quoteTest(sel);
   const quote = qt.quote;
   const righe = [], tot = {nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
@@ -7350,6 +7405,7 @@ function avviaTest(){
   // da qualunque materia ne abbia ancora, e non bilancia i livelli. Serve a finire
   // la banca dati il prima possibile. Se le nuove non bastano, il resto si riempie
   // come al solito.
+  if(!soloErr && ripassoComeEsame(sel)){ lanciaTest(componiComeEsame(), 'Tutti'); return; }
   let soloNuove = !soloErr && !pianoAttivo() && mixScelto().n === 100;
   // ---------------------------------------------------------------------
   // Il test ha la forma dell'esame: le domande si dividono fra gli argomenti
