@@ -6537,7 +6537,7 @@ function prospettoPiano(){
         {n: fmtN(giorniAllEsame()), t: 'giorni all\'esame'},
         {n: fmtN(s.daRiconf), t: 'da riconfermare'},
         {n: fmtN(s.ko), t: 'ancora da recuperare'}],
-      messaggi: [{cls: 'bene', txt: `Dal ${dataIt(isoPiu(isoCopertura(), 1))} si ripassa. ${ripassoComeEsame() ? 'Dal 16 novembre ogni test è <b>come l\'esame</b>: 60 domande da tutta la banca, con le quote per materia e per punti della prova vera. Le domande che non vedi da più giorni escono più spesso.' : pianoAttivo() ? (s.nuove > 0 ? `Ogni test è fatto di <b>40% sbagliate</b>, circa <b>43% riconferme</b> e <b>10 domande nuove</b>, finché le mai viste (<b>${fmtN(s.nuove)}</b>) non finiscono.` : 'Le mai viste sono finite: ogni test è <b>60% riconferme</b> e <b>40% sbagliate</b>.') : 'Il piano qui farebbe 40% sbagliate, il resto riconferme e qualche nuova.'}`},
+      messaggi: [{cls: 'bene', txt: `Dal ${dataIt(isoPiu(isoCopertura(), 1))} si ripassa. ${ripassoComeEsame() ? 'Dal 16 novembre ogni test è <b>come l\'esame</b>: 60 domande da tutta la banca, con le quote per materia e per punti della prova vera. Le domande escono a caso, come nella simulazione.' : pianoAttivo() ? (s.nuove > 0 ? `Ogni test è fatto di <b>40% sbagliate</b>, circa <b>43% riconferme</b> e <b>10 domande nuove</b>, finché le mai viste (<b>${fmtN(s.nuove)}</b>) non finiscono.` : 'Le mai viste sono finite: ogni test è <b>60% riconferme</b> e <b>40% sbagliate</b>.') : 'Il piano qui farebbe 40% sbagliate, il resto riconferme e qualche nuova.'}`},
         {cls: '', txt: `L'obiettivo di oggi è <b>${fmtN(P.domObiettivo)}</b> domande: le sbagliate e le riconferme che restano, divise sui giorni fino all'esame. Si ricalcola ogni mattina (mai sotto ${OB_MIN}, mai sopra ${OB_MAX}).`}]};
   }
   if(P.U === 0){
@@ -6814,8 +6814,8 @@ const CODA_NEW = 1 / 6, CODA_RIC = 0.60 - CODA_NEW, CODA_RIP = 0.40;
 const NUOVE_RIPASSO = 10;
 // Ultimi giorni (deciso il 16 novembre): ogni test del piano e' fatto come l'esame.
 // 60 domande della banca ufficiale con le quote per materia (24, 19, 6, 6, 5) e per livello
-// (20 da 1 punto, 40 da 2), pescate da tutta la banca come la simulazione. In piu' le
-// domande che non vede da piu' giorni escono piu' spesso; quelle viste oggi quasi mai.
+// (20 da 1 punto, 40 da 2), pescate da tutta la banca come la simulazione. Dal 16 sera
+// (deciso il 16 novembre) la scelta e' identica alla simulazione: a caso, senza pesi.
 const RIPASSO_ESAME_DAL = '2026-11-16';
 function ripassoComeEsame(sel){
   if(!pianoAttivo() || faseDel() !== 'ripasso' || oggiISO() < RIPASSO_ESAME_DAL) return false;
@@ -6829,7 +6829,9 @@ function pesoDistanza(q){
   if(g === null) return 10;
   return g === 0 ? 0.2 : 1 + g;          // 1 giorno fa: 2 · una settimana fa: 8
 }
+const PESO_DISTANZA = false;        // true: le domande non viste da tempo escono piu' spesso
 function pescaPesata(arr, k){
+  if(!PESO_DISTANZA) return shuffle(arr.slice()).slice(0, k);   // come avviaSimulazione
   return arr.map(q => ({q, key: Math.pow(Math.random(), 1 / pesoDistanza(q))}))
             .sort((a, b) => b.key - a.key).slice(0, k).map(x => x.q);
 }
@@ -6909,7 +6911,7 @@ function fasiPiano(){
     {id: 'banca', n: 2, nome: 'Tutta la banca dati', dal: isoPiu(FINE_FASE_MAT, 1), al: cop,
      cosa: 'Si vedono le domande mai incontrate: nelle altre materie sette su dieci sono nuove, in Matematica metà nuove e metà da recuperare.'},
     {id: 'ripasso', n: 3, nome: 'Ripasso totale', dal: isoPiu(cop, 1), al: DATA_ESAME,
-     cosa: 'Si ripassa: in ogni test 40% sbagliate, circa 43% riconferme e 10 domande nuove su 60, per smaltire le ultime mai viste. Quando le mai viste finiscono, il loro posto passa alle riconferme. Dal 16 novembre ogni test è come l\'esame, e le domande che non vedi da più giorni escono più spesso.'}];
+     cosa: 'Si ripassa: in ogni test 40% sbagliate, circa 43% riconferme e 10 domande nuove su 60, per smaltire le ultime mai viste. Quando le mai viste finiscono, il loro posto passa alle riconferme. Dal 16 novembre ogni test è come l\'esame: le domande escono a caso da tutta la banca, come nella simulazione.'}];
 }
 function faseDel(iso){
   iso = iso || oggiISO();
