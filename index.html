@@ -1973,6 +1973,10 @@ b.dubbia{color:var(--ottone-t);}
             <span class="modo-ico"><svg class="ic ic-xl"><use href="#i-fiamma"/></svg></span>
             <span class="modo-testo"><b>Allenamento PRO</b><span>30 domande sui tuoi punti deboli</span></span>
           </button>
+          <button class="modo modo-pro" id="btn-ost" title="Le domande da 2 punti della banca ufficiale sbagliate almeno 2 volte e ancora da recuperare. Prima quelle con più errori; quelle già fatte oggi vanno in fondo, così test dopo test si vedono tutte.">
+            <span class="modo-ico"><svg class="ic ic-xl"><use href="#i-fiamma"/></svg></span>
+            <span class="modo-testo"><b>Ostinate da 2 punti</b><span id="ost-sub">sbagliate 2+ volte · 60 per test</span></span>
+          </button>
         </div>
       </div>
       <div class="mix-box mix-v2" id="mix-box">
@@ -7625,6 +7629,26 @@ function avviaSimulazione(){
   lanciaTest(domande, 'Simulazione esame', {esame: true, sim: true, scadenza: MINUTI_ESAME * 60});
 }
 
+// ---------- ostinate da 2 punti (deciso il 18 novembre) ----------
+// Le domande da 2 punti della banca ufficiale sbagliate almeno 2 volte e ancora da
+// recuperare. Prima quelle con piu' errori; quelle gia' viste oggi vanno in fondo,
+// cosi' test dopo test escono tutte. 60 per test, mescolate.
+function poolOstinate(){
+  return QUESTIONS.filter(q => { const r = stato.risultati[q.n]; return !fuoriBanca(q) && livelloQ(q) === 2 && r && r.s === 'ko' && (r.e || 0) >= 2; });
+}
+function avviaOstinate(){
+  const pool = poolOstinate();
+  if(!pool.length) return;
+  const oggiQ = q => giorniDa(stato.risultati[q.n]) === 0 ? 1 : 0;
+  const ord = shuffle(pool.slice()).sort((a, b) => (oggiQ(a) - oggiQ(b)) || ((stato.risultati[b.n].e || 0) - (stato.risultati[a.n].e || 0)));
+  lanciaTest(shuffle(ord.slice(0, N_TEST)), 'Ostinate da 2 punti');
+}
+function aggiornaOstinate(){
+  const el = $('ost-sub'); if(!el) return;
+  const p = poolOstinate(), fatte = p.filter(q => giorniDa(stato.risultati[q.n]) === 0).length;
+  el.textContent = p.length + ' domande sbagliate 2+ volte' + (fatte ? ' · ' + fatte + ' già viste oggi' : '') + ' · 60 per test';
+}
+
 // ---------- allenamento PRO ----------
 function avviaPro(){
   ensureIndex();
@@ -8698,6 +8722,8 @@ ARGOMENTI.forEach(a => {
 });
 $('btn-sim').onclick = () => conferma(`Avviare la simulazione d'esame? Come la prova vera: 60 domande (24 mercato + 19 matematica + 6 privato + 6 tributario + 5 previdenziale) estratte dalla banca dati ufficiale: 20 valgono 1 punto e 40 ne valgono 2, per 100 punti in tutto. ${MINUTI_ESAME} minuti di tempo, correzione solo alla fine, si passa con ${SOGLIA_PUNTI} punti.`, avviaSimulazione);
 $('btn-pro').onclick = avviaPro;
+$('btn-ost').onclick = avviaOstinate;
+try { aggiornaOstinate(); setInterval(aggiornaOstinate, 5000); } catch(e) {}
 $('chk-solo-aperte').onchange = renderRipasso;
 $('chk-solo-errori').onchange = aggiornaNota;
 $('chk-autosave').onchange = () => { stato.autosave = $('chk-autosave').checked; salvaLocale(); };
