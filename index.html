@@ -57,15 +57,15 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 
 /* ---------- calendario del piano ---------- */
 .cal-intro{color:var(--nebbia); font-size:.88rem; margin-bottom:14px; line-height:1.5;}
-.cal-griglia{display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;}
-.cal-dow{font-size:.66rem; color:var(--nebbia); text-align:center; padding-bottom:2px; font-weight:600;}
+.cal-griglia{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:6px;}
+.cal-dow{font-size:.75rem; color:var(--nebbia); text-align:center; padding-bottom:2px; font-weight:600;}
 .cal-g{border:1px solid var(--filo); border-radius:var(--r-min); padding:7px 4px 6px; text-align:center;
   min-height:62px; display:flex; flex-direction:column; gap:2px; justify-content:center;
   background:rgba(var(--velo),.03);}
 .cal-g.vuoto{border:none; background:none;}
-.cal-n{font-size:.74rem; color:var(--nebbia); line-height:1;}
+.cal-n{font-size:.75rem; color:var(--nebbia); line-height:1;}
 .cal-v{font-family:var(--f-display); font-weight:600; font-size:1.02rem; color:var(--testo); line-height:1.05;}
-.cal-s{font-size:.6rem; color:var(--nebbia); line-height:1.15;}
+.cal-s{font-size:.75rem; color:var(--nebbia); line-height:1.15;}
 .cal-g.fatto{background:var(--vidibg); border-color:rgba(var(--ok-rgb),.34);}
 .cal-g.fatto .cal-v{color:var(--vidimato-t);}
 .cal-g.parziale{background:var(--ottonebg); border-color:rgba(var(--amb-rgb),.34);}
@@ -76,14 +76,14 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 .cal-g.oggi .cal-v{color:var(--inchiostro2);}
 .cal-g.finale{background:rgba(var(--velo),.06); border-style:dashed;}
 .cal-g.riposo{opacity:.55;}
-.cal-leg{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:.74rem; color:var(--nebbia);}
+.cal-leg{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:.75rem; color:var(--nebbia);}
 .cal-leg span{display:inline-flex; align-items:center; gap:6px;}
 .cal-leg i{width:11px; height:11px; border-radius:3px; display:inline-block; border:1px solid var(--filo);}
 .cal-riass{margin-top:14px; padding-top:12px; border-top:1px solid var(--filo); font-size:.9rem; line-height:1.55;}
 .cal-riass b{color:var(--testo);}
 .cal-male{color:var(--ottone-t);} .cal-male b{color:var(--ottone-t);}
 .cal-bene{color:var(--vidimato-t);} .cal-bene b{color:var(--vidimato-t);}
-@media(max-width:640px){ .cal-g{min-height:54px; padding:5px 2px;} .cal-v{font-size:.9rem;} .cal-s{font-size:.55rem;} }
+@media(max-width:640px){ .cal-griglia{gap:3px;} .cal-g{min-height:54px; padding:5px 1px; min-width:0; overflow:hidden;} .cal-v{font-size:.9rem;} .cal-s{font-size:.75rem; white-space:nowrap; overflow:hidden; text-overflow:clip;} }
 
 /* ============ IL CAMPO ============
    L'unica cosa che questa app può mostrare e nessun'altra: la banca dati è
@@ -93,15 +93,15 @@ html.si-muove .vista:not(.nascosto) > .card:nth-of-type(n+5){animation-delay:.27
 .campo-fascia{border-bottom:1px solid var(--bordo); background:var(--foglio);}
 .campo-int{max-width:1180px; margin:0 auto; padding:16px 18px 18px;}
 .campo-testa{display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap;}
-.campo-tit{font-family:var(--f-testo); font-size:.68rem; letter-spacing:.005em; 
+.campo-tit{font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em; 
   font-weight:600; color:var(--nebbia);}
-.campo-leg{display:flex; gap:14px; flex-wrap:wrap; font-family:var(--f-testo); font-size:.72rem; color:var(--nebbia);}
+.campo-leg{display:flex; gap:14px; flex-wrap:wrap; font-family:var(--f-testo); font-size:.75rem; color:var(--nebbia);}
 .campo-leg span{display:inline-flex; align-items:center; gap:6px;}
 .campo-leg b{color:var(--testo); font-weight:600;}
 #campo{display:block; width:100%; margin-top:11px; border-radius:3px;}
 .campo-nota{margin:9px 0 0; font-size:.76rem; color:var(--nebbia); line-height:1.5;}
 .campo-nota b{color:var(--testo); font-weight:600;}
-@media(max-width:640px){ .campo-int{padding:13px 14px 15px;} .campo-leg{gap:10px; font-size:.68rem;} }
+@media(max-width:640px){ .campo-int{padding:13px 14px 15px;} .campo-leg{gap:10px; font-size:.75rem;} }
 :where(button, a, input, select, summary, [tabindex]):focus-visible{
   outline:2px solid var(--azione); outline-offset:2px; border-radius:4px;}
 @media (prefers-reduced-motion: reduce){
@@ -240,10 +240,10 @@ header.top h1{font-family:var(--f-display); font-variation-settings:var(--morbid
 header.top h1 .rosso{color:var(--nebbia); font-weight:600;}
 header.top .logo-img{width:30px; height:30px; border-radius:var(--r-min); flex:none;}
 header.top{align-items:center;}
-header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.005em;
+header.top .sub{font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em;
                  color:var(--nebbia);}
 .utente-box{display:flex; align-items:center; gap:10px; font-size:.78rem; color:var(--nebbia);}
-#sync-stato{display:flex; align-items:center; gap:6px; font-family:var(--f-testo); font-size:.68rem;}
+#sync-stato{display:flex; align-items:center; gap:6px; font-family:var(--f-testo); font-size:.75rem;}
 #sync-stato.nascosto{display:none;}
 #sync-stato .sync-dot{width:8px; height:8px; border-radius:50%; background:var(--vidimato); flex:none;
                       box-shadow:0 0 0 3px rgba(143,209,158,.18);}
@@ -270,7 +270,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .tabs{position:fixed; left:0; right:0; bottom:0; z-index:40; display:flex; gap:0;
       background:var(--foglio); border-top:1px solid var(--bordo);
       padding:6px 6px calc(6px + var(--safe-b)); box-shadow:0 -3px 14px rgba(var(--ombra),.40);}
-.tab{flex:1; background:transparent; color:var(--nebbia); font-weight:600; font-size:.66rem;
+.tab{flex:1; background:transparent; color:var(--nebbia); font-weight:600; font-size:.75rem;
      padding:7px 2px 5px; border-radius:var(--r-int); min-height:0; letter-spacing:.01em;
      display:flex; flex-direction:column; align-items:center; gap:2px; line-height:1.15;}
 .tab .t-ico{font-size:1.2rem; line-height:1;}
@@ -315,7 +315,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .sa-riga:hover{background:rgba(var(--velo),.06);}
 .sa-riga input{width:16px; height:16px; accent-color:var(--testo); flex:none; position:relative; top:2px;}
 .sa-riga .sa-nome{flex:1 1 200px; min-width:0; font-weight:600; font-size:.86rem;}
-.sa-riga .mini{font-size:.72rem;}
+.sa-riga .mini{font-size:.75rem;}
 .mini{font-size:.76rem; color:var(--nebbia); white-space:normal; overflow-wrap:anywhere; font-family:var(--f-testo);}
 .mini b.ko{color:var(--lacca-t);} .mini b.ok{color:var(--vidimato-t);}
 .barra{height:6px; background:rgba(var(--velo),.10); border-radius:3px; overflow:hidden; flex:1 1 100%;}
@@ -323,7 +323,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .barra .segok{background:var(--vidimato);} .barra .segko{background:var(--lacca);}
 .opzioni-avvio{display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-top:14px;}
 .toggle{display:flex; align-items:center; gap:8px; font-size:.9rem; cursor:pointer; min-height:32px;}
-.pill{display:inline-block; padding:3px 11px; border-radius:4px; font-size:.68rem; font-weight:600;
+.pill{display:inline-block; padding:3px 11px; border-radius:4px; font-size:.75rem; font-weight:600;
       letter-spacing:.005em; font-family:var(--f-testo); }
 .pill-arg{background:var(--azz); color:var(--testo);}
 .pill-rip{background:var(--ottonebg); color:var(--ottone-t);}
@@ -341,7 +341,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 /* ---- il recupero degli errori ---- */
 .rec-testa{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .rec-testa h2{margin:0;}
-.rec-gg{font-size:.74rem; color:var(--nebbia); white-space:nowrap;}
+.rec-gg{font-size:.75rem; color:var(--nebbia); white-space:nowrap;}
 .rec-intro{font-size:.86rem; color:var(--nebbia); line-height:1.5; margin:8px 0 14px;}
 .rec-barra{display:flex; height:14px; border-radius:7px; overflow:hidden; background:var(--azz); margin-bottom:14px;}
 .rec-seg{height:100%;}
@@ -353,7 +353,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
   background:rgba(var(--velo),.04);}
 .rec-k b{display:block; font-family:var(--f-display); font-size:1.9rem; font-weight:800; line-height:1;
   font-variant-numeric:tabular-nums; color:var(--testo);}
-.rec-k span{display:block; font-size:.72rem; color:var(--nebbia); line-height:1.35; margin-top:5px;}
+.rec-k span{display:block; font-size:.75rem; color:var(--nebbia); line-height:1.35; margin-top:5px;}
 .rec-k.rec-hero{border-color:var(--ottone); background:var(--ottonebg);}
 .rec-k.rec-hero b{color:var(--ottone-t);}
 .rec-k.rec-hero span b{display:inline; font-size:inherit; color:var(--ottone-t); font-weight:800;}
@@ -363,13 +363,13 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .rec-av-num{flex:0 0 auto; text-align:center; min-width:96px;}
 .rec-av-num b{display:block; font-family:var(--f-display); font-weight:800; font-size:2.3rem; line-height:1;
   color:var(--ottone-t); font-variant-numeric:tabular-nums;}
-.rec-av-num span{display:block; font-size:.72rem; color:var(--nebbia); margin-top:4px;}
+.rec-av-num span{display:block; font-size:.75rem; color:var(--nebbia); margin-top:4px;}
 .rec-av-spieg{flex:1 1 260px; margin:0; font-size:.8rem; line-height:1.55; color:var(--nebbia);}
 .rec-av-spieg b{color:var(--testo);}
-.rec-k i{display:block; font-style:normal; font-size:.7rem; color:var(--nebbia); margin-top:6px;
+.rec-k i{display:block; font-style:normal; font-size:.75rem; color:var(--nebbia); margin-top:6px;
   padding-top:5px; border-top:1px solid var(--filo); font-variant-numeric:tabular-nums;}
 .rec-ieri{margin-top:8px; padding:9px 12px; border-radius:var(--r-min); background:var(--azz); border:1px solid var(--filo);}
-.rec-i-tit{font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--nebbia); margin-bottom:6px;}
+.rec-i-tit{font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--nebbia); margin-bottom:6px;}
 .rec-i-riga{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; font-size:.84rem; padding:2px 0;}
 .rec-i-et{color:var(--nebbia); flex:0 0 auto;}
 .rec-i-val{margin-left:auto; font-variant-numeric:tabular-nums;}
@@ -398,8 +398,8 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .rec-prima{margin:8px 0 0; padding:9px 11px; border-radius:10px; line-height:1.6;
            background:rgba(var(--amb-rgb),.10); border:1px solid rgba(var(--amb-rgb),.30);}
 .rec-dure{margin:12px 0 0; font-size:.8rem; color:var(--nebbia); line-height:1.45;}
-@media(max-width:620px){ .rec-nome{flex-basis:74px;} .rec-dati{flex-basis:118px; font-size:.72rem;}
-  .rec-quota{flex-basis:34px; font-size:.74rem;} .rec-av-num{min-width:78px;} .rec-av-num b{font-size:1.9rem;} }
+@media(max-width:620px){ .rec-nome{flex-basis:74px;} .rec-dati{flex-basis:118px; font-size:.75rem;}
+  .rec-quota{flex-basis:34px; font-size:.75rem;} .rec-av-num{min-width:78px;} .rec-av-num b{font-size:1.9rem;} }
 .cop-coda{display:block; margin-top:4px; color:var(--nebbia); font-size:.9em;}
 .campo-tit-sub{color:var(--nebbia); font-weight:400;}
 .arg-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
@@ -417,7 +417,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 /* Chi decide il mix: il piano o lei. La riga sta sopra i cursori perche' senza
    quella non si capisce se spostarli serva a qualcosa. */
 .mix-testa{display:flex; align-items:baseline; justify-content:space-between; gap:10px;
-  font-size:.7rem; color:var(--nebbia); line-height:1.35; margin-bottom:3px;}
+  font-size:.75rem; color:var(--nebbia); line-height:1.35; margin-bottom:3px;}
 .mix-guida b{color:var(--testo); font-weight:700;}
 .mix-torna{color:var(--inchiostro2); text-decoration:none; white-space:nowrap;
   border-bottom:1px solid currentColor; padding-bottom:1px;}
@@ -432,14 +432,14 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .mix-tab:not(.on):hover{color:var(--testo);}
 .mix-tab:focus-visible, .af-btn:focus-visible{outline:2px solid var(--azione); outline-offset:2px;}
 .mix-fasi{list-style:none; margin:0 0 8px; padding:0; display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;}
-.mix-fasi li{border-top:3px solid rgba(var(--velo),.16); padding:6px 2px 0; font-size:.7rem; color:var(--nebbia);
+.mix-fasi li{border-top:3px solid rgba(var(--velo),.16); padding:6px 2px 0; font-size:.75rem; color:var(--nebbia);
   line-height:1.3; display:flex; flex-direction:column; gap:1px;}
 .mix-fasi li b{color:var(--testo); font-weight:600; font-size:.76rem;}
 .mix-fasi li.ora{border-top-color:var(--azione);}
 .mix-fasi li.ora .mf-n{color:var(--inchiostro2); font-weight:700;}
 .mix-fasi li.fatta{opacity:.55;}
-.mf-n{text-transform:uppercase; letter-spacing:.07em; font-size:.6rem;}
-.mf-d{font-family:var(--f-mono); font-size:.64rem;}
+.mf-n{text-transform:uppercase; letter-spacing:.07em; font-size:.75rem;}
+.mf-d{font-family:var(--f-mono); font-size:.75rem;}
 .mix-cosa{font-size:.8rem; line-height:1.5; margin:0 0 10px; color:var(--testo);}
 .mix-barra{display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; background:rgba(var(--velo),.08);}
 .mix-barra i{display:block; min-width:3px;}
@@ -450,7 +450,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .mix-leg-tot{margin-left:auto;}
 .mix-tab-mat{width:100%; border-collapse:collapse; font-size:.76rem;}
 .mix-tab-mat th, .mix-tab-mat td{padding:5px 3px; text-align:center; border-bottom:1px solid var(--filo); font-weight:400;}
-.mix-tab-mat thead th{color:var(--nebbia); font-size:.66rem; white-space:nowrap;}
+.mix-tab-mat thead th{color:var(--nebbia); font-size:.75rem; white-space:nowrap;}
 .mix-tab-mat thead th span{margin-left:3px;}
 .mix-tab-mat thead th:first-child, .mix-tab-mat tbody th{text-align:left;}
 .mix-tab-mat tbody th{color:var(--testo); font-weight:600; white-space:nowrap;}
@@ -540,15 +540,15 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .d-corpo .d-formula-box,.d-corpo .d-concl-box,.d-corpo .d-key{
   padding:12px 15px; margin:13px 0; border-radius:14px;}
 .d-corpo .d-box,.d-corpo .d-formula-box{background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.13);}
-.d-corpo .d-esempio{background:rgba(var(--azione-rgb),.09); border:1px solid rgba(var(--azione-rgb),.22); border-left:3px solid var(--azione);}
-.d-corpo .d-trucco{background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.26); border-left:3px solid var(--viola);}
-.d-corpo .d-attenzione{background:var(--ottonebg); border:1px solid rgba(var(--amb-rgb),.30); border-left:3px solid var(--ottone);}
-.d-corpo .d-concl-box{background:var(--vidibg); border:1px solid rgba(var(--ok-rgb),.28); border-left:3px solid var(--vidimato);}
+.d-corpo .d-esempio{background:rgba(var(--azione-rgb),.09); border:1px solid rgba(var(--azione-rgb),.22);}
+.d-corpo .d-trucco{background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.26);}
+.d-corpo .d-attenzione{background:var(--ottonebg); border:1px solid rgba(var(--amb-rgb),.30);}
+.d-corpo .d-concl-box{background:var(--vidibg); border:1px solid rgba(var(--ok-rgb),.28);}
 .d-corpo .d-box > :last-child,.d-corpo .d-esempio > :last-child,.d-corpo .d-trucco > :last-child,
 .d-corpo .d-attenzione > :last-child,.d-corpo .d-concl-box > :last-child,
 .d-corpo .d-formula-box > :last-child,.d-corpo .d-key > :last-child{margin-bottom:0;}
 .d-corpo .d-esempio::before,.d-corpo .d-trucco::before,.d-corpo .d-attenzione::before{
-  display:block; font-family:var(--f-testo); font-size:.63rem; letter-spacing:.005em;
+  display:block; font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em;
    font-weight:800; margin-bottom:6px;}
 .d-corpo .d-esempio::before{content:"Esempio"; color:var(--inchiostro2);}
 .d-corpo .d-trucco::before{content:"Trucco d'esame"; color:var(--viola-t);}
@@ -557,7 +557,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .d-corpo .d-formula{font-family:var(--f-mono); font-size:.97rem; text-align:center;
   background:rgba(var(--velo),.07); border:1px solid rgba(var(--velo),.14); border-radius:var(--r-int);
   padding:10px 12px; margin:10px 0;}
-.d-corpo .d-formula-t{font-family:var(--f-mono); font-size:.65rem; letter-spacing:.11em;
+.d-corpo .d-formula-t{font-family:var(--f-mono); font-size:.75rem; letter-spacing:.11em;
   text-transform:uppercase; color:var(--inchiostro2); font-weight:800; margin-bottom:6px;}
 .d-corpo .d-trucco-inline{background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.24);
   border-radius:var(--r-int); padding:9px 12px; display:block;}
@@ -565,7 +565,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .d-tabw{overflow-x:auto; margin:13px 0;}
 .d-corpo .d-tab{width:100%; border-collapse:collapse; font-size:.88rem; min-width:440px;}
 .d-corpo .d-tab th{background:rgba(var(--velo),.09); color:var(--testo); text-align:left;
-  padding:8px 10px; font-family:var(--f-testo); font-size:.74rem; font-weight:800;
+  padding:8px 10px; font-family:var(--f-testo); font-size:.75rem; font-weight:800;
   letter-spacing:.03em;  border-bottom:1px solid rgba(var(--velo),.16);}
 .d-corpo .d-tab td{border-bottom:1px solid rgba(var(--velo),.09); padding:8px 10px; vertical-align:top;}
 .d-corpo .d-tab ul{margin:0; padding-left:16px;}
@@ -577,7 +577,7 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .d-corpo .d-key{background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.13);}
 .d-corpo .d-key-ok{background:var(--vidibg); border-color:rgba(var(--ok-rgb),.28);}
 .d-corpo .d-key-ko{background:var(--laccabg); border-color:rgba(var(--ko-rgb),.28);}
-.d-corpo .d-key-t{font-family:var(--f-testo); font-size:.66rem; letter-spacing:.005em;
+.d-corpo .d-key-t{font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em;
    font-weight:800; margin:0 0 7px;}
 .d-corpo .d-key-ok .d-key-t{color:var(--vidimato-t);} .d-corpo .d-key-ko .d-key-t{color:var(--lacca-t);}
 .d-corpo .d-due-colonne{display:flex; gap:12px; flex-wrap:wrap;}
@@ -597,9 +597,9 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
   .disp-tab{font-size:.85rem; padding:8px 12px;}
 }
 
-.spiega{background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.28); border-left:4px solid var(--inchiostro2); border-radius:var(--r-int);
+.spiega{background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.28); border-radius:var(--r-int);
         padding:11px 14px; margin:0 0 12px; font-size:.9rem; line-height:1.55;}
-.segnali{background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.30); border-left:4px solid var(--viola);
+.segnali{background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.30);
   border-radius:var(--r-int); padding:12px 14px; margin-top:10px; font-size:.92rem; line-height:1.6;}
 .segnali .sp-tag{color:var(--viola-t);}
 .sg-r{margin:7px 0 0;}
@@ -610,9 +610,9 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .sg-cautela{margin:7px 0 0; font-size:.82rem; color:var(--nebbia);}
 .sgr-testa{font-size:.95rem; line-height:1.6; margin:0 0 12px;}
 .sgr-gruppo{margin-top:14px;}
-.sgr-tit{font-family:var(--f-testo); font-size:.68rem; letter-spacing:.005em; 
+.sgr-tit{font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em; 
   font-weight:800; color:var(--nebbia); margin-bottom:7px;}
-.sgr-voce{display:flex; align-items:baseline; gap:10px; padding:8px 11px; border-radius:var(--r-int); margin-bottom:6px;
+.sgr-voce{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; padding:8px 11px; border-radius:var(--r-int); margin-bottom:6px;
   background:rgba(var(--velo),.05); border:1px solid rgba(var(--velo),.12);}
 .sgr-voce.neg{border-color:rgba(var(--ko-rgb),.30); background:rgba(var(--ko-rgb),.07);}
 .sgr-voce.pos{border-color:rgba(var(--ok-rgb),.28); background:rgba(var(--ok-rgb),.07);}
@@ -621,9 +621,9 @@ header.top .sub{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.00
 .sgr-nota{font-size:.86rem; color:var(--nebbia); line-height:1.55;}
 .sgr-motore{margin-top:14px; padding:11px 13px; border-radius:var(--r-int); font-size:.9rem; line-height:1.6;
   background:rgba(var(--azione-rgb),.10); border:1px solid rgba(var(--azione-rgb),.28);}
-.trucco{background:var(--ottonebg); border:1px solid rgba(var(--amb-rgb),.3); border-left:4px solid var(--ottone); border-radius:var(--r-int);
+.trucco{background:var(--ottonebg); border:1px solid rgba(var(--amb-rgb),.3); border-radius:var(--r-int);
         padding:11px 14px; margin:0 0 12px; font-size:.9rem; line-height:1.55;}
-.spiega .sp-tag, .trucco .sp-tag{font-family:var(--f-testo); font-size:.62rem; letter-spacing:.1em;
+.spiega .sp-tag, .trucco .sp-tag{font-family:var(--f-testo); font-size:.75rem; letter-spacing:.1em;
          font-weight:600; color:var(--nebbia);}
 .azioni{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
 .spazio{flex:1;}
@@ -641,21 +641,23 @@ kbd{background:rgba(var(--velo),.10); border:1px solid var(--bordo); border-radi
       transform:rotate(-2.5deg); animation:timbrata .28s cubic-bezier(.2,1.6,.4,1);}
 .esito.ok{color:var(--vidimato-t); background:rgba(39,107,78,.05);}
 .esito.ko{color:var(--lacca-t); background:rgba(179,58,43,.05);}
+.esito.neutro{color:var(--testo); background:rgba(var(--velo),.05); font-family:var(--f-testo); font-weight:600;
+  padding:10px 14px; border-radius:12px; max-width:60ch; line-height:1.5;}
 @keyframes timbrata{0%{transform:rotate(-2.5deg) scale(1.7); opacity:0;} 100%{transform:rotate(-2.5deg) scale(1); opacity:1;}}
 @media (prefers-reduced-motion:reduce){ .esito.ok,.esito.ko{animation:none;} .amore-emoji{animation:none;} }
 table.riep{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:8px;}
 table.riep th{background:var(--inchiostro); color:var(--su-accento); padding:8px 9px; text-align:left; font-weight:600;
-              font-family:var(--f-testo); font-size:.7rem; letter-spacing:.005em; }
+              font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em; }
 table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
-.err-item{border:1px solid var(--bordo); border-left:4px solid var(--lacca); border-radius:var(--r-int);
+.err-item{border:1px solid rgba(var(--ko-rgb),.35); border-radius:var(--r-int);
           padding:12px 14px; margin-bottom:10px; font-size:.9rem; background:var(--foglio);}
 .err-item .d{font-weight:600; margin:4px 0 6px;}
 .err-item .r{color:var(--vidimato-t); margin-top:4px;}
 .err-item .tua{color:var(--lacca-t);}
-.err-item.rip-sup{border-left-color:var(--vidimato);}
+.err-item.rip-sup{border-color:rgba(var(--ok-rgb),.35);}
 /* Il ripasso e' un di piu': deve leggersi come secondario rispetto alla risposta e
    alla spiegazione, non competere con loro. Quindi niente colore, solo il bordo. */
-.rileggi{margin-top:8px; border:1px solid var(--bordo); border-left:4px solid var(--nebbia);
+.rileggi{margin-top:8px; border:1px solid var(--bordo);
   border-radius:var(--r-int); background:rgba(var(--velo),.04);}
 .rileggi > summary{cursor:pointer; list-style:none; padding:9px 13px; display:flex; gap:9px;
   align-items:baseline; flex-wrap:wrap; font-size:.87rem;}
@@ -663,7 +665,7 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .rileggi > summary::after{content:"▾"; margin-left:auto; color:var(--nebbia); font-size:.8rem;
   transition:transform .15s;}
 .rileggi[open] > summary::after{transform:rotate(180deg);}
-.rileggi .rl-t{font-family:var(--f-mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase;
+.rileggi .rl-t{font-family:var(--f-mono); font-size:.75rem; letter-spacing:.13em; text-transform:uppercase;
   font-weight:700; color:var(--nebbia); white-space:nowrap;}
 .rileggi .rl-d{color:var(--testo); font-weight:600;}
 .rileggi .rl-corpo{margin:0; padding:0 13px 12px; font-size:.88rem;
@@ -707,7 +709,7 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .prog-pct > span:first-child{font-family:var(--f-display); font-variation-settings:var(--morbido);
   font-size:2.6rem; font-weight:600; color:var(--testo); line-height:.95; letter-spacing:-.02em;
   font-variant-numeric:tabular-nums;}
-.prog-pct-lab{font-size:.66rem; color:var(--nebbia); line-height:1.45;}
+.prog-pct-lab{font-size:.75rem; color:var(--nebbia); line-height:1.45;}
 .prog-pct-lab b{color:var(--testo); font-weight:700;}
 .prog-pct-lab #prog-pct-dom{font-size:1.15em; font-variant-numeric:tabular-nums;}
 .sbar{display:flex; height:20px; border-radius:5px; overflow:hidden; background:rgba(var(--velo),.10); margin-top:6px;}
@@ -734,7 +736,7 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 #btn-reset:hover{background:rgba(179,58,43,.3); color:var(--testo);}
 .toggle-chiaro{color:var(--nebbia); font-size:.85rem; flex-wrap:wrap;}
 .nota-chiara{color:var(--nebbia);}
-.mini-chiaro{color:var(--nebbia); font-size:.72rem; font-family:var(--f-testo);}
+.mini-chiaro{color:var(--nebbia); font-size:.75rem; font-family:var(--f-testo);}
 .divisore{border-top:1px solid rgba(var(--velo),.15); margin:16px 0 13px;}
 .sez-tit{font-weight:700; color:var(--testo); font-size:.95rem; margin-bottom:10px; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap;
          font-family:var(--f-display);}
@@ -742,11 +744,11 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .card-prog .mini{color:var(--nebbia);}
 .card-prog .nota{color:var(--nebbia);}
 .ultimi-test{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px;}
-.ut-lab{font-size:.74rem; color:var(--nebbia);}
+.ut-lab{font-size:.75rem; color:var(--nebbia);}
 .ut-pill{background:rgba(var(--velo),.1); border:1px solid rgba(var(--velo),.18); border-radius:var(--r-min);
          padding:5px 11px; font-size:.84rem; color:var(--testo); font-weight:700; display:flex; gap:6px; align-items:baseline;
          font-family:var(--f-mono);}
-.ut-pill .ut-score{font-weight:400; font-size:.68rem; color:var(--nebbia);}
+.ut-pill .ut-score{font-weight:400; font-size:.75rem; color:var(--nebbia);}
 .ut-sup{background:rgba(var(--ok-rgb),.18); border-color:var(--vidimato); color:var(--vidimato-t);}
 .ut-sup .ut-score{color:var(--vidimato-t);}
 
@@ -759,8 +761,8 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .kpi2 .ico{width:40px; height:40px; border-radius:var(--r-int); display:flex; align-items:center; justify-content:center; font-size:1.15rem; flex:none;}
 .ico-blu{background:var(--azz);} .ico-verde{background:var(--vidibg);} .ico-rosso{background:var(--laccabg);} .ico-giallo{background:rgba(var(--azione-rgb),.12);}
 .kpi2 .kv{font-family:var(--f-mono); font-size:1.4rem; font-weight:600; color:var(--testo); line-height:1.15; letter-spacing:-.01em;}
-.kpi2 .kl{font-size:.7rem; color:var(--nebbia);}
-.kpi2 .kd{font-size:.72rem; margin-top:1px; font-weight:600;}
+.kpi2 .kl{font-size:.75rem; color:var(--nebbia);}
+.kpi2 .kd{font-size:.75rem; margin-top:1px; font-weight:600;}
 .kd.su{color:var(--vidimato-t);} .kd.giu{color:var(--lacca-t);} .kd.pari{color:var(--nebbia); font-weight:400;}
 
 /* ---------- dashboard ---------- */
@@ -772,9 +774,9 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 .kpi{border:1px solid var(--bordo); border-radius:var(--r-int); padding:12px 14px; background:var(--foglio);}
 .kpi-chiave{border-color:rgba(var(--velo),.42);}
 .kpi-chiave .k-val{color:var(--testo);}
-.kpi .k-lab{font-size:.7rem; color:var(--ink2); font-family:var(--f-testo); letter-spacing:.04em; }
+.kpi .k-lab{font-size:.75rem; color:var(--ink2); font-family:var(--f-testo); letter-spacing:.04em; }
 .kpi .k-val{font-family:var(--f-mono); font-size:1.65rem; font-weight:600; color:var(--ink); margin-top:2px; letter-spacing:-.01em;}
-.kpi .k-sub{font-size:.72rem; color:var(--muted); margin-top:2px;}
+.kpi .k-sub{font-size:.75rem; color:var(--muted); margin-top:2px;}
 .legenda{display:flex; gap:16px; flex-wrap:wrap; font-size:.76rem; color:var(--ink2); margin-top:10px;}
 .legenda span{display:flex; align-items:center; gap:6px;}
 .swatch{width:11px; height:11px; border-radius:3px; display:inline-block;}
@@ -800,7 +802,7 @@ details.tab-dati summary{cursor:pointer; color:var(--testo); font-weight:600;}
      border-radius:var(--r-int); background:rgba(var(--velo),.06); color:var(--testo); cursor:pointer;}
 mark{background:#F2A93B; color:#241503; border-radius:3px; padding:0 2px; font-weight:600;}
 ::placeholder{color:var(--nebbia); opacity:.8;}
-.cerca-item{border:1px solid var(--bordo); border-left:4px solid var(--inchiostro); border-radius:var(--r-int);
+.cerca-item{border:1px solid var(--bordo); border-radius:var(--r-int);
      padding:12px 14px; margin-bottom:10px; font-size:.9rem; background:var(--foglio);}
 .cerca-item .d{font-weight:600; margin:5px 0 6px;}
 .cerca-item .r{color:var(--vidimato-t); margin-top:3px;}
@@ -832,12 +834,12 @@ details.grp-arg .corpo{padding:12px 14px;}
 .tem-rank.r1{background:var(--lacca);} .tem-rank.r2{background:var(--lacca2);} .tem-rank.r3{background:var(--ottone);}
 .tem-rank.rN{background:var(--nuova); color:var(--su-nuova);}
 .tem-kw2{font-weight:700; font-size:1.02rem; text-transform:capitalize; color:var(--testo); flex:1; line-height:1.2;}
-.tem-badge{background:var(--laccabg); color:var(--lacca-t); border-radius:5px; padding:3px 10px; font-size:.68rem;
+.tem-badge{background:var(--laccabg); color:var(--lacca-t); border-radius:5px; padding:3px 10px; font-size:.75rem;
            font-weight:600; font-family:var(--f-testo);}
 .tem-meter{height:7px; background:rgba(var(--velo),.10); border-radius:4px; overflow:hidden;}
 .tem-meter > div{height:100%; background:var(--lacca); border-radius:0 4px 4px 0;}
 .tem-fondo{display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap;}
-.tem-note{font-size:.74rem; color:var(--nebbia); flex:1; min-width:150px;}
+.tem-note{font-size:.75rem; color:var(--nebbia); flex:1; min-width:150px;}
 .btn-tem{padding:8px 16px; font-size:.82rem; white-space:nowrap;}
 
 /* tematiche compatte con tendina per argomento */
@@ -850,10 +852,10 @@ details.grp-arg .corpo{padding:12px 14px;}
 .tem-riga{display:flex; align-items:center; gap:8px; padding:6px 2px; border-bottom:1px dashed var(--filo);}
 .tem-riga:last-child{border-bottom:none;}
 .tem-riga .tem-kw2{font-size:.88rem; font-weight:600; flex:1 1 120px; min-width:0; overflow-wrap:anywhere; line-height:1.25;}
-.tem-riga .tem-rank{width:22px; height:22px; font-size:.72rem; border-radius:7px;}
+.tem-riga .tem-rank{width:22px; height:22px; font-size:.75rem; border-radius:7px;}
 .tem-mini-meter{flex:0 1 90px; height:5px; background:rgba(var(--velo),.10); border-radius:3px; overflow:hidden; display:inline-block;}
 .tem-mini-meter span{display:block; height:100%; background:var(--lacca); border-radius:0 3px 3px 0;}
-.tem-nerr{font-size:.74rem; color:var(--lacca-t); font-weight:600; flex:none; min-width:32px; text-align:right;}
+.tem-nerr{font-size:.75rem; color:var(--lacca-t); font-weight:600; flex:none; min-width:32px; text-align:right;}
 .tem-riga .btn-tem{padding:6px 12px; font-size:.76rem; min-height:32px; flex:none;}
 @media (max-width:640px){
   .tem-mini-meter{display:none;}
@@ -876,7 +878,7 @@ details.grp-arg .corpo{padding:12px 14px;}
 .login-marchio{font-family:var(--f-display); font-weight:800; font-size:1.5rem; color:var(--testo); line-height:1.1;}
 .login-marchio .rosso{color:var(--lacca-t);}
 .login-logo{width:52px; height:52px; border-radius:13px; margin-bottom:10px;}
-.login-sub{font-family:var(--f-testo); font-size:.64rem; letter-spacing:.005em; 
+.login-sub{font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em; 
            color:var(--nebbia); margin:4px 0 20px;}
 .campo{margin-bottom:12px;}
 .campo label{display:block; font-size:.78rem; font-weight:600; color:var(--nebbia); margin-bottom:4px;
@@ -912,29 +914,29 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   /* ---- card "I tuoi progressi": compatta ---- */
   .prog-testa{margin-bottom:8px;}
   .prog-pct > span:first-child{font-size:1.5rem;}
-  .prog-pct-lab{font-size:.6rem;}
+  .prog-pct-lab{font-size:.75rem;}
   .sbar-prog{height:9px;}
   .prog-chips{gap:6px; margin-top:9px;}
-  .chip{padding:2px 8px; font-size:.66rem; border-radius:7px; gap:5px;}
+  .chip{padding:2px 8px; font-size:.75rem; border-radius:7px; gap:5px;}
   .card-prog .azioni{margin-top:10px !important; gap:7px;}
-  #btn-salva, #btn-carica, #btn-reset{padding:6px 10px; min-height:31px; font-size:.72rem;
+  #btn-salva, #btn-carica, #btn-reset{padding:6px 10px; min-height:31px; font-size:.75rem;
     font-weight:600; border-radius:var(--r-min);}
   .card-prog .azioni .spazio{display:none;}
-  .toggle-chiaro{font-size:.7rem; margin-top:7px !important; gap:7px; line-height:1.35; flex-wrap:nowrap; align-items:flex-start; display:flex;}
+  .toggle-chiaro{font-size:.75rem; margin-top:7px !important; gap:7px; line-height:1.35; flex-wrap:nowrap; align-items:flex-start; display:flex;}
   .toggle-chiaro input{margin-top:1px;}
   .toggle-chiaro input{width:15px; height:15px;}
   .ultimi-test{margin-top:8px; gap:5px;}
-  .ut-pill{padding:3px 8px; font-size:.72rem;}
-  .ut-lab{font-size:.64rem;}
+  .ut-pill{padding:3px 8px; font-size:.75rem;}
+  .ut-lab{font-size:.75rem;}
   .divisore{margin:10px 0 8px;}
   .sez-tit{font-size:.84rem; margin-bottom:6px;}
   .oggi-grid{grid-template-columns:repeat(2, 1fr); gap:7px;}
   .kpi2{padding:8px 9px; gap:8px; border-radius:var(--r-int);}
   .kpi2 .ico{width:30px; height:30px; font-size:.9rem; border-radius:var(--r-min);}
   .kpi2 .kv{font-size:1.05rem;}
-  .kpi2 .kl{font-size:.62rem; line-height:1.25;}
-  .kpi2 .kd{font-size:.62rem;}
-  .card-prog .nota{font-size:.66rem; margin-top:8px; line-height:1.4;}
+  .kpi2 .kl{font-size:.75rem; line-height:1.25;}
+  .kpi2 .kd{font-size:.75rem;}
+  .card-prog .nota{font-size:.75rem; margin-top:8px; line-height:1.4;}
 
   /* ---- card "Argomenti": azioni impilate e righe pulite ---- */
   .arg-head{gap:8px;}
@@ -945,20 +947,20 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .avvia-tit{font-size:1.08rem;}
   .avvia-sub{font-size:.76rem;}
   .mix-box{order:5; flex:1 1 100%; padding:8px 11px;}
-  .mix-riga .mix-nome{flex-basis:104px; font-size:.68rem;}
+  .mix-riga .mix-nome{flex-basis:104px; font-size:.75rem;}
   .riga-arg{padding:10px 2px; gap:4px 8px;}
   .riga-arg label{flex:1 1 100%; font-size:.92rem; align-items:flex-start;}
   .riga-arg input{margin-top:1px;}
-  .riga-arg .mini{flex:1 1 100%; font-size:.68rem; padding-left:27px; line-height:1.5;}
+  .riga-arg .mini{flex:1 1 100%; font-size:.75rem; padding-left:27px; line-height:1.5;}
   .barra{height:5px; margin-left:27px; flex-basis:calc(100% - 27px);}
   .sa-det{margin-left:6px; font-size:.84rem;}
-  .sa-det summary{font-size:.74rem;}
+  .sa-det summary{font-size:.75rem;}
   .sa-riga{padding:7px 0 7px 2px; gap:6px;}
   .sa-riga .sa-nome{font-size:.84rem; flex:1 1 calc(100% - 26px);}
-  .sa-riga .mini{flex:1 1 100%; padding-left:24px; font-size:.64rem;}
+  .sa-riga .mini{flex:1 1 100%; padding-left:24px; font-size:.75rem;}
   .opzioni-avvio{gap:8px 14px; margin-top:11px;}
   .toggle{font-size:.84rem;}
-  .nota{font-size:.72rem;}
+  .nota{font-size:.75rem;}
   /* tematiche: tutto dentro la card */
   .tem-grid{grid-template-columns:minmax(0, 1fr);}
   .tem-card{min-width:0; padding:11px 12px;}
@@ -991,10 +993,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 button.avvia{display:flex; align-items:center; gap:15px; width:100%; text-align:left;
   padding:17px 20px; border-radius:12px; border:0; cursor:pointer;
   background:var(--azione); color:var(--su-accento);
-  box-shadow:4px 4px 0 rgba(var(--velo),.20);
+  box-shadow:0 6px 16px rgba(var(--ombra),.35);
   transition:transform .13s ease, box-shadow .13s ease;}
-button.avvia:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 rgba(var(--velo),.26);}
-button.avvia:active{transform:translate(2px,2px); box-shadow:1px 1px 0 rgba(var(--velo),.20);}
+button.avvia:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(var(--ombra),.40);}
+button.avvia:active{transform:translateY(1px); box-shadow:0 2px 6px rgba(var(--ombra),.30);}
 button.avvia:focus-visible{outline:3px solid var(--azione); outline-offset:3px;}
 .avvia-play{flex:none; width:40px; height:40px; border-radius:var(--r-int);
   background:rgba(10,22,24,.10); border:1px solid rgba(10,22,24,.18);
@@ -1011,8 +1013,8 @@ button.avvia:disabled{background:rgba(var(--velo),.10); color:var(--nebbia); box
 button.avvia:disabled .avvia-play{background:rgba(var(--velo),.08); border-color:rgba(var(--velo),.12);}
 button.avvia:disabled .avvia-play::after{border-left-color:rgba(var(--velo),.45);}
 button.avvia:disabled .avvia-sub{color:rgba(var(--velo),.4);}
-:root[data-tema="chiaro"] button.avvia{box-shadow:4px 4px 0 rgba(18,34,32,.18);}
-:root[data-tema="chiaro"] button.avvia:hover{box-shadow:6px 6px 0 rgba(18,34,32,.24);}
+:root[data-tema="chiaro"] button.avvia{box-shadow:0 6px 16px rgba(18,34,32,.16);}
+:root[data-tema="chiaro"] button.avvia:hover{box-shadow:0 10px 24px rgba(18,34,32,.20);}
 :root[data-tema="chiaro"] .avvia-play{background:rgba(242,246,243,.14); border-color:rgba(242,246,243,.24);}
 :root[data-tema="chiaro"] .avvia-sub{color:rgba(var(--su-accento-rgb),.86);}
 button.avvia:disabled .avvia-freccia{opacity:.35;}
@@ -1026,7 +1028,6 @@ button.modo{flex:1 1 0; min-width:0; display:flex; align-items:center; gap:12px;
 button.modo:hover{background:rgba(var(--velo),.05); border-color:rgba(var(--velo),.26);}
 button.modo:focus-visible{outline:3px solid var(--azione); outline-offset:2px;}
 .modo-sim:hover{border-color:rgba(39,107,78,.45); background:rgba(39,107,78,.06);}
-.modo-pro{border-left-color:var(--azione);}
 .modo-pro:hover{border-color:rgba(156,122,45,.5); background:rgba(156,122,45,.08);}
 .modo-ico{flex:none; width:38px; height:38px; border-radius:14px; display:flex; align-items:center;
   justify-content:center; font-size:1.15rem; background:rgba(var(--velo),.06);}
@@ -1053,7 +1054,7 @@ details.dett-card>summary{font-size:1.12rem; color:var(--testo);}
 table.riep thead th{position:sticky; top:0; z-index:1;}
 /* dettaglio per materia dentro la riga del test */
 .st-mats{display:flex; flex-wrap:wrap; gap:4px; margin-top:5px;}
-.st-mat{font-size:.72rem; line-height:1.5; padding:1px 6px; border-radius:var(--r-min);
+.st-mat{font-size:.75rem; line-height:1.5; padding:1px 6px; border-radius:var(--r-min);
   white-space:nowrap; border:1px solid var(--filo); color:var(--nebbia);}
 .st-mat b{font-variant-numeric:tabular-nums; color:var(--testo);}
 .st-mat.st-su{background:var(--vidibg); border-color:transparent;}
@@ -1073,7 +1074,7 @@ table.riep thead th{position:sticky; top:0; z-index:1;}
 .obh-piano.male{color:var(--ottone-t);} .obh-piano.male b{color:var(--ottone-t);}
 .obh-tit{font-family:var(--f-display); font-weight:700; font-size:.95rem; color:var(--testo);}
 .obh-trg{display:inline-block; margin-left:9px; padding:2px 9px; border-radius:999px; vertical-align:middle;
-  font-family:var(--f-testo); font-size:.66rem; font-weight:700; letter-spacing:.03em;
+  font-family:var(--f-testo); font-size:.75rem; font-weight:700; letter-spacing:.03em;
   color:var(--inchiostro2); background:rgba(var(--azione-rgb),.13); border:1px solid rgba(var(--azione-rgb),.30);}
 .obh-gg{font-size:.76rem; color:var(--nebbia); white-space:nowrap;}
 .gg-corto{display:none;}
@@ -1082,13 +1083,16 @@ table.riep thead th{position:sticky; top:0; z-index:1;}
 .obh-num b{font-family:var(--f-display); font-variation-settings:var(--morbido); font-size:2.2rem;
   font-weight:600; color:var(--testo); font-variant-numeric:tabular-nums; line-height:1;}
 .obh-num span{font-size:.9rem; color:var(--nebbia); margin-left:5px;}
-.obh-stato{font-size:.85rem; color:var(--lacca-t); font-weight:600;}
+.obh-stato{font-size:.85rem; color:var(--testo); font-weight:600;}
 .obh-stato.ok{color:var(--vidimato-t);}
 .obh-bar{height:10px; border-radius:99px; background:rgba(var(--velo),.10); overflow:hidden; margin-top:10px;}
 .obh-bar i{display:block; height:100%; border-radius:99px;
   background:var(--ottone-pieno); transition:width .4s ease;}
 .obh-bar.ok i{background:var(--vidimato);}
 .obh-fatto{padding:4px 2px; font-size:.95rem; color:var(--vidimato-t);}
+.obh-azione{margin-top:10px; width:100%; padding:12px 14px; border-radius:12px; border:0; cursor:pointer;
+  font:inherit; font-weight:700; background:var(--azione); color:var(--su-accento);}
+.obh-azione:focus-visible{outline:2px solid var(--testo); outline-offset:2px;}
 /* andamento */
 .and-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .and-head h2{margin:0;}
@@ -1110,9 +1114,9 @@ table.riep thead th{position:sticky; top:0; z-index:1;}
 .and-bar.vuota{background:rgba(var(--velo),.16); height:3px;}
 .and-col:hover .and-bar{opacity:1;}
 .and-gg-riga{display:flex; gap:3px; margin-top:6px;}
-.and-gg{flex:1 1 0; min-width:0; text-align:center; font-size:.64rem; color:var(--nebbia); font-variant-numeric:tabular-nums;}
+.and-gg{flex:1 1 0; min-width:0; text-align:center; font-size:.75rem; color:var(--nebbia); font-variant-numeric:tabular-nums;}
 .and-soglia{position:absolute; left:0; right:0; border-top:1px dashed rgba(var(--velo),.32); pointer-events:none; z-index:1;}
-.and-soglia span{position:absolute; right:0; top:-14px; font-size:.63rem; color:var(--nebbia); background:var(--foglio); padding:0 4px;}
+.and-soglia span{position:absolute; right:0; top:-14px; font-size:.75rem; color:var(--nebbia); background:var(--foglio); padding:0 4px;}
 .and-consiglio{margin-top:14px; padding:11px 13px; border-radius:14px; background:rgba(156,122,45,.10);
   border:1px solid rgba(156,122,45,.24); font-size:.9rem; line-height:1.55; color:var(--testo);}
 .and-vuoto{margin-top:14px; color:var(--nebbia); font-size:.92rem;}
@@ -1127,7 +1131,7 @@ table.riep thead th{position:sticky; top:0; z-index:1;}
 .dt-tit{font-family:var(--f-display); font-weight:600; font-size:.95rem; margin-bottom:9px;}
 .dt-hint{font-family:var(--f-testo); font-weight:400; font-size:.76rem; color:var(--nebbia);}
 .dt-tab{width:100%; border-collapse:collapse; font-size:.86rem;}
-.dt-tab th{text-align:left; font-size:.68rem;  letter-spacing:.005em;
+.dt-tab th{text-align:left; font-size:.75rem;  letter-spacing:.005em;
   color:var(--nebbia); font-weight:600; padding:0 8px 7px 0; border-bottom:1px solid rgba(var(--velo),.12);}
 .dt-tab th:not(:first-child), .dt-tab td:not(:first-child){text-align:right; white-space:nowrap;}
 .dt-tab td{padding:9px 8px 9px 0; border-bottom:1px solid rgba(var(--velo),.07);}
@@ -1152,9 +1156,9 @@ b.dubbia{color:var(--ottone-t);}
 /* ---------- prospetto del piano ----------
    Una card sola che dice: in che fase sei, quanto ti chiede oggi, quando finisci,
    e se qualcosa non torna. Il bordo colorato e' il semaforo. */
-.card-prospetto{border-left:4px solid var(--vidimato);}
-.card-prospetto.pr-allarme{border-left-color:var(--lacca);}
-.card-prospetto.pr-attenzione{border-left-color:var(--ottone);}
+.card-prospetto{border:1px solid rgba(var(--ok-rgb),.28);}
+.card-prospetto.pr-allarme{border-color:rgba(var(--ko-rgb),.4);}
+.card-prospetto.pr-attenzione{border-color:rgba(var(--amb-rgb),.4);}
 .prs-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .prs-testa h2{margin:0; font-size:1.12rem;}
 .prs-fase{font-size:.76rem; font-weight:700; padding:3px 10px; border-radius:99px;
@@ -1194,18 +1198,18 @@ b.dubbia{color:var(--ottone-t);}
 .st-proiezione.provvisoria{background:rgba(var(--velo),.05); border-color:rgba(var(--velo),.18); border-style:dashed;}
 .st-proiezione.provvisoria .pj-num b{color:var(--nebbia);}
 .pj-tag{display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; vertical-align:middle;
-  font-family:var(--f-testo); font-size:.66rem; font-weight:700; letter-spacing:.04em; 
+  font-family:var(--f-testo); font-size:.75rem; font-weight:700; letter-spacing:.04em; 
   color:var(--nebbia); background:rgba(var(--velo),.10); border:1px solid rgba(var(--velo),.20);}
 .pj-motori{margin-top:13px; padding-top:12px; border-top:1px solid rgba(var(--velo),.16);}
 .mot-riga{display:flex; gap:11px; padding:9px 0; border-bottom:1px solid rgba(var(--velo),.09);}
 .mot-riga:last-child{border-bottom:none;}
 .mot-n{flex:0 0 22px; height:22px; border-radius:50%; display:grid; place-items:center; margin-top:2px;
-  font-family:var(--f-testo); font-size:.7rem; font-weight:800;
+  font-family:var(--f-testo); font-size:.75rem; font-weight:800;
   color:var(--nebbia); background:rgba(var(--velo),.10);}
 .mot-riga.male .mot-n{color:var(--lacca-t); background:rgba(var(--ko-rgb),.18);}
 .mot-riga.attesa .mot-n{color:var(--ottone-t); background:rgba(var(--amb-rgb),.18);}
 .mot-corpo{flex:1;}
-.mot-tit{font-family:var(--f-testo); font-size:.68rem; letter-spacing:.005em; 
+.mot-tit{font-family:var(--f-testo); font-size:.75rem; letter-spacing:.005em; 
   font-weight:800; color:var(--nebbia);}
 .mot-val{margin-top:2px; font-size:.98rem; line-height:1.45;}
 .mot-note{margin-top:3px; font-size:.82rem; color:var(--nebbia); line-height:1.5;}
@@ -1236,7 +1240,7 @@ b.dubbia{color:var(--ottone-t);}
   font-size:.84rem; color:var(--nebbia); line-height:1.55;}
 .pj-riga{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:4px;}
 .pj-num{flex:1 1 340px; max-width:62%;}
-.pj-meta{flex:0 0 auto;}
+.pj-meta{flex:1 1 220px; min-width:0; overflow-wrap:anywhere;}
 @media(max-width:620px){ .pj-num{max-width:100%;} .pj-meta{text-align:left;} }
 .pj-num b{font-family:var(--f-display); font-size:2.1rem; font-weight:800; line-height:1;}
 .st-proiezione.bene .pj-num b{color:var(--vidimato-t);}
@@ -1267,12 +1271,10 @@ b.dubbia{color:var(--ottone-t);}
 .st-coach{margin-top:16px; padding:20px 22px 20px 24px; border-radius:15px; line-height:1.72;
   border:1px solid rgba(var(--velo),.14);
   background:rgba(var(--velo),.045);}
-.st-coach.elogio{border-color:rgba(var(--ok-rgb),.30); border-left-color:var(--vidimato);
+.st-coach.elogio{border-color:rgba(var(--ok-rgb),.30);
   background:linear-gradient(180deg, rgba(var(--ok-rgb),.10), transparent);}
-.st-coach.sostegno{border-color:rgba(var(--amb-rgb),.30); border-left-color:var(--ottone);
+.st-coach.sostegno{border-color:rgba(var(--amb-rgb),.30);
   background:linear-gradient(180deg, rgba(var(--velo),.06), transparent);}
-.st-coach.ripresa{border-left-color:var(--ottone);}
-.st-coach.neutro{border-left-color:var(--testo);}
 .st-coach-testa{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
 .st-coach-ico{font-size:1.15rem;}
 .st-coach-tit{font-family:var(--f-display); font-weight:700; font-size:.8rem; 
@@ -1286,7 +1288,7 @@ b.dubbia{color:var(--ottone-t);}
 .st-coach .co-btn{margin-top:12px; padding:9px 16px; font-size:.86rem;}
 /* le prove: dati di supporto, volutamente più sobri */
 .st-prove{margin-top:20px; padding-top:16px; border-top:1px solid rgba(var(--velo),.1);}
-.st-prove-tit{font-family:var(--f-display); font-weight:600; font-size:.72rem; 
+.st-prove-tit{font-family:var(--f-display); font-weight:600; font-size:.75rem; 
   letter-spacing:.005em; color:var(--nebbia); margin-bottom:10px;}
 .st-badge{display:inline-block; font-family:var(--f-display); font-weight:700; font-size:.82rem;
   padding:4px 12px; border-radius:99px; color:var(--su-pieno);}
@@ -1299,7 +1301,6 @@ b.dubbia{color:var(--ottone-t);}
 .st-mossa-tit{font-family:var(--f-display); font-weight:700; font-size:.78rem; 
   letter-spacing:.005em; color:var(--nebbia); margin-bottom:5px;}
 @media(max-width:640px){ .st-riga{flex-direction:column; gap:14px;} .pr-cap{text-align:left;} }
-.card-coach{border-left-color:var(--azione);}
 .co-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .co-testa h2{margin:0;}
 .co-serie{font-size:.78rem; color:var(--ottone-t); font-weight:600; background:rgba(156,122,45,.13);
@@ -1312,7 +1313,6 @@ b.dubbia{color:var(--ottone-t);}
 .co-btn{margin-top:10px; border:1px solid var(--inchiostro); background:var(--inchiostro); color:var(--su-accento);
   font:inherit; font-size:.82rem; font-weight:600; padding:7px 13px; border-radius:var(--r-int); cursor:pointer;}
 .co-btn:hover{opacity:.88;}
-.card-pronta{border-left-color:var(--vidimato);}
 .pr-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .pr-testa h2{margin:0;}
 .pr-gg{font-size:.78rem; color:var(--nebbia);}
@@ -1327,14 +1327,13 @@ b.dubbia{color:var(--ottone-t);}
 .pr-col{display:flex; flex-direction:column; align-items:center; justify-content:flex-end;}
 .pr-bar{width:26px; background:rgba(var(--velo),.42); border-radius:4px 4px 0 0;}
 .pr-bar.ok{background:var(--vidimato);}
-.pr-lab{font-size:.6rem; color:var(--nebbia); margin-top:3px; font-variant-numeric:tabular-nums;}
+.pr-lab{font-size:.75rem; color:var(--nebbia); margin-top:3px; font-variant-numeric:tabular-nums;}
 .pr-soglia{position:absolute; left:-4px; right:-4px; border-top:1px dashed rgba(var(--velo),.35);}
-.pr-cap{font-size:.72rem; color:var(--nebbia); text-align:right; margin-top:4px;}
+.pr-cap{font-size:.75rem; color:var(--nebbia); text-align:right; margin-top:4px;}
 .pr-trend{display:inline-block; margin-top:12px; font-size:.87rem; font-weight:600;}
 .pr-trend.su{color:var(--vidimato-t);} .pr-trend.giu{color:var(--lacca-t);} .pr-trend.neutro{color:var(--nebbia); font-weight:500;}
 .pr-giudizio{margin-top:8px; font-size:.92rem; line-height:1.6;}
 @media(max-width:640px){ .pr-riga{flex-direction:column; align-items:flex-start; gap:14px;} .pr-cap{text-align:left;} }
-.card-mal{border-left-color:var(--ottone);}
 .mal-testo{margin:6px 0 14px; font-size:.93rem; line-height:1.6;}
 .mal-azioni{display:flex; gap:10px; flex-wrap:wrap;}
 .mal-azioni .btn-p, .mal-azioni .btn-s{margin:0;}
@@ -1349,10 +1348,10 @@ b.dubbia{color:var(--ottone-t);}
 .dt-nota{margin-top:10px; font-size:.8rem; color:var(--nebbia); line-height:1.5;}
 @media(max-width:640px){
   .dt-tab{font-size:.8rem;} .dt-tab td{padding:8px 5px 8px 0;}
-  .dt-nome{font-size:.82rem;} .dt-tab th{font-size:.62rem;}
+  .dt-nome{font-size:.82rem;} .dt-tab th{font-size:.75rem;}
   .dt-lungo{display:none;} .dt-corto{display:inline;}
 }
-@media(max-width:640px){ .and-num b{font-size:2.1rem;} .and-meta{text-align:left;} .and-gg{font-size:.58rem;} }
+@media(max-width:640px){ .and-num b{font-size:2.1rem;} .and-meta{text-align:left;} .and-gg{font-size:.75rem;} }
 @media(max-width:640px){ .obh-num b{font-size:1.65rem;} .obh-stato{font-size:.8rem;} }
 @media(max-width:640px){ .azione-alt{flex-direction:column;} button.modo{width:100%;} }
 
@@ -1387,7 +1386,7 @@ b.dubbia{color:var(--ottone-t);}
 .sch-aut .a-ok i{color:var(--vidimato-t);} .sch-aut .a-ko i{color:var(--lacca-t);}
 @media(max-width:560px){ .sch-riga{grid-template-columns:1fr;} }
 
-.sch-etichetta{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+.sch-etichetta{font-size:.75rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
   color:var(--nebbia); margin:14px 0 2px; padding-top:12px; border-top:1px solid rgba(var(--ombra),.09);}
 .sch-sez h3 + .sch-etichetta{margin-top:6px; padding-top:0; border-top:0;}
 /* ==================== PIER ==================== */
@@ -1861,13 +1860,35 @@ b.dubbia{color:var(--ottone-t);}
   transition:opacity .3s, transform .3s; transform-origin:100% 100%;}
 .pier-fumetto.visibile{opacity:1; transform:none;}
 .pier-fumetto b{color:var(--azione);}
-.pier-fumetto .pf-nome{display:block; font-size:.7rem; font-weight:700; color:var(--nebbia); margin-bottom:2px;}
+.pier-fumetto .pf-nome{display:block; font-size:.75rem; font-weight:700; color:var(--nebbia); margin-bottom:2px;}
 
+/* critique del 22 novembre */
+.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;}
+.altri-all{margin-top:12px;}
+.altri-all > summary{cursor:pointer; list-style:none; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
+  padding:10px 12px; border-radius:12px; border:1px solid var(--filo); font-weight:600; color:var(--testo);}
+.altri-all > summary::-webkit-details-marker{display:none;}
+.altri-all > summary::before{content:'+'; font-weight:700; color:var(--nebbia); width:1ch;}
+.altri-all[open] > summary::before{content:'–';}
+.altri-all > summary span{font-weight:400; font-size:.8rem; color:var(--nebbia);}
+.altri-all[open] .azione-alt{margin-top:10px;}
+.btn-leggero{background:transparent !important; border-color:transparent !important; color:var(--nebbia) !important; text-decoration:underline; text-underline-offset:3px; padding-left:4px !important; padding-right:4px !important;}
+@media(max-width:640px){
+  body:not([data-vista="vista-dashboard"]) .campo-fascia{display:none;}
+}
+@media(max-width:640px){
+  .riep th, .riep td{padding:6px 5px;}
+  .riep td:first-child{overflow-wrap:anywhere;}
+  .riep th{font-size:.75rem; hyphens:none; word-break:keep-all;}
+  #vista-risultati .riep, #vista-dashboard .riep{font-size:.85rem;}
+  .wrap{padding-bottom:calc(200px + var(--safe-b));}
+  #pier-angolo:not(.p-piccolo) .pier-scena{transform:scale(.78); margin:-33px 0 0 0;}
+}
 /* piano di febbraio */
 .c2-blocchi{margin:4px 0 0 18px; padding:0;}
 .c2-blocchi li{margin:2px 0;}
 .c2-blocchi li.c2-ora{font-weight:600; color:var(--vidimato-t);}
-.c2-blocchi li.c2-fatto{opacity:.55;}
+.c2-blocchi li.c2-fatto{color:var(--nebbia);} .c2-blocchi li.c2-fatto b{color:var(--nebbia);}
 .c2-data{display:flex; align-items:center; gap:8px; margin-top:10px; font-weight:600;}
 .c2-data input{font:inherit; padding:4px 8px; border-radius:8px; border:1px solid var(--filo, #888); background:transparent; color:inherit;}
 </style>
@@ -1957,6 +1978,7 @@ b.dubbia{color:var(--ottone-t);}
 
     <!-- 1 · AZIONE: allenati -->
     <div class="card card-azione">
+      <h2 class="sr-only">Allenati</h2>
       <div class="azione-testa">
 
       </div>
@@ -1971,6 +1993,7 @@ b.dubbia{color:var(--ottone-t);}
           </span>
           <span class="avvia-freccia" aria-hidden="true">→</span>
         </button>
+        <details class="altri-all"><summary>Altri allenamenti <span>simulazione d'esame, allenamento PRO, ostinate</span></summary>
         <div class="azione-alt">
           <button class="modo modo-sim" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+5+6+6), di cui 20 da 1 punto e 40 da 2 per 100 punti in tutto, 85 minuti di tempo, correzione solo alla fine, si passa con 80 punti">
             <span class="modo-ico"><svg class="ic ic-xl"><use href="#i-prova"/></svg></span>
@@ -1985,6 +2008,7 @@ b.dubbia{color:var(--ottone-t);}
             <span class="modo-testo"><b>Ostinate da 2 punti</b><span id="ost-sub">sbagliate 2+ volte · 60 per test</span></span>
           </button>
         </div>
+        </details>
       </div>
       <div class="mix-box mix-v2" id="mix-box">
         <div class="mix-capo">
@@ -2029,74 +2053,6 @@ b.dubbia{color:var(--ottone-t);}
     <!-- 1a-bis · PROSPETTO DEL PIANO -->
     <div class="card card-prospetto nascosto" id="card-prospetto"></div>
 
-    <!-- 1a · A CHE PUNTO SEI -->
-    <div class="card card-stato" id="card-stato"></div>
-
-    <!-- 1b · DOVE INTERVENIRE -->
-    <div class="card card-and" id="card-andamento">
-      <div class="and-head">
-        <h2><svg class="ic ic-g"><use href="#i-diagnosi"/></svg> Dove intervenire</h2>
-        <div class="and-switch" id="and-switch">
-          <button data-gg="1">1g</button>
-          <button data-gg="2">2g</button>
-          <button data-gg="3">3g</button>
-          <button data-gg="5">5g</button>
-          <button data-gg="7" class="attivo">7g</button>
-          <button data-gg="10">10g</button>
-          <button data-gg="14">14g</button>
-        </div>
-      </div>
-      <div id="andamento-corpo"></div>
-      <div id="blocco-maledette"></div>
-    </div>
-
-    <!-- 2 · PROGRESSI (compatti) -->
-    <div class="card card-prog" id="card-progressi">
-      <div class="prog-testa">
-        <h2><svg class="ic ic-g"><use href="#i-curva"/></svg> I tuoi progressi</h2>
-        <div class="prog-pct"><span id="prog-pct">0%</span><span class="prog-pct-lab" id="prog-pct-lab">dei <b>punti</b> della banca ufficiale<br><b id="prog-pct-dom">0%</b> delle <b>domande</b></span></div>
-      </div>
-      <div class="sbar sbar-prog" id="prog-bar"></div>
-      <div class="prog-chips" id="stat-globale"></div>
-
-      <div class="divisore"></div>
-      <div class="sez-tit"><svg class="ic"><use href="#i-calendario"/></svg> Oggi <span class="mini-chiaro" id="oggi-data"></span></div>
-      <div class="oggi-grid" id="kpi-oggi"></div>
-
-      <details class="dett"><summary><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo e backup progressi</summary>
-        <div class="sez-tit" style="margin-top:12px"><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo: banca dati esaurita entro l'esame <span class="mini-chiaro" id="ob-countdown"></span></div>
-        <div class="oggi-grid" id="testo-obiettivo"></div>
-        <div class="azioni" style="margin-top:16px">
-          <button id="btn-salva"><svg class="ic"><use href="#i-scarica"/></svg> Salva progressi (file)</button>
-          <button id="btn-carica"><svg class="ic"><use href="#i-carica"/></svg> Carica progressi</button>
-          <span class="spazio"></span>
-          <button id="btn-reset"><svg class="ic"><use href="#i-cestino"/></svg> Azzera</button>
-        </div>
-        <input type="file" id="file-progressi" class="filejs" accept=".json,application/json">
-        <label class="toggle toggle-chiaro" style="margin-top:14px"><input type="checkbox" id="chk-autosave"> Scarica anche il file .json a fine test (copia di sicurezza) <span class="mini-chiaro" id="ultimo-salvataggio"></span></label>
-        <div class="ultimi-test" id="ultimi-test"></div>
-        <div class="nota nota-chiara" style="margin-top:14px">I progressi si salvano da soli nel browser: chiudi e riapri e ritrovi tutto. Il file .json a fine test resta come copia di sicurezza (o per passare a un altro dispositivo, con <b>Carica progressi</b>).</div>
-      </details>
-    </div>
-
-    <!-- 2b · IL RECUPERO DEGLI ERRORI -->
-    <div class="card nascosto" id="card-recupero"></div>
-
-    <!-- 3 · TEMATICHE -->
-    <div class="card" id="card-tematiche">
-      <details class="dett-card"><summary><svg class="ic"><use href="#i-fiamma"/></svg> Tematiche che sbagli di più</summary>
-        <div class="nota" style="margin-top:8px">Classifica delle parole chiave ricorrenti nei tuoi errori, per argomento. Con <b>Allenati</b> fai un test su <b>tutte le domande della banca dati</b> che toccano quella tematica (prima le sbagliate, poi le nuove, infine quelle già superate).</div>
-        <div id="lista-tematiche"></div>
-      </details>
-    </div>
-
-    <!-- 4 · STORICO -->
-    <div class="card" id="card-storico">
-      <details class="dett-card"><summary><svg class="ic"><use href="#i-archivio"/></svg> Storico test</summary>
-        <div class="storico-scroll"><table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Risposte</th><th>Punti</th><th></th></tr></thead><tbody></tbody></table></div>
-        <div class="nota" id="nota-storico"></div>
-      </details>
-    </div>
   </div>
 
   <!-- ==================== QUIZ ==================== -->
@@ -2115,7 +2071,7 @@ b.dubbia{color:var(--ottone-t);}
       </div>
       <div class="domanda" id="q-testo"></div>
       <div id="q-opzioni"></div>
-      <div class="feedback nascosto" id="q-feedback"></div>
+      <div class="feedback nascosto" id="q-feedback" role="status" aria-live="polite"></div>
       <div class="spiega nascosto" id="q-spiega"></div>
       <div class="trucco nascosto" id="q-trucco"></div>
       <div class="segnali nascosto" id="q-segnali"></div>
@@ -2123,7 +2079,7 @@ b.dubbia{color:var(--ottone-t);}
       <div class="nota nascosto" id="q-aggiornamento">C'è una versione aggiornata dell'app: si installa
         appena finisci questo test. Va' avanti tranquilla, non perdi niente.</div>
       <div class="azioni">
-        <button class="btn-s" id="btn-abbandona">Termina ora</button>
+        <button class="btn-s btn-leggero" id="btn-abbandona">Termina ora</button>
         <span class="spazio"></span>
         <button class="btn-p" id="btn-prossima" disabled>Prossima →</button>
       </div>
@@ -2136,7 +2092,7 @@ b.dubbia{color:var(--ottone-t);}
     <div class="card">
       <h2>Risultato del test</h2>
       <div class="punteggio" id="r-punteggio"></div>
-      <div class="esito" id="r-esito"></div>
+      <div class="esito" id="r-esito" role="status" aria-live="polite"></div>
       <table class="riep"><thead><tr><th>Argomento</th><th>Corrette</th><th>Sbagliate</th><th>Punti</th></tr></thead><tbody id="r-argomenti"></tbody></table>
       <div class="nota nascosto" id="r-autosave">Progressi scaricati automaticamente nel file .json (cartella download): è il tuo salvataggio aggiornato.</div>
       <div class="azioni" style="margin-top:16px">
@@ -2168,7 +2124,7 @@ b.dubbia{color:var(--ottone-t);}
     <div class="card">
       <h2>Domande sbagliate almeno una volta — da rileggere prima dell'esame</h2>
       <div class="nota" style="margin-top:0">Qui restano <b>tutte</b> le domande che hai sbagliato almeno una volta, anche dopo che le hai superate: ripassale prima dell'esame. Una domanda sbagliata esce dal giro dei test solo dopo <b>2 risposte esatte</b>.</div>
-      <label class="toggle" style="margin-top:12px"><input type="checkbox" id="chk-solo-aperte"> Mostra solo quelle ancora da superare</label>
+      <label class="toggle" style="margin-top:12px"><input type="checkbox" id="chk-solo-aperte"> Mostra solo quelle ancora da recuperare</label>
       <div id="lista-ripasso" style="margin-top:10px"></div>
     </div>
   </div>
@@ -3915,10 +3871,80 @@ b.dubbia{color:var(--ottone-t);}
       <div class="kpi-riga" id="d-kpi"></div>
       <div id="d-globale"></div>
       <div class="legenda">
-        <span><span class="swatch" style="background:var(--sup)"></span> Superate</span>
-        <span><span class="swatch" style="background:var(--rip)"></span> Da ripassare</span>
-        <span><span class="swatch" style="background:var(--nuo); opacity:.32"></span> Non ancora viste</span>
+        <span><span class="swatch" style="background:var(--sup)"></span> Consolidate o da riconfermare</span>
+        <span><span class="swatch" style="background:var(--rip)"></span> Da recuperare</span>
+        <span><span class="swatch" style="background:var(--nuo); opacity:.32"></span> Mai viste</span>
       </div>
+    </div>
+
+    <!-- analisi spostate dalla home (critique del 22 novembre) -->
+    <!-- 1a · A CHE PUNTO SEI -->
+    <div class="card card-stato" id="card-stato"></div>
+
+    <!-- 1b · DOVE INTERVENIRE -->
+    <div class="card card-and" id="card-andamento">
+      <div class="and-head">
+        <h2><svg class="ic ic-g"><use href="#i-diagnosi"/></svg> Dove intervenire</h2>
+        <div class="and-switch" id="and-switch">
+          <button data-gg="1">1g</button>
+          <button data-gg="2">2g</button>
+          <button data-gg="3">3g</button>
+          <button data-gg="5">5g</button>
+          <button data-gg="7" class="attivo">7g</button>
+          <button data-gg="10">10g</button>
+          <button data-gg="14">14g</button>
+        </div>
+      </div>
+      <div id="andamento-corpo"></div>
+      <div id="blocco-maledette"></div>
+    </div>
+
+    <!-- 2 · PROGRESSI (compatti) -->
+    <div class="card card-prog" id="card-progressi">
+      <div class="prog-testa">
+        <h2><svg class="ic ic-g"><use href="#i-curva"/></svg> I tuoi progressi</h2>
+        <div class="prog-pct"><span id="prog-pct">0%</span><span class="prog-pct-lab" id="prog-pct-lab">dei <b>punti</b> della banca ufficiale<br><b id="prog-pct-dom">0%</b> delle <b>domande</b></span></div>
+      </div>
+      <div class="sbar sbar-prog" id="prog-bar"></div>
+      <div class="prog-chips" id="stat-globale"></div>
+
+      <div class="divisore"></div>
+      <div class="sez-tit"><svg class="ic"><use href="#i-calendario"/></svg> Oggi <span class="mini-chiaro" id="oggi-data"></span></div>
+      <div class="oggi-grid" id="kpi-oggi"></div>
+
+      <details class="dett"><summary><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo e backup progressi</summary>
+        <div class="sez-tit" style="margin-top:12px"><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo: banca dati esaurita entro l'esame <span class="mini-chiaro" id="ob-countdown"></span></div>
+        <div class="oggi-grid" id="testo-obiettivo"></div>
+        <div class="azioni" style="margin-top:16px">
+          <button id="btn-salva"><svg class="ic"><use href="#i-scarica"/></svg> Salva progressi (file)</button>
+          <button id="btn-carica"><svg class="ic"><use href="#i-carica"/></svg> Carica progressi</button>
+          <span class="spazio"></span>
+          <button id="btn-reset"><svg class="ic"><use href="#i-cestino"/></svg> Azzera</button>
+        </div>
+        <input type="file" id="file-progressi" class="filejs" accept=".json,application/json">
+        <label class="toggle toggle-chiaro" style="margin-top:14px"><input type="checkbox" id="chk-autosave"> Scarica anche il file .json a fine test (copia di sicurezza) <span class="mini-chiaro" id="ultimo-salvataggio"></span></label>
+        <div class="ultimi-test" id="ultimi-test"></div>
+        <div class="nota nota-chiara" style="margin-top:14px">I progressi si salvano da soli nel browser: chiudi e riapri e ritrovi tutto. Il file .json a fine test resta come copia di sicurezza (o per passare a un altro dispositivo, con <b>Carica progressi</b>).</div>
+      </details>
+    </div>
+
+    <!-- 2b · IL RECUPERO DEGLI ERRORI -->
+    <div class="card nascosto" id="card-recupero"></div>
+
+    <!-- 3 · TEMATICHE -->
+    <div class="card" id="card-tematiche">
+      <details class="dett-card"><summary><svg class="ic"><use href="#i-fiamma"/></svg> Tematiche che sbagli di più</summary>
+        <div class="nota" style="margin-top:8px">Classifica delle parole chiave ricorrenti nei tuoi errori, per argomento. Con <b>Allenati</b> fai un test su <b>tutte le domande della banca dati</b> che toccano quella tematica (prima le sbagliate, poi le nuove, infine quelle già superate).</div>
+        <div id="lista-tematiche"></div>
+      </details>
+    </div>
+
+    <!-- 4 · STORICO -->
+    <div class="card" id="card-storico">
+      <details class="dett-card"><summary><svg class="ic"><use href="#i-archivio"/></svg> Storico test</summary>
+        <div class="storico-scroll"><table class="riep" id="tab-storico"><thead><tr><th>#</th><th>Data</th><th>Argomenti</th><th>Risposte</th><th>Punti</th><th></th></tr></thead><tbody></tbody></table></div>
+        <div class="nota" id="nota-storico"></div>
+      </details>
     </div>
 
     <div class="card">
@@ -4246,8 +4272,9 @@ if(!menoMoto()) document.documentElement.classList.add('si-muove');
 const fmtN = n => Number(n).toLocaleString('it-IT', {useGrouping:true});
 function fmtT(s){ const m=Math.floor(s/60), ss=s%60; return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0'); }
 
-function conferma(testo, cb){
+function conferma(testo, cb, etichetta){
   $('conferma-testo').textContent = testo;
+  $('conferma-si').textContent = etichetta || 'Conferma';
   $('velo-conferma').classList.remove('nascosto');
   $('conferma-si').onclick = () => { $('velo-conferma').classList.add('nascosto'); cb(); };
   $('conferma-no').onclick = () => $('velo-conferma').classList.add('nascosto');
@@ -4265,6 +4292,8 @@ function mostra(vista){
   $('tab-ripasso').classList.toggle('attiva', vista === 'vista-ripasso');
   $('tab-cerca').classList.toggle('attiva', vista === 'vista-cerca');
   $('tab-dispensa').classList.toggle('attiva', vista === 'vista-dispensa');
+  document.querySelectorAll('#barra-tab .tab').forEach(t => t.classList.contains('attiva') ? t.setAttribute('aria-current', 'page') : t.removeAttribute('aria-current'));
+  document.body.dataset.vista = vista;
   window.scrollTo(0,0);
   // un aggiornamento rimasto in attesa perché c'era un test aperto si installa qui:
   // fuori dal quiz e dopo che i risultati sono stati letti, non prima
@@ -4376,7 +4405,7 @@ function renderHome(){
     div.className = 'riga-arg';
     div.innerHTML = `
       <label><input type="checkbox" class="chk-arg" data-arg="${i}" checked> ${arg}</label>
-      <span class="mini">${s.tot} domande · <b class="ok">${s.ok} superate</b> · <b class="ko">${s.ko} da ripassare</b>${s.dubbie ? ` · <b class="dubbia">${s.dubbie} da confermare</b>` : ''} · ${s.nuove} nuove</span>
+      <span class="mini">${s.tot} domande · <b class="ok">${s.ok} superate</b> · <b class="ko">${s.ko} da recuperare</b>${s.dubbie ? ` · <b class="dubbia">${s.dubbie} da confermare</b>` : ''} · ${s.nuove} nuove</span>
       <div class="barra"><div style="width:100%">
         <div class="segok" style="width:${100*s.ok/s.tot}%"></div>
         <div class="segko" style="width:${100*s.ko/s.tot}%"></div>
@@ -4442,13 +4471,14 @@ function renderHome(){
     + `I due numeri non coincidono perché le domande non valgono uguale: una da 2 punti pesa il doppio di una da 1. `
     + `Il conto è sulla banca ufficiale${sg.fuori ? `, quindi senza le ${fmtN(sg.fuori)} fuori banca` : ''}.`;
   $('prog-bar').innerHTML =
-    (sg.ok ? `<div class="s-sup" style="width:${100*sg.ok/sg.tot}%" title="Superate: ${sg.ok}"></div>` : '') +
-    (sg.ko ? `<div class="s-rip" style="width:${100*sg.ko/sg.tot}%" title="Da ripassare: ${sg.ko}"></div>` : '');
+    (sg.ok ? `<div class="s-sup" style="width:${100*sg.ok/sg.tot}%" title="Consolidate o da riconfermare: ${fmtN(sg.ok)}"></div>` : '') +
+    (sg.ko ? `<div class="s-rip" style="width:${100*sg.ko/sg.tot}%" title="Da recuperare: ${fmtN(sg.ko)}"></div>` : '');
+  const cs4 = contaStati();
   $('stat-globale').innerHTML = `
-    <span class="chip"><span class="dot" style="background:var(--vidimato)"></span><span>Superate: <b>${fmtN(sg.ok)}</b></span></span>
-    <span class="chip"><span class="dot" style="background:var(--lacca)"></span><span>Da ripassare: <b>${fmtN(sg.ko)}</b></span></span>
-    ${sg.dubbie ? `<span class="chip" title="Risposte giuste ma date con esitazione (troppo tempo o ripensamenti): tornano al test successivo per una conferma"><span class="dot" style="background:var(--ottone)"></span><span>Da confermare: <b>${fmtN(sg.dubbie)}</b></span></span>` : ''}
-    <span class="chip"><span class="dot" style="background:var(--nuova)"></span><span>Mai viste: <b>${fmtN(sg.nuove)}</b></span></span>
+    <span class="chip"><span class="dot" style="background:var(--vidimato)"></span><span>Consolidate: <b>${fmtN(cs4.salda)}</b></span></span>
+    <span class="chip"><span class="dot" style="background:var(--ottone)"></span><span>Da riconfermare: <b>${fmtN(cs4.attesa)}</b></span></span>
+    <span class="chip"><span class="dot" style="background:var(--lacca)"></span><span>Da recuperare: <b>${fmtN(cs4.aperta)}</b></span></span>
+    <span class="chip"><span class="dot" style="background:var(--nuova)"></span><span>Mai viste: <b>${fmtN(cs4.nuova)}</b></span></span>
     <span class="chip"><span><svg class="ic"><use href="#i-prova"/></svg> Test svolti: <b>${fmtN(stato.storico.length)}</b></span></span>
     <span class="chip" title="I punti che le domande superate valgono all'esame, sul totale dei punti della banca ufficiale. Conta più della percentuale di domande: una da 2 punti vale il doppio di una da 1."><span>Punti superati: <b>${fmtN(sg.ptOk)}</b> su ${fmtN(sg.ptTot)}</span></span>
     <span class="chip"><span>Totale: <b>${fmtN(sg.tot)}</b>${sg.fuori ? ` <span class="chip-fuori" title="${fmtN(sg.fuori)} domande non sono più nel database ufficiale OCF di agosto 2026: restano come esercizio, non contano nella copertura e non entrano nelle simulazioni">(${fmtN(sg.inBanca)} ufficiali + ${fmtN(sg.fuori)} fuori banca)</span>` : ''}</span></span>`;
@@ -4457,9 +4487,12 @@ function renderHome(){
   $('ultimi-test').innerHTML = !ult.length ? '' :
     '<span class="ut-lab">Ultimi 5 test:</span>' + ult.map((h, j) => {
       const P = puntiStorico(h, da + j);
+      const sim = /^Simulazione/.test(h.argomenti || '');
+      if(!sim)   // allenamento: quante giuste, senza la soglia d'esame
+        return `<span class="ut-pill" title="${h.data} — ${h.argomenti} — ${h.punti}/${h.tot} risposte esatte">${Math.round(100 * h.punti / h.tot)}% giuste<span class="ut-score">${h.punti}/${h.tot}</span></span>`;
       const p = su100(P.pt, P.ptMax);
       const sup = p >= SOGLIA_PUNTI;
-      return `<span class="ut-pill ${sup ? 'ut-sup' : ''}" title="${h.data} — ${h.argomenti} — ${h.punti}/${h.tot} risposte esatte, ${P.pt}/${P.ptMax} punti${P.esatto ? '' : ' (stimati)'}${sup ? ' — superato!' : ''}">${sup ? '<svg class="ic"><use href="#i-coppa"/></svg> ' : ''}${P.esatto ? '' : '≈'}${p}/100<span class="ut-score">${h.punti}/${h.tot}</span></span>`;
+      return `<span class="ut-pill ${sup ? 'ut-sup' : ''}" title="Simulazione del ${h.data} — ${h.punti}/${h.tot} risposte esatte, ${P.pt}/${P.ptMax} punti${sup ? ' — sopra la soglia' : ''}">${sup ? '<svg class="ic"><use href="#i-coppa"/></svg> ' : ''}Simulazione ${p}/100<span class="ut-score">${h.punti}/${h.tot}</span></span>`;
     }).join('') + '<span class="ut-lab">← più recente</span>';
 
   // Lo storico completo dentro il riquadro scorrevole, dal test piu' recente
@@ -4875,7 +4908,7 @@ function statoRecupero(){
   return {mai, aperte, meta, daZero, dure, chiuse, chiuseOggi, metaOggi, ritmo, gg: gg.length,
           risposteServono, ggResti, alGiorno, ripassiAlGiorno, finisce, resa, arg,
           giornata, metaAlGiorno, metaRipassi, passiTot, passiFatti, avanz, passiOggi,
-          passiAlGiorno, settimana, allEsame, scadenza: isoCopertura()};
+          passiAlGiorno, settimana, allEsame, scadenza: cicloFeb() ? isoPiu(dataEsameVera(), -2) : isoCopertura()};
 }
 
 function renderRecupero(){
@@ -4924,15 +4957,15 @@ function renderRecupero(){
   // L'ordine conta più del totale: svuotare tutta la coda entro il consolidamento
   // spesso non è realistico, e dirlo e basta non serve a nulla. Le domande a metà
   // costano una risposta a testa: è il primo obiettivo, ed è un numero raggiungibile.
-  const priorita = `<p class="rec-prima"><b>Prima le ${fmt(R.meta)} a metà:</b> una risposta esatta a testa,
+  const priorita = !R.meta ? '' : `<p class="rec-prima"><b>Prima le ${fmt(R.meta)} a metà:</b> una risposta esatta a testa,
       <b>${fmt(R.metaAlGiorno)} al giorno</b> da qui al ${dataIt(R.scadenza)} — circa ${fmt(R.metaRipassi)} ripassi al giorno
       con la resa di adesso. Sono ${fmt(R.meta)} domande che escono dal giro definitivamente, e sono le meno care che hai.</p>`;
   const piano = R.ritmo === null
-    ? `<p>Le aperte sono <b>${fmt(R.aperte)}</b>: chiuderle tutte entro il <b>${dataIt(R.scadenza)}</b>, quando comincia il consolidamento,
-       vorrebbe dire <b>${fmt(R.alGiorno)} al giorno</b> (circa ${fmt(R.ripassiAlGiorno)} ripassi). Il ritmo vero si misura dai prossimi giorni.</p>${priorita}`
+    ? (R.aperte ? `<p>Le domande da recuperare sono <b>${fmt(R.aperte)}</b>: recuperarle tutte entro il <b>${dataIt(R.scadenza)}</b>
+       vorrebbe dire <b>${fmt(R.alGiorno)} al giorno</b> (circa ${fmt(R.ripassiAlGiorno)} ripassi). Il ritmo vero si misura dai prossimi giorni.</p>` : '') + priorita
     : inTempo
     ? `<p>Al ritmo di questi giorni — <b>${R.ritmo.toFixed(0)} chiuse al giorno</b> — la coda si svuota intorno al <b>${dataIt(R.finisce)}</b>,
-       in tempo per il consolidamento. Non serve altro che continuare.</p>`
+       in tempo per l'esame. Non serve altro che continuare.</p>`
     : `<p>Al ritmo di questi giorni (<b>${R.ritmo.toFixed(1)} chiuse al giorno</b>) la coda intera si svuoterebbe ${R.finisce ? `il <b>${dataIt(R.finisce)}</b>` : 'dopo l\'esame'}:
        chiuderle tutte entro il ${dataIt(R.scadenza)} chiederebbe ${fmt(R.alGiorno)} chiusure al giorno, e non è la strada.</p>${priorita}`;
 
@@ -4943,7 +4976,7 @@ function renderRecupero(){
       <span class="rec-nome">${nomeBreve(a.arg)}</span>
       <span class="rec-mini"><i class="rm-ok" style="width:${100*a.chiuse/tot}%"></i><i class="rm-meta" style="width:${100*a.meta/tot}%"></i></span>
       <span class="rec-quota">${Math.round(p*100)}%</span>
-      <span class="rec-dati"><b>${fmt(a.aperte)}</b> aperte${a.meta ? ` · ${fmt(a.meta)} a metà` : ''}</span>
+      <span class="rec-dati"><b>${fmt(a.aperte)}</b> da recuperare${a.meta ? ` · ${fmt(a.meta)} a metà` : ''}</span>
     </div>`;
   }).join('');
 
@@ -4953,13 +4986,13 @@ function renderRecupero(){
       <span class="rec-gg">${giorniAllEsame()} giorni all'esame</span>
     </div>
     <p class="rec-intro">Una domanda sbagliata esce dal giro dopo <b>due</b> risposte esatte di fila.
-      Per questo il numero delle aperte sembra fermo anche quando lavori: qui si vede anche
+      Per questo il numero delle domande da recuperare sembra fermo anche quando lavori: qui si vede anche
       la strada fatta a metà, che è la parte che non si vedeva.</p>
     <div class="rec-avanz">
       <div class="rec-av-num"><b>${pct(R.passiFatti, R.passiTot)}</b><span>del recupero fatto</span></div>
       <p class="rec-av-spieg">Ogni domanda sbagliata vale <b>due</b> passi — le due risposte esatte che servono per chiuderla.
         Di ${fmt(R.passiTot)} passi ne hai fatti <b>${fmt(R.passiFatti)}</b>: ${fmt(R.chiuse)} domande chiuse (due passi ciascuna)
-        più ${fmt(R.meta)} arrivate a metà (un passo). Contate a domande sarebbe ${pct(R.chiuse, R.mai)}, e non sarebbe onesto.</p>
+        ${R.meta ? `più ${fmt(R.meta)} arrivate a metà (un passo). Contando solo quelle chiuse sarebbe ${pct(R.chiuse, R.mai)}: le metà strada contano anche loro.` : ''}</p>
     </div>
     <div class="rec-barra" title="${fmt(R.mai)} domande sbagliate almeno una volta da quando hai cominciato">
       <div class="rec-seg s-ok" style="width:${pc(R.chiuse)}%"></div>
@@ -5043,7 +5076,8 @@ function applicaFase(){
   if(cicloFeb()){
     aggiornaDataEsame();
     const f = fase2(), chiave = 'feb-' + (f.startsWith('natale') ? 'natale' : f);
-    if(['riposo', 'dopo', 'esame'].includes(f) || stato.faseAvvisata === chiave){ avviso.classList.add('nascosto'); return; }
+    // con il piano attivo l'obiettivo di oggi dice gia' tutto: l'avviso serve solo se sta usando il suo mix
+    if(pianoAttivo() || ['riposo', 'dopo', 'esame'].includes(f) || stato.faseAvvisata === chiave){ avviso.classList.add('nascosto'); return; }
     avviso.classList.remove('nascosto');
     avviso.innerHTML = `<b><svg class="ic"><use href="#i-mirino"/></svg> ${NOMI_FASE2[f]}</b><br>${cosaOggi2(f)}`
       + (pianoAttivo() ? '' : ` Adesso però stai usando il tuo mix.`)
@@ -5377,9 +5411,15 @@ function disegnaCampo(animato){
   });
   cx.globalAlpha = 1;
 }
-function renderCampo(){
+// I quattro stati del campo sono il vocabolario dell'app: consolidate, da riconfermare,
+// da recuperare, mai viste. Tutti i conteggi passano da qui, cosi' i numeri coincidono.
+function contaStati(lista){
   const conta = {nuova:0, aperta:0, attesa:0, salda:0};
-  QUESTIONS.forEach(q => conta[statoDomanda(q)]++);
+  (lista || QUESTIONS).forEach(q => conta[statoDomanda(q)]++);
+  return conta;
+}
+function renderCampo(){
+  const conta = contaStati();
   const fmt = fmtN;
   const leg = $('campo-leg');
   if(leg) leg.innerHTML =
@@ -5966,7 +6006,7 @@ function renderMotori(pr){
     m && m.ripPerTest !== null && m.nRip
       ? `<b>${dec(m.ripPerTest)}</b> per test · ne azzecchi <b>${pct(m.resaRip)}</b>`
       : '<span class="mot-manca">da misurare</span>',
-    `Restano <b>${n(pr.aperteKo)}</b> domande da recuperare: ognuna richiede due risposte esatte per uscire dal giro.`));
+    `Restano <b>${n(pr.aperteKo)}</b> domande ufficiali da recuperare: ognuna richiede due risposte esatte per uscire dal giro.`));
 
   // Il passo scelto, non il minimo: erano due numeri diversi che si contraddicevano
   // in due punti dell'app ("ne servono 3,3" qui, "300 al giorno" nell'obiettivo).
@@ -6192,8 +6232,8 @@ function renderMaledette(){
   box.innerHTML = `<div class="dt-blocco">
       <div class="dt-tit"><svg class="ic"><use href="#i-lucchetto"/></svg> Domande che continui a sbagliare</div>
       <div class="mal-testo">Sono <b>${m.length}</b> domande sbagliate almeno ${SOGLIA_MALEDETTA} volte`
-      + (aperte ? ` (<b>${aperte}</b> ancora da superare)` : '')
-      + `; la più ostinata ti ha fregata <b>${peggio}</b> volte. All'esame queste domande valgono <b>${fmtN(puntiDi(m))} punti</b>, di cui <b>${fmtN(puntiDi(m.filter(q => livelloQ(q) === 2)))}</b> su quelle da 2. Riproporle uguali non basta: leggile con spiegazione e trucco, poi verificale.</div>
+      + (aperte ? ` (<b>${aperte}</b> ancora da recuperare)` : '')
+      + `; la più ostinata l'hai sbagliata <b>${peggio}</b> volte. All'esame queste domande valgono <b>${fmtN(puntiDi(m))} punti</b>, di cui <b>${fmtN(puntiDi(m.filter(q => livelloQ(q) === 2)))}</b> su quelle da 2. Riproporle uguali non basta: leggile con spiegazione e trucco, poi verificale.</div>
       <div class="mal-azioni">
         <button class="btn-s" id="btn-mal-studia"><svg class="ic"><use href="#i-libro"/></svg> Studiale una per una</button>
         <button class="btn-s" id="btn-mal-test"><svg class="ic"><use href="#i-mirino"/></svg> Mettiti alla prova su queste</button>
@@ -6258,11 +6298,11 @@ function renderAndamento(){
       const pct = tot ? Math.round(100*ok/tot) : null;
       return `<tr><td class="dt-nome"><span class="dt-lungo">${a}</span><span class="dt-corto">${nomeBreve(a)}</span></td>
         <td class="dt-pct">${pct===null?'<span class="neutro">—</span>':pct+'%'}</td>
-        <td><span class="dt-d ${ko?'giu':'neutro'}">${fmt(ko)} da ripassare</span></td>
+        <td><span class="dt-d ${ko?'giu':'neutro'}">${fmt(ko)} da recuperare</span></td>
         <td class="dt-n">${fmt(nuove)} mai viste</td></tr>`;
     }).join('');
     dettaglio = `<table class="dt-tab"><thead><tr>
-        <th>Argomento</th><th>Superate</th><th>Da ripassare</th><th>Ancora nuove</th>
+        <th>Argomento</th><th>Superate</th><th>Da recuperare</th><th>Mai viste</th>
       </tr></thead><tbody>${righe}</tbody></table>
       <div class="dt-nota">Questo è il quadro complessivo per argomento. La media giorno per giorno divisa per argomento parte da adesso: dopo i prossimi test vedrai anche qui se ogni materia sale o scende.</div>`;
   }
@@ -6319,7 +6359,7 @@ function renderAndamento(){
     } else {
       const deb = ambitoPiuDebole();
       consiglio = deb
-        ? `Ambito più debole: <b>${deb.arg}</b> (${deb.pct}% superate, ${fmt(deb.daRip)} da ripassare).`
+        ? `Ambito più debole: <b>${deb.arg}</b> (${deb.pct}% superate, ${fmt(deb.daRip)} da recuperare).`
         : 'Servono più risposte per confrontare gli ambiti.';
     }
   }
@@ -6373,7 +6413,7 @@ function sottoBlocco(){
   return `<div class="dt-blocco">
       <div class="dt-tit">Sottoargomenti di ${arg} <span class="dt-hint">— dal più debole; il tasto avvia un test mirato</span></div>
       <div class="so-scroll"><table class="dt-tab so-tab"><thead><tr>
-        <th>Sottoargomento</th><th>Superate</th><th>Da ripassare</th><th>Nuove</th><th>Punti</th><th></th>
+        <th>Sottoargomento</th><th>Superate</th><th>Da recuperare</th><th>Mai viste</th><th>Punti</th><th></th>
       </tr></thead><tbody>${corpo}</tbody></table></div>
     </div>`;
 }
@@ -6933,18 +6973,18 @@ function fase2(iso){
   if(iso >= C2.giro2Dal) return eGiornoRiposo(iso) ? 'riposo' : 'giro2';
   return 'pausa';
 }
-const NOMI_FASE2 = {prima: 'In attesa del piano', giro1: '1° giro completo', coda: 'Fine del 1° giro',
+const NOMI_FASE2 = {prima: 'In attesa del piano', giro1: '1° giro', coda: 'Fine del 1° giro',
   'natale-sim': 'Natale · simulazione', 'natale-ost': 'Natale · ostinate', riposo: 'Riposo', pausa: 'Pausa',
-  giro2: '2° giro completo', vigilia: 'Vigilia: giornata leggera', esame: 'Giorno dell\'esame', dopo: 'Esame fatto'};
+  giro2: '2° giro', vigilia: 'Vigilia: giornata leggera', esame: 'Giorno dell\'esame', dopo: 'Esame fatto'};
 // i blocchi del piano, per il prospetto
 function blocchiPiano2(){
   const esame = dataEsameVera();
   return [
-    {id: 'giro1', nome: '1° giro completo', dal: C2.inizio, al: C2.fineGiro1, ritmo: '4 test al giorno'},
+    {id: 'giro1', nome: '1° giro', dal: C2.inizio, al: C2.fineGiro1, ritmo: '4 test al giorno'},
     {id: 'natale', nome: 'Natale', dal: '2026-12-23', al: '2026-12-30', ritmo: '1 test al giorno (non il 24 e il 25)'},
     {id: 'pausa', nome: 'Pausa', dal: C2.pausaDal, al: C2.pausaAl, ritmo: 'niente'},
     {id: 'coda', nome: 'Fine del 1° giro', dal: C2.codaDal, al: C2.codaAl, ritmo: '4 test al giorno'},
-    {id: 'giro2', nome: '2° giro completo', dal: C2.giro2Dal, al: isoPiu(esame, -2), ritmo: '5 test al giorno'},
+    {id: 'giro2', nome: '2° giro', dal: C2.giro2Dal, al: isoPiu(esame, -2), ritmo: '5 test al giorno'},
     {id: 'vigilia', nome: 'Vigilia', dal: isoPiu(esame, -1), al: isoPiu(esame, -1), ritmo: 'leggera'}];
 }
 // categoria di rischio di una domanda: 0 sicura (mai sbagliata), 1 a rischio, 2 ostinata (sbagliata 2+ volte)
@@ -7024,6 +7064,29 @@ function componiPiano2(){
   if(f === 'natale-ost') return componiOstinate();
   return componiComeEsame();                       // simulazione, pausa, riposo, vigilia
 }
+// Il prossimo test del piano si compone una volta sola: obiettivo, anteprima, sottotitolo
+// del tasto e test che parte leggono la stessa lista, che cambia solo dopo un test.
+let _prossimo2 = null;
+function prossimoPiano2(){
+  const k = [oggiISO(), stato.nTest || 0, fase2(), stato.dataEsame || ''].join('|');
+  if(!_prossimo2 || _prossimo2.k !== k) _prossimo2 = {k, D: componiPiano2()};
+  return _prossimo2.D;
+}
+// com'e' fatto il prossimo test, in parole del piano
+function infoProssimo2(){
+  const f = fase2(), D = prossimoPiano2();
+  const giro = (f === 'giro1' || f === 'coda') ? 1 : f === 'giro2' ? 2 : 0;
+  if(!giro) return {D, giro: 0, nGiro: 0, nRipresa: 0};
+  const dal = numIso(giro === 1 ? C2.inizio : C2.giro2Dal);
+  const nRipresa = D.filter(q => vistaDal(q, dal)).length;
+  return {D, giro, nGiro: D.length - nRipresa, nRipresa};
+}
+function descrizioneProssimo2(){
+  const f = fase2(), I = infoProssimo2();
+  if(I.giro) return I.nRipresa ? `${I.D.length} domande · ${I.nGiro} del ${I.giro}° giro, ${I.nRipresa} sbagliate da riprendere` : `${I.D.length} domande del ${I.giro}° giro`;
+  if(f === 'natale-ost') return `${I.D.length} domande · sbagliate più volte`;
+  return `${I.D.length} domande · a caso, come all'esame`;
+}
 function pianoFebAttivo(sel){
   if(!pianoAttivo() || !cicloFeb()) return false;
   sel = sel || argomentiSelezionati();
@@ -7059,13 +7122,13 @@ function obiettivo2(iso){
 function cosaOggi2(f){
   return ({
     prima: `Il piano di febbraio parte <b>lunedì 30 novembre</b>. Fino ad allora i test sono come l'esame, a caso da tutta la banca.`,
-    giro1: `<b>1° giro completo della banca.</b> Ogni test ha la forma dell'esame: circa 51 domande del giro, partendo da quelle che non vedi da più tempo, e circa 9 sbagliate del giro da riprendere.`,
+    giro1: `<b>1° giro di tutta la banca.</b> Ogni test ha la forma dell'esame: quasi tutte domande del giro, partendo da quelle che non vedi da più tempo, più qualche sbagliata del giro da riprendere.`,
     coda: `<b>Fine del 1° giro.</b> Si chiudono le domande del giro rimaste, sempre partendo da quelle che non vedi da più tempo.`,
     'natale-sim': `<b>Oggi: una simulazione d'esame.</b> Usa il tasto «Simulazione esame», con il timer, come all'esame.`,
     'natale-ost': `<b>Oggi: un test di ostinate.</b> Usa il tasto «Ostinate da 2 punti».`,
     riposo: `<b>Oggi riposo.</b> Se fai un test conta lo stesso, ma il piano non chiede niente.`,
     pausa: `<b>Pausa.</b> Si riparte l'8 gennaio.`,
-    giro2: `<b>2° giro completo della banca.</b> Prima le domande sicure, poi quelle a rischio e le ostinate: così all'esame le più fragili sono le più fresche. Nell'ultima settimana le ostinate tornano una seconda volta.`,
+    giro2: `<b>2° giro di tutta la banca.</b> Prima le domande sicure, poi quelle a rischio e le ostinate: così all'esame le più fragili sono le più fresche. Nell'ultima settimana le ostinate tornano una seconda volta.`,
     vigilia: `<b>Vigilia dell'esame: giornata leggera.</b> Un test o una simulazione al massimo, poi riposo.`,
     esame: `<b>Oggi è il giorno dell'esame.</b> In bocca al lupo!`,
     dopo: `L'esame è passato. Aggiorna la data qui sotto se ce n'è uno nuovo.`})[f] || '';
@@ -7103,15 +7166,24 @@ function renderObiettivo2(){
          `<div class="kd pari">${alGiorno ? `≈ ${Math.max(1, Math.round(alGiorno / N_TEST))} test da ${N_TEST} · si ricalcola ogni giorno` : NOMI_FASE2[f]}</div>`) +
     tile('<svg class="ic"><use href="#i-bandiera"/></svg>', 'ico-verde', alGiorno ? `${fmt(fatte)}/${fmt(alGiorno)}` : fmt(fatte), 'domande fatte oggi',
          alGiorno ? (fatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>' : `<div class="kd pari">ne mancano ${fmt(alGiorno - fatte)}</div>`) : '<div class="kd pari">contano lo stesso</div>');
+  // la riga buona: cosa ha gia' recuperato oggi, oppure quante ne ha gia' consolidate
+  const recOggi = g ? (g.rec || 0) : 0;
+  const cons = contaStati().salda;
+  const rigaBuona = recOggi
+    ? `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Oggi hai recuperato <b>${fmt(recOggi)}</b> ${recOggi === 1 ? 'sbagliata' : 'sbagliate'}.</div>`
+    : `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Già consolidate: <b>${fmt(cons)}</b> domande su ${fmt(totBanca)}.</div>`;
+  // nei giorni di Natale il piano chiede un tasto preciso: lo si mette qui
+  const azione = f === 'natale-sim' ? `<button type="button" class="obh-azione" data-obh="sim">Avvia la simulazione d'esame</button>`
+    : f === 'natale-ost' ? `<button type="button" class="obh-azione" data-obh="ost">Avvia il test delle ostinate</button>` : '';
+  const collega = () => $('ob-hero').querySelectorAll('[data-obh]').forEach(b => b.onclick = () => $(b.dataset.obh === 'sim' ? 'btn-sim' : 'btn-ost').click());
   if(!alGiorno){
     $('ob-hero').innerHTML = `<div class="obh-top"><span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> ${NOMI_FASE2[f]}</span>`
-      + `<span class="obh-gg">esame tra ${ggEsame} giorni</span></div><div class="obh-piano">${cosaOggi2(f)}</div>`;
+      + `<span class="obh-gg">esame tra ${ggEsame} giorni</span></div><div class="obh-piano">${cosaOggi2(f)}</div>${rigaBuona}`;
     return;
   }
   const restano = Math.max(0, alGiorno - fatte), fatto = fatte >= alGiorno, pct = Math.min(100, Math.round(100 * fatte / alGiorno));
-  const gg = giorniGiro(giro);
   const riga = (f === 'giro1' || f === 'coda' || f === 'giro2')
-    ? `<div class="obh-piano">${giro}° giro: restano <b>${fmt(restoGiro)}</b> domande da vedere${gg ? ` in ${gg} giorni di studio` : ''}. ${cosaOggi2(f)}</div>`
+    ? `<div class="obh-piano">Prossimo test: ${descrizioneProssimo2()}.</div>`
     : `<div class="obh-piano">${cosaOggi2(f)}</div>`;
   $('ob-hero').innerHTML = `
     <div class="obh-top">
@@ -7123,7 +7195,8 @@ function renderObiettivo2(){
       <div class="obh-stato ${fatto ? 'ok' : ''}">${fatto ? '✔ obiettivo raggiunto' : `ne mancano <b>${fmt(restano)}</b> · ≈ ${Math.max(1, Math.round(restano / N_TEST))} test`}</div>
     </div>
     <div class="obh-bar ${fatto ? 'ok' : ''}"><i style="width:${pct}%"></i></div>
-    ${riga}`;
+    ${riga}${azione}${rigaBuona}`;
+  collega();
 }
 function prospetto2(){
   aggiornaDataEsame();
@@ -7331,7 +7404,7 @@ function mixTest(sel, iso){
   const soloErr = !!(chk && chk.checked);
   if(!soloErr && (pianoFebAttivo(sel) || ripassoComeEsame(sel))){
     // test come l'esame: si mostra una pescata d'esempio, divisa per stato delle domande
-    const D = pianoFebAttivo(sel) ? componiPiano2() : componiComeEsame();
+    const D = pianoFebAttivo(sel) ? prossimoPiano2() : componiComeEsame();
     const righe = [], tot = {nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
     STRUTTURA_ESAME.forEach(([a, quota]) => {
       const r = {a, nome: nomeBreve(a), quota, nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
@@ -7433,7 +7506,7 @@ function aggiornaNota(){
   if(disponibili === 0){
     const pausate = s.ko - s.koEleg;
     $('nota-pool').textContent = soloErr
-      ? 'Nessuna domanda da ripassare in questi argomenti — togli la spunta "Solo domande sbagliate" per proseguire con le nuove.'
+      ? 'Nessuna domanda da recuperare in questi argomenti — togli la spunta "Solo domande sbagliate" per proseguire con le nuove.'
       : (pausate > 0
         ? `Al momento non c'è nulla di scaduto: le ${pausate} sbagliate sono in pausa di ripasso distanziato. Usa "Solo domande sbagliate" per riprenderle subito.`
         : 'Hai superato tutte le domande di questi argomenti! Azzera i progressi per ricominciare.');
@@ -7702,7 +7775,7 @@ function avviaTest(){
   // da qualunque materia ne abbia ancora, e non bilancia i livelli. Serve a finire
   // la banca dati il prima possibile. Se le nuove non bastano, il resto si riempie
   // come al solito.
-  if(!soloErr && pianoFebAttivo(sel)){ lanciaTest(componiPiano2(), 'Tutti'); return; }
+  if(!soloErr && pianoFebAttivo(sel)){ const D = prossimoPiano2(); _prossimo2 = null; lanciaTest(D, 'Tutti'); return; }
   if(!soloErr && ripassoComeEsame(sel)){ lanciaTest(componiComeEsame(), 'Tutti'); return; }
   let soloNuove = !soloErr && !pianoAttivo() && mixScelto().n === 100;
   // ---------------------------------------------------------------------
@@ -8087,7 +8160,7 @@ function rispondi(i){
   if(test.risposte[q.n] !== undefined && test.risposte[q.n] !== i) test.cambi[q.n] = (test.cambi[q.n] || 0) + 1;
   test.risposte[q.n] = i;
   const opts = [...$('q-opzioni').children];
-  opts.forEach((o, j) => o.classList.toggle('sel', j === i));
+  opts.forEach((o, j) => { o.classList.toggle('sel', j === i); o.setAttribute('aria-pressed', String(j === i)); });
   $('btn-prossima').disabled = false;
   $('btn-prossima').textContent = test.esame ? labelAvanti() : '✓ Conferma risposta';
 }
@@ -8293,12 +8366,26 @@ function fineTest(){
                                           : `${giuste.length} / ${risposte.length}`;
   const pct = risposte.length ? giuste.length/risposte.length : 0;
   const el = $('r-esito');
-  el.className = 'esito ' + (su100fine >= SOGLIA_PUNTI ? 'ok' : 'ko');
+  // Un test di allenamento non si giudica con la soglia d'esame: e' fatto apposta con
+  // domande difficili (sbagliate, vecchie, ostinate). Si dice cosa e' entrato e cosa
+  // ha recuperato. La soglia di 80 resta solo per la simulazione, dove ha senso.
+  const entrate = Object.keys(primaKo);
+  const recuperate = entrate.filter(n => stato.risultati[n] && stato.risultati[n].s === 'ok').length;
+  const aMeta = entrate.filter(n => { const r = stato.risultati[n]; return r && r.s === 'ko' && (r.c || 0) > primaKo[n]; }).length;
+  const pctTxt2 = Math.round(pct * 100);
+  el.className = 'esito ' + (pct >= 0.8 || recuperate >= 5 ? 'ok' : 'neutro');
   el.textContent = risposte.length === 0 ? 'Nessuna risposta data.' :
-    (su100fine >= SOGLIA_PUNTI
-      ? `Ottimo: ${PTfine.pt} punti su ${PTfine.ptMax} — ${su100fine} su 100, sopra la soglia · ${Math.round(pct*100)}% di risposte esatte`
-      : `${PTfine.pt} punti su ${PTfine.ptMax} — ${su100fine} su 100 (serve ${SOGLIA_PUNTI}) · ${Math.round(pct*100)}% di risposte esatte — le ${errori.length} sbagliate torneranno nei prossimi test finché non le superi 2 volte`);
-  let superato = risposte.length > 0 && su100fine >= SOGLIA_PUNTI;
+    `${giuste.length} ${giuste.length === 1 ? 'giusta' : 'giuste'} su ${risposte.length} (${pctTxt2}%).`
+    + (entrate.length === 1 && (recuperate || aMeta)
+        ? (recuperate ? ' La sbagliata che avevi in questo test l\'hai recuperata.' : ' La sbagliata che avevi in questo test è a metà strada.')
+      : entrate.length && (recuperate || aMeta)
+        ? ` Delle ${entrate.length} sbagliate che avevi in questo test${recuperate ? '' : ','} `
+          + [recuperate ? (recuperate === 1 ? 'ne hai recuperata 1' : `ne hai recuperate ${recuperate}`) : '',
+             aMeta ? `${aMeta} ${aMeta === 1 ? 'è' : 'sono'} a metà strada` : ''].filter(Boolean).join(' e ') + '.'
+        : '')
+    + (errori.length === 1 ? ' La sbagliata di oggi torna nei prossimi giorni.'
+       : errori.length ? ` Le ${errori.length} sbagliate di oggi tornano nei prossimi giorni.` : '');
+  let superato = risposte.length >= 20 && pct >= 0.8;
   if(test.sim){
     const sup = PTfine.pt >= SOGLIA_PUNTI;   // la soglia vera: 80 punti su 100
     superato = sup;
@@ -8377,7 +8464,7 @@ function pctTxt(ok, tot){ return tot ? Math.round(100*ok/tot) + '%' : '—'; }
 function barraStack(s){
   const tot = s.tot || 1;
   const seg = (cls, n, tit) => n ? `<div class="${cls}" style="width:${100*n/tot}%" title="${tit}: ${n}"></div>` : '';
-  return `<div class="sbar">${seg('s-sup', s.ok, 'Superate')}${seg('s-rip', s.ko, 'Da ripassare')}${seg('s-nuo', s.nuove, 'Non viste')}</div>`;
+  return `<div class="sbar">${seg('s-sup', s.ok, 'Consolidate o da riconfermare')}${seg('s-rip', s.ko, 'Da recuperare')}${seg('s-nuo', s.nuove, 'Mai viste')}</div>`;
 }
 
 // precisione al primo tentativo: una domanda azzeccata alla prima proposta è archiviata con zero errori (e=0)
@@ -8542,21 +8629,22 @@ function renderDashboard(){
   const nGiorni = Object.keys(stato.giorni).length;
   const pt = primoTentativo(QUESTIONS);
   // KPI
+  const cs = contaStati();
   $('d-kpi').innerHTML = `
-    <div class="kpi"><div class="k-lab">Domande superate</div><div class="k-val">${sg.ok}</div><div class="k-sub">${pctTxt(sg.ok, sg.tot)} della banca dati (${sg.tot})</div></div>
-    <div class="kpi"><div class="k-lab">Da ripassare</div><div class="k-val">${sg.ko}</div><div class="k-sub">escono dopo 2 risposte esatte</div></div>
-    <div class="kpi"><div class="k-lab">Precisione complessiva</div><div class="k-val">${pctTxt(totOk, totOk+totKo)}</div><div class="k-sub">${totOk+totKo} risposte date in ${stato.storico.length} test</div></div>
-    <div class="kpi kpi-chiave"><div class="k-lab">Precisione al 1° tentativo</div><div class="k-val">${pctTxt(pt.ok, pt.tot)}</div><div class="k-sub">${pt.ok} su ${pt.tot} nuove azzeccate subito — è la stima più vicina al risultato d'esame</div></div>
-    <div class="kpi"><div class="k-lab">Giorni di studio</div><div class="k-val">${nGiorni}</div><div class="k-sub">${nGiorni ? 'media ' + Math.round((totOk+totKo)/nGiorni) + ' domande/giorno' : 'inizia il primo test!'}</div></div>`;
+    <div class="kpi"><div class="k-lab">Consolidate</div><div class="k-val">${fmtN(cs.salda)}</div><div class="k-sub">${pctTxt(cs.salda, QUESTIONS.length)} della banca dati (${fmtN(QUESTIONS.length)})</div></div>
+    <div class="kpi"><div class="k-lab">Da riconfermare</div><div class="k-val">${fmtN(cs.attesa)}</div><div class="k-sub">giuste una volta, tornano a distanza</div></div>
+    <div class="kpi"><div class="k-lab">Da recuperare</div><div class="k-val">${fmtN(cs.aperta)}</div><div class="k-sub">escono dopo 2 risposte esatte di fila</div></div>
+    <div class="kpi"><div class="k-lab">Precisione complessiva</div><div class="k-val">${pctTxt(totOk, totOk+totKo)}</div><div class="k-sub">${fmtN(totOk+totKo)} risposte date in ${fmtN(stato.storico.length)} test</div></div>
+    <div class="kpi"><div class="k-lab">Giorni di studio</div><div class="k-val">${fmtN(nGiorni)}</div><div class="k-sub">${nGiorni ? 'media ' + fmtN(Math.round((totOk+totKo)/nGiorni)) + ' domande al giorno' : 'inizia il primo test!'}</div></div>`;
   // barra globale
   $('d-globale').innerHTML = barraStack(sg) +
-    `<div class="a-num" style="margin-top:6px; font-size:.78rem; color:var(--ink2)">${sg.ok} superate · ${sg.ko} da ripassare · ${sg.nuove} non ancora viste</div>`;
+    `<div class="a-num" style="margin-top:6px; font-size:.78rem; color:var(--ink2)">${fmtN(sg.ok)} consolidate o da riconfermare · ${fmtN(sg.ko)} da recuperare · ${fmtN(sg.nuove)} mai viste</div>`;
   // per argomento
   $('d-argomenti').innerHTML = ARGOMENTI.map(arg => {
     const s = statiPool(QUESTIONS.filter(q => q.t === arg));
     return `<div class="arg-riga">
       <div class="a-testa"><span class="a-nome">${arg}</span>
-      <span class="a-num">${pctTxt(s.ok, s.tot)} superato — ${s.ok}/${s.tot} · <b style="color:var(--rip)">${s.ko}</b> da ripassare · ${s.nuove} nuove · 1° tentativo: <b>${(pta => pctTxt(pta.ok, pta.tot))(primoTentativo(QUESTIONS.filter(q => q.t === arg)))}</b></span></div>
+      <span class="a-num">${pctTxt(s.ok, s.tot)} superato — ${s.ok}/${s.tot} · <b style="color:var(--rip)">${s.ko}</b> da recuperare · ${s.nuove} nuove · 1° tentativo: <b>${(pta => pctTxt(pta.ok, pta.tot))(primoTentativo(QUESTIONS.filter(q => q.t === arg)))}</b></span></div>
       ${barraStack(s)}</div>`;
   }).join('');
   renderGiorni();
@@ -8719,7 +8807,7 @@ function renderRipasso(){
       const r = stato.risultati[q.n];
       const sup = r.s === 'ok';
       return `<div class="err-item ${sup ? 'rip-sup' : ''}">
-        <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da superare'}</span>
+        <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da recuperare'}</span>
         <span class="pill pill-rip">sbagliata ${r.e === 1 ? '1 volta' : r.e + ' volte'}</span>
         ${!sup && !proponibile(r) ? `<span class="pill pill-pausa">⏸ torna tra ${r.t - (stato.nTest || 0)} test</span>` : ''}
         ${etichetteQ(q)}
@@ -8730,12 +8818,12 @@ function renderRipasso(){
       </div>`;
     }).join('');
     return `<details class="grp-arg" open>
-      <summary>${arg} <span class="mini">— ${errate.length} ${errate.length === 1 ? 'domanda' : 'domande'}${soloAperte ? '' : ` (${aperte} ancora da superare)`}</span></summary>
+      <summary>${arg} <span class="mini">— ${errate.length} ${errate.length === 1 ? 'domanda' : 'domande'}${soloAperte ? '' : ` (${aperte} ancora da recuperare)`}</span></summary>
       <div class="corpo">${items}</div>
     </details>`;
   }).join('');
   cont.innerHTML = avviso + (totale ? blocchi :
-    `<div class="vuoto">${soloMaledette ? 'Nessuna domanda sbagliata cosi\u0300 tante volte: ottimo segno.' : (soloAperte ? 'Nessuna domanda ancora da superare — tutte le sbagliate sono state recuperate! Togli il filtro per rileggerle.' : 'Ancora nessuna domanda sbagliata: quando ne sbagli una, la ritrovi qui per il ripasso pre-esame.')}</div>`);
+    `<div class="vuoto">${soloMaledette ? 'Nessuna domanda sbagliata cosi\u0300 tante volte: ottimo segno.' : (soloAperte ? 'Nessuna domanda ancora da recuperare — tutte le sbagliate sono state recuperate! Togli il filtro per rileggerle.' : 'Ancora nessuna domanda sbagliata: quando ne sbagli una, la ritrovi qui per il ripasso pre-esame.')}</div>`);
   const link = $('mal-tutte');
   if(link) link.onclick = (e) => { e.preventDefault(); soloMaledette = false; renderRipasso(); };
 }
@@ -8844,7 +8932,7 @@ function dispensaCorpoHTML(errate){
     const r = stato.risultati[q.n];
     const sup = r.s === 'ok';
     return `<div class="err-item ${sup ? 'rip-sup' : ''}">
-      <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da superare'}</span>
+      <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da recuperare'}</span>
       <span class="pill pill-rip">sbagliata ${r.e === 1 ? '1 volta' : r.e + ' volte'}</span>
       ${etichetteQ(q)}
       <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
@@ -8855,7 +8943,7 @@ function dispensaCorpoHTML(errate){
   };
   return gruppi.filter(g => g.domande.length).map(g => `
     <div class="disp-tit">${g.tema}</div>
-    <div class="disp-sub">${g.domande.length} ${g.domande.length === 1 ? 'domanda' : 'domande'} — ${g.domande.filter(q => stato.risultati[q.n].s === 'ko').length} ancora da superare</div>
+    <div class="disp-sub">${g.domande.length} ${g.domande.length === 1 ? 'domanda' : 'domande'} — ${g.domande.filter(q => stato.risultati[q.n].s === 'ko').length} ancora da recuperare</div>
     ${g.domande.map(item).join('')}`).join('');
 }
 
@@ -8989,7 +9077,7 @@ function renderCerca(){
     const r = stato.risultati[q.n];
     const badge = !r ? '<span class="pill pill-nuova">mai vista</span>'
       : r.s === 'ok' ? `<span class="pill pill-sup">✔ superata${r.e ? ' (dopo ' + r.e + (r.e === 1 ? ' errore' : ' errori') + ')' : ''}</span>`
-      : `<span class="pill pill-ko">✘ da ripassare</span>`;
+      : `<span class="pill pill-ko">✘ da recuperare</span>`;
     return `<div class="cerca-item">
       <span class="pill pill-arg">${q.t}</span> ${badge} ${etichetteQ(q)}
       <div class="d">${q.n}. ${ev(q.q)}</div>
@@ -9026,7 +9114,7 @@ $('tab-ripasso').addEventListener('click', () => { soloMaledette = false; });
 $('btn-tema').onclick = () => applicaTema(temaAttuale() === 'chiaro' ? 'scuro' : 'chiaro');
 applicaTema(temaAttuale());
 $('tab-allenamento').onclick = () => { renderHome(); mostra('vista-home'); };
-$('tab-dashboard').onclick = () => { renderDashboard(); mostra('vista-dashboard'); };
+$('tab-dashboard').onclick = () => { renderHome(); renderDashboard(); mostra('vista-dashboard'); requestAnimationFrame(() => disegnaCampo()); };
 $('tab-ripasso').onclick = () => { renderRipasso(); mostra('vista-ripasso'); };
 $('tab-cerca').onclick = () => { mostra('vista-cerca'); renderCerca(); $('campo-cerca').focus(); };
 $('tab-dispensa').onclick = () => { renderDispensa(); mostra('vista-dispensa'); };
@@ -9076,6 +9164,12 @@ function vociRiga(c){ return {nNew: c.nNew, nRip: c.nRip, nRic: c.nRic, nRipe: (
 function renderMixFasi(){
   const el = $('mix-fasi'); if(!el) return;
   if(!pianoAttivo()){ el.innerHTML = ''; el.classList.add('nascosto'); return; }
+  if(cicloFeb()){
+    // le fasi stanno nel riquadro del piano: qui solo com'e' fatto il prossimo test
+    el.classList.remove('nascosto');
+    el.innerHTML = `<p class="mix-cosa"><b>${NOMI_FASE2[fase2()]}.</b> Il prossimo test: ${descrizioneProssimo2()}.</p>`;
+    return;
+  }
   el.classList.remove('nascosto');
   const f = faseOggi();
   const prima = oggiISO() < INIZIO_CICLO;
@@ -9133,7 +9227,8 @@ function renderMixEsito(){
   // anche il bottone dice com'e' fatto il test che parte
   const sub = document.querySelector('#btn-avvia .sub-lungo');
   if(sub) sub.textContent = M.soloErr ? `${M.tot.n} domande · solo sbagliate`
-    : `${M.tot.n} domande · ${T.nNew} nuove, ${T.nRip} sbagliate, ${T.nRic + T.nRipe} da riprendere`;
+    : (pianoFebAttivo() ? descrizioneProssimo2()
+    : `${M.tot.n} domande · ${T.nNew} nuove, ${T.nRip} sbagliate, ${T.nRic + T.nRipe} da riprendere`);
 }
 
 function renderMixImpatto(){
@@ -9224,7 +9319,7 @@ $('mix-tab-mio').onclick = () => { if(!pianoAttivo()) return; prendiIlComando();
 });
 $('btn-avvia').onclick = avviaTest;
 $('btn-prossima').onclick = prossima;
-$('btn-abbandona').onclick = () => conferma('Terminare il test adesso? Le domande già risposte vengono registrate, le altre no.', fineTest);
+$('btn-abbandona').onclick = () => conferma('Terminare il test adesso? Le domande già risposte vengono registrate, le altre no.', fineTest, 'Termina il test');
 $('btn-nuovo').onclick = () => { mostra('vista-home'); avviaTest(); };
 $('btn-home').onclick = () => { renderHome(); mostra('vista-home'); };
 $('btn-salva').onclick = salvaProgressi;
@@ -9692,9 +9787,9 @@ const Pier = (() => {
       '<b>{p}%</b> con {ko} da recuperare. Te le rimetto davanti io, tu pensa a leggerle bene.',
       'Ok, <b>{p}%</b>. Non è ancora il tuo punteggio, è il punteggio di oggi.']},
     {min: 0, posa: 'a-sdraiato', frasi: [
-      '<b>{p}%</b>. Giornata storta, capita anche a me con le pallina. Domani si riprova.',
+      '<b>{p}%</b>. Giornata storta, capita anche a me con la pallina. Domani si riprova.',
       '<b>{p}%</b>: le {ko} sbagliate valgono più delle giuste, perché adesso le sai dove sono.',
-      'Vieni qui. <b>{p}%</b> oggi non dice niente su novembre. Facciamone un altro corto.']}];
+      'Vieni qui. <b>{p}%</b> oggi non dice niente sull\'esame. Facciamone un altro corto.']}];
 
   const globale = window;
   const $$ = id => document.getElementById(id);
