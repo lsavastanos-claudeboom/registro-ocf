@@ -1863,6 +1863,13 @@ b.dubbia{color:var(--ottone-t);}
 .pier-fumetto b{color:var(--azione);}
 .pier-fumetto .pf-nome{display:block; font-size:.7rem; font-weight:700; color:var(--nebbia); margin-bottom:2px;}
 
+/* piano di febbraio */
+.c2-blocchi{margin:4px 0 0 18px; padding:0;}
+.c2-blocchi li{margin:2px 0;}
+.c2-blocchi li.c2-ora{font-weight:600; color:var(--vidimato-t);}
+.c2-blocchi li.c2-fatto{opacity:.55;}
+.c2-data{display:flex; align-items:center; gap:8px; margin-top:10px; font-weight:600;}
+.c2-data input{font:inherit; padding:4px 8px; border-radius:8px; border:1px solid var(--filo, #888); background:transparent; color:inherit;}
 </style>
 <script>
 (function(){
@@ -1965,7 +1972,7 @@ b.dubbia{color:var(--ottone-t);}
           <span class="avvia-freccia" aria-hidden="true">→</span>
         </button>
         <div class="azione-alt">
-          <button class="modo modo-sim" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+6+6+5), di cui 20 da 1 punto e 40 da 2 per 100 punti in tutto, 85 minuti di tempo, correzione solo alla fine, si passa con 80 punti">
+          <button class="modo modo-sim" id="btn-sim" title="Come la prova vera: 60 domande estratte per materia (24+19+5+6+6), di cui 20 da 1 punto e 40 da 2 per 100 punti in tutto, 85 minuti di tempo, correzione solo alla fine, si passa con 80 punti">
             <span class="modo-ico"><svg class="ic ic-xl"><use href="#i-prova"/></svg></span>
             <span class="modo-testo"><b>Simulazione esame</b><span>60 domande · 100 punti · 85 minuti · come la prova vera</span></span>
           </button>
@@ -4410,6 +4417,7 @@ function renderHome(){
     e.preventDefault(); const arg = ARGOMENTI[+a.dataset.arg];
     saStato[arg] = saStato[arg].map(() => false); renderHome();
   });
+  aggiornaDataEsame();
   aggiornaNota();
   renderOggi();
   renderObiettivo();
@@ -5032,6 +5040,21 @@ const GG_CONSOLIDAMENTO = 10;
 // offre di tornarci con un tasto: le sue percentuali non si toccano da sole.
 function applicaFase(){
   const avviso = $('avviso-fase'); if(!avviso) return;
+  if(cicloFeb()){
+    aggiornaDataEsame();
+    const f = fase2(), chiave = 'feb-' + (f.startsWith('natale') ? 'natale' : f);
+    if(['riposo', 'dopo', 'esame'].includes(f) || stato.faseAvvisata === chiave){ avviso.classList.add('nascosto'); return; }
+    avviso.classList.remove('nascosto');
+    avviso.innerHTML = `<b><svg class="ic"><use href="#i-mirino"/></svg> ${NOMI_FASE2[f]}</b><br>${cosaOggi2(f)}`
+      + (pianoAttivo() ? '' : ` Adesso però stai usando il tuo mix.`)
+      + `<div class="af-azioni">${pianoAttivo() ? '' : '<button type="button" class="af-btn af-pieno" data-af="piano">Segui il piano</button>'}<button type="button" class="af-btn" data-af="ok">Ho capito</button></div>`;
+    avviso.querySelectorAll('[data-af]').forEach(b => b.onclick = () => {
+      stato.faseAvvisata = chiave;
+      if(b.dataset.af === 'piano') stato.pianoAuto = true;
+      aggiornaDopoMix();
+    });
+    return;
+  }
   if(oggiISO() > DATA_ESAME || oggiISO() < INIZIO_CICLO || stato.faseAvvisata === faseDel()){
     avviso.classList.add('nascosto'); return;
   }
@@ -6355,8 +6378,22 @@ function sottoBlocco(){
     </div>`;
 }
 
-const DATA_ESAME = '2026-11-18';   // ultimo giorno di test: mercoledì 18 novembre (esame giovedì 19)
-const ESAME_BREVE = '19 novembre', ESAME_GIORNO = 'giovedì 19 novembre';
+// Esame di febbraio (deciso il 22 novembre): la data si cambia dall'app quando arriva la
+// convocazione (stato.dataEsame). DATA_ESAME resta l'ultimo giorno di test, cioe' la vigilia.
+const ESAME_FEB_PREDEF = '2027-02-04';
+let DATA_ESAME = '2027-02-03';
+let ESAME_BREVE = '4 febbraio', ESAME_GIORNO = 'giovedì 4 febbraio';
+function dataEsameVera(){
+  const d = stato && typeof stato.dataEsame === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(stato.dataEsame) ? stato.dataEsame : ESAME_FEB_PREDEF;
+  return d;
+}
+function aggiornaDataEsame(){
+  const e = dataEsameVera();
+  DATA_ESAME = isoPiu(e, -1);
+  const d = new Date(e + 'T12:00:00');
+  ESAME_BREVE = d.toLocaleDateString('it-IT', {day: 'numeric', month: 'long'});
+  ESAME_GIORNO = d.toLocaleDateString('it-IT', {weekday: 'long', day: 'numeric', month: 'long'});
+}
 // Il secondo giro di preparazione parte il 19 ottobre. La prima settimana è dedicata
 // alle lacune di Matematica: poche domande nuove, molti ripassi di quelle sbagliate.
 const INIZIO_CICLO = '2026-10-19';
@@ -6388,7 +6425,7 @@ function inFaseFinale(){ return oggiISO() > isoCopertura(); }
 // Cambia quando cambia il MODO di calcolare l'obiettivo. L'obiettivo resta fermo
 // per tutta la giornata — deve, altrimenti balla mentre si risponde — ma se esce
 // una versione con un calcolo diverso quello di oggi va rifatto subito, non domani.
-const VERSIONE_PIANO = 6;
+const VERSIONE_PIANO = 7;
 // La firma del mix: se cambia (piano <-> scelta sua, o altre percentuali) l'obiettivo
 // di oggi va rifatto subito.
 function firmaMix(){ if(pianoAttivo()) return 'piano'; const m = mixScelto(); return m.n + '/' + m.k + '/' + m.r; }
@@ -6407,6 +6444,7 @@ function targetOggi(domandeAlGiorno){
 }
 
 function renderObiettivo(){
+  if(cicloFeb()) return renderObiettivo2();
   let nuove = 0, recuperi = 0, daRip = 0;
   QUESTIONS.forEach(q => {
     const r = stato.risultati[q.n];
@@ -6530,6 +6568,7 @@ function renderObiettivo(){
 // Serve perche' i numeri sparsi nelle altre card non dicono da soli se si sta
 // andando bene o male.
 function prospettoPiano(){
+  if(cicloFeb()) return prospetto2();
   const P = piano();
   const dataIt = iso => iso ? new Date(iso).toLocaleDateString('it-IT', {day:'numeric', month:'long'}) : null;
   const scad = dataIt(isoCopertura());
@@ -6605,10 +6644,11 @@ function prospettoPiano(){
 }
 function renderProspetto(){
   const el = $('card-prospetto'); if(!el) return;
-  if(oggiISO() > DATA_ESAME){ el.classList.add('nascosto'); return; }
+  aggiornaDataEsame();
+  if(!cicloFeb() && oggiISO() > DATA_ESAME){ el.classList.add('nascosto'); return; }
   const p = prospettoPiano();
   // chi decide il mix si vede anche qui, e col mix suo c'e' la strada per tornare al piano
-  p.fase = pianoAttivo() ? `Piano · fase ${faseOggi().n} di 3` : 'Mix scelto da te';
+  p.fase = pianoAttivo() ? (cicloFeb() ? `Piano · ${p.fase}` : `Piano · fase ${faseOggi().n} di 3`) : 'Mix scelto da te';
   if(!pianoAttivo()){
     const m = mixScelto();
     p.messaggi.unshift({cls: '', txt: `Stai usando il tuo mix (<b>${m.n}% nuove · ${m.k}% sbagliate · ${m.r}% da riconfermare</b>): i conti qui sotto sono fatti con quello. <a href="#" class="prs-torna" data-torna-piano>Torna al piano</a>`});
@@ -6623,6 +6663,7 @@ function renderProspetto(){
     + p.messaggi.map(m => `<div class="prs-msg ${m.cls}">${m.txt}</div>`).join('');
   const torna = el.querySelector('[data-torna-piano]');
   if(torna) torna.onclick = e => { e.preventDefault(); stato.pianoAuto = true; aggiornaDopoMix(); };
+  collegaDataEsame(el);
 }
 
 function argomentiSelezionati(){
@@ -6858,6 +6899,256 @@ function componiComeEsame(){
   return shuffle(domande);
 }
 
+// ======================= PIANO DI FEBBRAIO (deciso il 22 novembre) =======================
+// Dall'esame del 19 novembre: le domande non viste da piu' di 14 giorni sono andate al 68%,
+// quelle gia' sbagliate in passato al 52%. Il piano quindi fa DUE giri completi della banca:
+//  1) 30 nov – 22 dic (4 test al giorno), coda 8 – 12 gen: tutta la banca, prima quelle non
+//     viste da piu' tempo, con il 20% di ogni test per riprendere le sbagliate del giro;
+//  2) Natale: 23, 27, 29 dic simulazione; 26, 28, 30 dic ostinate; 24-25 dic e 31 dic – 7 gen pausa;
+//  3) 13 gen – vigilia (5 test al giorno): tutta la banca, prima le sicure (mai sbagliate),
+//     poi le a rischio, per ultime le ostinate, cosi' all'esame le piu' fragili sono le piu'
+//     fresche; nell'ultima settimana le ostinate tornano una seconda volta.
+// La vigilia e' leggera. Il giorno dell'esame si cambia dall'app.
+const C2 = {
+  inizio: '2026-11-30', fineGiro1: '2026-12-22',
+  natale: {'2026-12-23': 'sim', '2026-12-24': 'riposo', '2026-12-25': 'riposo', '2026-12-26': 'ost',
+           '2026-12-27': 'sim', '2026-12-28': 'ost', '2026-12-29': 'sim', '2026-12-30': 'ost'},
+  pausaDal: '2026-12-31', pausaAl: '2027-01-07',
+  codaDal: '2027-01-08', codaAl: '2027-01-12', giro2Dal: '2027-01-13'
+};
+function numIso(iso){ return Math.floor(new Date(iso + 'T00:00:00Z').getTime() / 86400000); }
+function cicloFeb(){ return true; }
+// la fase di un giorno: prima, giro1, natale-sim, natale-ost, riposo, pausa, coda, giro2, vigilia, esame, dopo
+function fase2(iso){
+  iso = iso || oggiISO();
+  const esame = dataEsameVera(), vigilia = isoPiu(esame, -1);
+  if(iso > esame) return 'dopo';
+  if(iso === esame) return 'esame';
+  if(iso === vigilia) return 'vigilia';
+  if(iso < C2.inizio) return 'prima';
+  if(iso <= C2.fineGiro1) return eGiornoRiposo(iso) ? 'riposo' : 'giro1';
+  if(C2.natale[iso]) return C2.natale[iso] === 'riposo' ? 'riposo' : 'natale-' + C2.natale[iso];
+  if(iso >= C2.pausaDal && iso <= C2.pausaAl) return 'pausa';
+  if(iso >= C2.codaDal && iso <= C2.codaAl) return eGiornoRiposo(iso) ? 'riposo' : 'coda';
+  if(iso >= C2.giro2Dal) return eGiornoRiposo(iso) ? 'riposo' : 'giro2';
+  return 'pausa';
+}
+const NOMI_FASE2 = {prima: 'In attesa del piano', giro1: '1° giro completo', coda: 'Fine del 1° giro',
+  'natale-sim': 'Natale · simulazione', 'natale-ost': 'Natale · ostinate', riposo: 'Riposo', pausa: 'Pausa',
+  giro2: '2° giro completo', vigilia: 'Vigilia: giornata leggera', esame: 'Giorno dell\'esame', dopo: 'Esame fatto'};
+// i blocchi del piano, per il prospetto
+function blocchiPiano2(){
+  const esame = dataEsameVera();
+  return [
+    {id: 'giro1', nome: '1° giro completo', dal: C2.inizio, al: C2.fineGiro1, ritmo: '4 test al giorno'},
+    {id: 'natale', nome: 'Natale', dal: '2026-12-23', al: '2026-12-30', ritmo: '1 test al giorno (non il 24 e il 25)'},
+    {id: 'pausa', nome: 'Pausa', dal: C2.pausaDal, al: C2.pausaAl, ritmo: 'niente'},
+    {id: 'coda', nome: 'Fine del 1° giro', dal: C2.codaDal, al: C2.codaAl, ritmo: '4 test al giorno'},
+    {id: 'giro2', nome: '2° giro completo', dal: C2.giro2Dal, al: isoPiu(esame, -2), ritmo: '5 test al giorno'},
+    {id: 'vigilia', nome: 'Vigilia', dal: isoPiu(esame, -1), al: isoPiu(esame, -1), ritmo: 'leggera'}];
+}
+// categoria di rischio di una domanda: 0 sicura (mai sbagliata), 1 a rischio, 2 ostinata (sbagliata 2+ volte)
+function rischio(q){
+  const r = stato.risultati[q.n]; const e = r ? (r.e || 0) : 0;
+  return e >= 2 ? 2 : e >= 1 ? 1 : 0;
+}
+function vistaDal(q, dalNum){ const r = stato.risultati[q.n]; return !!(r && r.gg !== undefined && r.gg >= dalNum); }
+// le domande ancora da fare in un giro
+function poolGiro(n, materia){
+  const dal = numIso(n === 1 ? C2.inizio : C2.giro2Dal);
+  return QUESTIONS.filter(q => !fuoriBanca(q) && (!materia || q.t === materia) && !vistaDal(q, dal));
+}
+// ostinate gia' viste nel 2° giro da almeno 4 giorni: il secondo passaggio dell'ultima settimana
+function poolOstinateBis(materia){
+  const dal = numIso(C2.giro2Dal), oggi = oggiNum();
+  return QUESTIONS.filter(q => {
+    if(fuoriBanca(q) || (materia && q.t !== materia) || rischio(q) < 2) return false;
+    const r = stato.risultati[q.n];
+    return r && r.gg !== undefined && r.gg >= dal && oggi - r.gg >= 4;
+  });
+}
+function ultimaSettimana(){ return fase2() === 'giro2' && giorniStudio(oggiISO(), isoPiu(dataEsameVera(), -2)).length <= 6; }
+// ordine di un giro: 1° giro, prima le non viste da piu' tempo; 2° giro, prima le sicure, poi
+// a rischio e ostinate insieme (da quelle non viste da piu' tempo): se il tempo stringe non resta
+// fuori un blocco intero di ostinate, e nell'ultima settimana le ostinate tornano comunque.
+function ordinaGiro(arr, n){
+  const gg = q => { const r = stato.risultati[q.n]; return r && r.gg !== undefined ? r.gg : -1; };
+  const a = shuffle(arr.slice());
+  if(n === 1) return a.sort((x, y) => gg(x) - gg(y));
+  return a.sort((x, y) => (Math.min(1, rischio(x)) - Math.min(1, rischio(y))) || (gg(x) - gg(y)));
+}
+// le sbagliate da riprendere dentro il giro: sbagliate di recente e di nuovo proponibili
+function ripresaGiro(n, materia){
+  const dal = numIso(n === 1 ? C2.inizio : C2.giro2Dal);
+  return QUESTIONS.filter(q => { const r = stato.risultati[q.n];
+      return !fuoriBanca(q) && q.t === materia && r && r.s === 'ko' && r.gg !== undefined && r.gg >= dal && proponibile(r); })
+    .sort((a, b) => (stato.risultati[b.n].e || 0) - (stato.risultati[a.n].e || 0) || (Math.random() - .5));
+}
+// un test da 60 del giro, con le quote dell'esame per materia e per punti
+function componiGiro(n){
+  const quotaRip = n === 1 ? 0.15 : (ultimaSettimana() ? 0.2 : 0.08);
+  const domande = [], presi = new Set();
+  const prendi = q => { if(q && !presi.has(q.n)){ presi.add(q.n); domande.push(q); return true; } return false; };
+  STRUTTURA_ESAME.forEach(([a, quota]) => {
+    const vuole = quoteLivello(quota);              // {1: x, 2: y}
+    const rip = (n === 2 && ultimaSettimana()) ? ordinaGiro(poolOstinateBis(a), 2).reverse().concat(ripresaGiro(n, a)) : ripresaGiro(n, a);
+    let nRip = Math.min(Math.round(quota * quotaRip), rip.length);
+    const pres = {1: 0, 2: 0};
+    for(const q of rip){ if(nRip <= 0) break; if(prendi(q)){ pres[livelloQ(q)]++; nRip--; } }
+    const ord = ordinaGiro(poolGiro(n, a), n).filter(q => !presi.has(q.n));
+    [1, 2].forEach(L => {
+      let manca = Math.max(0, vuole[L] - pres[L]);
+      for(const q of ord){ if(manca <= 0) break; if(livelloQ(q) === L && prendi(q)) manca--; }
+    });
+    // se un livello e' finito, si completa la materia con l'altro, poi con le sbagliate, poi a caso
+    let resto = quota - domande.filter(q => q.t === a).length;
+    for(const q of ord){ if(resto <= 0) break; if(prendi(q)) resto--; }
+    for(const q of rip){ if(resto <= 0) break; if(prendi(q)) resto--; }
+    if(resto > 0){
+      const altre = shuffle(QUESTIONS.filter(q => q.t === a && !fuoriBanca(q) && !presi.has(q.n)));
+      for(const q of altre){ if(resto <= 0) break; if(prendi(q)) resto--; }
+    }
+  });
+  return shuffle(domande);
+}
+function componiOstinate(){
+  const pool = poolOstinate();
+  const oggiQ = q => giorniDa(stato.risultati[q.n]) === 0 ? 1 : 0;
+  return shuffle(shuffle(pool.slice()).sort((a, b) => (oggiQ(a) - oggiQ(b)) || ((stato.risultati[b.n].e || 0) - (stato.risultati[a.n].e || 0))).slice(0, N_TEST));
+}
+// il test che il piano propone oggi
+function componiPiano2(){
+  const f = fase2();
+  if(f === 'giro1' || f === 'coda') return poolGiro(1).length ? componiGiro(1) : componiComeEsame();
+  if(f === 'giro2') return componiGiro(2);
+  if(f === 'natale-ost') return componiOstinate();
+  return componiComeEsame();                       // simulazione, pausa, riposo, vigilia
+}
+function pianoFebAttivo(sel){
+  if(!pianoAttivo() || !cicloFeb()) return false;
+  sel = sel || argomentiSelezionati();
+  return STRUTTURA_ESAME.every(([a]) => sel.includes(a)) && !argFiltrati(sel).length;
+}
+// giorni di un giro da oggi in poi (domeniche escluse)
+function giorniGiro(n){
+  const oggi = oggiISO();
+  if(n === 1){
+    const a = giorniStudio(oggi > C2.inizio ? oggi : C2.inizio, C2.fineGiro1);
+    const b = giorniStudio(oggi > C2.codaDal ? oggi : C2.codaDal, C2.codaAl);
+    return a.length + b.length;
+  }
+  return giorniStudio(oggi > C2.giro2Dal ? oggi : C2.giro2Dal, isoPiu(dataEsameVera(), -2)).length;
+}
+// l'obiettivo del giorno, in domande: il resto del giro diviso sui giorni che restano
+function obiettivo2(iso){
+  const f = fase2(iso);
+  if(f === 'natale-sim' || f === 'natale-ost' || f === 'vigilia') return N_TEST;
+  if(f === 'giro1' || f === 'coda'){
+    const resto = poolGiro(1).length, gg = Math.max(1, giorniGiro(1));
+    if(!resto) return 4 * N_TEST;
+    return Math.max(180, Math.min(300, Math.round(resto / 0.85 / gg / 10) * 10));
+  }
+  if(f === 'giro2'){
+    // il secondo passaggio delle ostinate sta dentro la quota di ripasso dell'ultima settimana
+    const resto = poolGiro(2).length, gg = Math.max(1, giorniGiro(2));
+    const quota = ultimaSettimana() ? 0.8 : 0.92;
+    return Math.max(240, Math.min(330, Math.round(resto / quota / gg / 10) * 10));
+  }
+  return 0;
+}
+function cosaOggi2(f){
+  return ({
+    prima: `Il piano di febbraio parte <b>lunedì 30 novembre</b>. Fino ad allora i test sono come l'esame, a caso da tutta la banca.`,
+    giro1: `<b>1° giro completo della banca.</b> Ogni test ha la forma dell'esame: circa 51 domande del giro, partendo da quelle che non vedi da più tempo, e circa 9 sbagliate del giro da riprendere.`,
+    coda: `<b>Fine del 1° giro.</b> Si chiudono le domande del giro rimaste, sempre partendo da quelle che non vedi da più tempo.`,
+    'natale-sim': `<b>Oggi: una simulazione d'esame.</b> Usa il tasto «Simulazione esame», con il timer, come all'esame.`,
+    'natale-ost': `<b>Oggi: un test di ostinate.</b> Usa il tasto «Ostinate da 2 punti».`,
+    riposo: `<b>Oggi riposo.</b> Se fai un test conta lo stesso, ma il piano non chiede niente.`,
+    pausa: `<b>Pausa.</b> Si riparte l'8 gennaio.`,
+    giro2: `<b>2° giro completo della banca.</b> Prima le domande sicure, poi quelle a rischio e le ostinate: così all'esame le più fragili sono le più fresche. Nell'ultima settimana le ostinate tornano una seconda volta.`,
+    vigilia: `<b>Vigilia dell'esame: giornata leggera.</b> Un test o una simulazione al massimo, poi riposo.`,
+    esame: `<b>Oggi è il giorno dell'esame.</b> In bocca al lupo!`,
+    dopo: `L'esame è passato. Aggiorna la data qui sotto se ce n'è uno nuovo.`})[f] || '';
+}
+// "del 4 febbraio", ma "dell'8 febbraio" e "dell'11 febbraio"
+function delEsame(){ return (/^(8|11) /.test(ESAME_BREVE) ? "dell'" : 'del ') + ESAME_BREVE; }
+function campoDataEsame(){
+  return `<label class="c2-data">Data dell'esame <input type="date" id="c2-data" value="${dataEsameVera()}"></label>`;
+}
+function collegaDataEsame(root){
+  const inp = (root || document).querySelector('#c2-data');
+  if(!inp) return;
+  inp.onchange = () => {
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(inp.value) || inp.value < '2027-01-14'){ inp.value = dataEsameVera(); return; }
+    stato.dataEsame = inp.value; aggiornaDataEsame(); stato.piano = null;
+    aggiornaDopoMix(); if(typeof renderCalendario === 'function') renderCalendario();
+  };
+}
+function renderObiettivo2(){
+  aggiornaDataEsame();
+  const f = fase2(), el = $('testo-obiettivo');
+  const g = stato.giorni[oggiISO()];
+  const fatte = g ? (g.ok + g.ko) : 0;
+  const ob = obiettivo2();
+  const alGiorno = ob ? targetOggi(ob) : 0;
+  const fmt = fmtN;
+  const ggEsame = Math.max(0, numIso(dataEsameVera()) - oggiNum());
+  const giro = oggiISO() < C2.giro2Dal ? 1 : 2;
+  const restoGiro = poolGiro(giro).length, totBanca = QUESTIONS.filter(q => !fuoriBanca(q)).length;
+  $('ob-countdown').textContent = `— ${NOMI_FASE2[f]} · esame ${ESAME_GIORNO}${ggEsame ? ` (tra ${ggEsame} giorni)` : ''}`;
+  el.innerHTML =
+    tile('<svg class="ic"><use href="#i-calcolo"/></svg>', 'ico-blu', fmt(restoGiro), `domande ancora da vedere nel ${giro}° giro`,
+         `<div class="kd pari">su ${fmt(totBanca)} della banca ufficiale</div>`) +
+    tile('<svg class="ic"><use href="#i-curva"/></svg>', 'ico-giallo', alGiorno ? fmt(alGiorno) : '—', alGiorno ? 'domande da fare oggi' : 'oggi il piano non chiede niente',
+         `<div class="kd pari">${alGiorno ? `≈ ${Math.max(1, Math.round(alGiorno / N_TEST))} test da ${N_TEST} · si ricalcola ogni giorno` : NOMI_FASE2[f]}</div>`) +
+    tile('<svg class="ic"><use href="#i-bandiera"/></svg>', 'ico-verde', alGiorno ? `${fmt(fatte)}/${fmt(alGiorno)}` : fmt(fatte), 'domande fatte oggi',
+         alGiorno ? (fatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>' : `<div class="kd pari">ne mancano ${fmt(alGiorno - fatte)}</div>`) : '<div class="kd pari">contano lo stesso</div>');
+  if(!alGiorno){
+    $('ob-hero').innerHTML = `<div class="obh-top"><span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> ${NOMI_FASE2[f]}</span>`
+      + `<span class="obh-gg">esame tra ${ggEsame} giorni</span></div><div class="obh-piano">${cosaOggi2(f)}</div>`;
+    return;
+  }
+  const restano = Math.max(0, alGiorno - fatte), fatto = fatte >= alGiorno, pct = Math.min(100, Math.round(100 * fatte / alGiorno));
+  const gg = giorniGiro(giro);
+  const riga = (f === 'giro1' || f === 'coda' || f === 'giro2')
+    ? `<div class="obh-piano">${giro}° giro: restano <b>${fmt(restoGiro)}</b> domande da vedere${gg ? ` in ${gg} giorni di studio` : ''}. ${cosaOggi2(f)}</div>`
+    : `<div class="obh-piano">${cosaOggi2(f)}</div>`;
+  $('ob-hero').innerHTML = `
+    <div class="obh-top">
+      <span class="obh-tit"><svg class="ic"><use href="#i-mirino"/></svg> Obiettivo di oggi<span class="obh-trg">${NOMI_FASE2[f]}</span></span>
+      <span class="obh-gg">esame tra ${ggEsame} giorni</span>
+    </div>
+    <div class="obh-riga">
+      <div class="obh-num"><b>${fmt(fatte)}</b><span>/${fmt(alGiorno)} domande</span></div>
+      <div class="obh-stato ${fatto ? 'ok' : ''}">${fatto ? '✔ obiettivo raggiunto' : `ne mancano <b>${fmt(restano)}</b> · ≈ ${Math.max(1, Math.round(restano / N_TEST))} test`}</div>
+    </div>
+    <div class="obh-bar ${fatto ? 'ok' : ''}"><i style="width:${pct}%"></i></div>
+    ${riga}`;
+}
+function prospetto2(){
+  aggiornaDataEsame();
+  const f = fase2(), oggi = oggiISO();
+  const tot = QUESTIONS.filter(q => !fuoriBanca(q)).length;
+  const r1 = poolGiro(1).length, r2 = poolGiro(2).length;
+  const aRischio = QUESTIONS.filter(q => !fuoriBanca(q) && rischio(q) >= 1).length;
+  const ost = QUESTIONS.filter(q => !fuoriBanca(q) && rischio(q) === 2).length;
+  const blocchi = blocchiPiano2().map(b => {
+    const ora = (b.id === 'natale' && f.startsWith('natale')) || b.id === f || (b.id === 'giro1' && f === 'riposo' && oggi <= C2.fineGiro1 && oggi >= C2.inizio);
+    const fatto = oggi > b.al;
+    return `<li class="${ora ? 'c2-ora' : ''} ${fatto ? 'c2-fatto' : ''}"><b>${b.nome}</b> · ${dataBreve(b.dal)}${b.al !== b.dal ? ' – ' + dataBreve(b.al) : ''} · ${b.ritmo}</li>`;
+  }).join('');
+  return {fase: NOMI_FASE2[f], semaforo: 'ok',
+    titolo: `Piano per l'esame ${delEsame()}`,
+    voci: [
+      {n: fmtN(oggi < C2.giro2Dal ? tot - r1 : tot - r2), t: `viste nel ${oggi < C2.giro2Dal ? '1°' : '2°'} giro su ${fmtN(tot)}`},
+      {n: fmtN(aRischio), t: 'a rischio (sbagliate almeno una volta)'},
+      {n: fmtN(ost), t: 'ostinate (sbagliate 2+ volte)'}],
+    messaggi: [
+      {cls: 'bene', txt: cosaOggi2(f)},
+      {cls: '', txt: `<ol class="c2-blocchi">${blocchi}</ol>`},
+      {cls: '', txt: `Perché due giri: all'esame del 19 novembre le domande non viste da più di 14 giorni sono andate al 68%, quelle viste di recente all'84%. ${campoDataEsame()}`}]};
+}
+
 // Ultimi giorni (deciso il 12 novembre): fra le sbagliate di Matematica passano per prime
 // quelle da 2 punti di Fondi, Titoli obbligazionari e Valutazione delle obbligazioni,
 // che da sole sono quasi meta' delle sbagliate da 2 punti. La forma del test non cambia:
@@ -7038,9 +7329,9 @@ function mixTest(sel, iso){
   sel = sel || argomentiSelezionati();
   const chk = $('chk-solo-errori');
   const soloErr = !!(chk && chk.checked);
-  if(!soloErr && ripassoComeEsame(sel)){
+  if(!soloErr && (pianoFebAttivo(sel) || ripassoComeEsame(sel))){
     // test come l'esame: si mostra una pescata d'esempio, divisa per stato delle domande
-    const D = componiComeEsame();
+    const D = pianoFebAttivo(sel) ? componiPiano2() : componiComeEsame();
     const righe = [], tot = {nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
     STRUTTURA_ESAME.forEach(([a, quota]) => {
       const r = {a, nome: nomeBreve(a), quota, nNew: 0, nRip: 0, nRic: 0, nVin: 0, nSonda: 0, n: 0};
@@ -7411,6 +7702,7 @@ function avviaTest(){
   // da qualunque materia ne abbia ancora, e non bilancia i livelli. Serve a finire
   // la banca dati il prima possibile. Se le nuove non bastano, il resto si riempie
   // come al solito.
+  if(!soloErr && pianoFebAttivo(sel)){ lanciaTest(componiPiano2(), 'Tutti'); return; }
   if(!soloErr && ripassoComeEsame(sel)){ lanciaTest(componiComeEsame(), 'Tutti'); return; }
   let soloNuove = !soloErr && !pianoAttivo() && mixScelto().n === 100;
   // ---------------------------------------------------------------------
@@ -7544,9 +7836,9 @@ function avviaTest(){
 const STRUTTURA_ESAME = [
   ['Diritto mercato finanziario', 24],
   ['Matematica ed economia finanziaria', 19],
-  ['Diritto privato e commerciale', 6],
+  ['Diritto privato e commerciale', 5],          // all'esame del 19 novembre: 5 privato, 6 previdenziale
   ['Diritto tributario', 6],
-  ['Diritto previdenziale e assicurativo', 5],
+  ['Diritto previdenziale e assicurativo', 6],
 ];
 const MINUTI_ESAME = 85;
 
@@ -8153,7 +8445,47 @@ function notaNuoveProssimaFase(){
   const dal = isoPiu(FINE_FASE_MAT, 1);
   return ` (dal ${dataLunga(dal)} salgono a ${Math.round(N_TEST * quotaNuoveGiorno(dal))})`;
 }
+// Calendario del piano di febbraio: per ogni giorno cosa chiede il piano, e sui giorni
+// passati quanto e' stato fatto.
+function renderCalendario2(){
+  const el = $('cal-griglia'); if(!el) return;
+  aggiornaDataEsame();
+  const oggi = oggiNum(), esame = numIso(dataEsameVera());
+  const primo = Math.min(numIso(C2.inizio), oggi);
+  const ETI = {giro1: '1° giro', coda: '1° giro', giro2: '2° giro', 'natale-sim': 'simulaz.', 'natale-ost': 'ostinate',
+               riposo: 'riposo', pausa: 'pausa', vigilia: 'leggera', esame: 'ESAME', prima: '', dopo: ''};
+  const obOggi = obiettivo2();
+  const DOW = ['L','M','M','G','V','S','D'];
+  let html = DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
+  const dow0 = (new Date(primo * 86400000).getUTCDay() + 6) % 7;
+  for(let i = 0; i < dow0; i++) html += '<div class="cal-g vuoto"></div>';
+  let pieni = 0, parz = 0, salt = 0;
+  for(let n = primo; n <= esame; n++){
+    const iso = isoDelGiorno(n), f = fase2(iso), g = stato.giorni[iso];
+    const fatte = g ? (g.ok || 0) + (g.ko || 0) : 0;
+    const studio = ['giro1', 'coda', 'giro2', 'natale-sim', 'natale-ost', 'vigilia'].includes(f);
+    const previsto = !studio ? 0 : (f === 'giro1' || f === 'coda') ? ((fase2() === 'giro1' || fase2() === 'coda') ? obOggi : 4 * N_TEST)
+      : f === 'giro2' ? (fase2() === 'giro2' ? obOggi : 5 * N_TEST) : N_TEST;
+    let stt, val, sotto;
+    if(n === oggi){ stt = 'oggi'; val = previsto ? fmtN(previsto) : '—'; sotto = `fatte ${fmtN(fatte)}`; }
+    else if(n > oggi){ stt = studio ? 'futuro' : (f === 'esame' ? 'finale' : 'riposo'); val = previsto ? fmtN(previsto) : (f === 'esame' ? '★' : '—'); sotto = ETI[f] || ''; }
+    else if(!studio){ stt = fatte ? 'fatto' : 'riposo'; val = fatte ? fmtN(fatte) : '—'; sotto = ETI[f] || ''; }
+    else if(!fatte){ stt = 'saltato'; val = '0'; sotto = 'niente'; if(n >= numIso(C2.inizio)) salt++; }
+    else { stt = fatte >= previsto * 0.85 ? 'fatto' : 'parziale'; val = fmtN(fatte); sotto = `${Math.max(1, Math.round(fatte / N_TEST))} test`;
+           if(n >= numIso(C2.inizio)){ if(stt === 'fatto') pieni++; else parz++; } }
+    html += `<div class="cal-g ${stt}" title="${iso} · ${NOMI_FASE2[f]}"><div class="cal-n">${new Date(n * 86400000).getUTCDate()}</div><div class="cal-v">${val}</div><div class="cal-s">${sotto}</div></div>`;
+  }
+  el.innerHTML = html;
+  $('cal-intro').innerHTML = `Il calendario del piano per l'esame <b>${delEsame()}</b>. Sui giorni futuri c'è quante domande chiede il piano, sui giorni passati quante ne hai fatte. `
+    + `Se un giorno fai meno, il resto del giro si ridistribuisce sui giorni rimasti.`;
+  const r1 = poolGiro(1).length, r2 = poolGiro(2).length;
+  $('cal-riass').innerHTML = (oggiISO() < C2.giro2Dal
+      ? `1° giro: restano <b>${fmtN(r1)}</b> domande da vedere entro il ${dataLunga(C2.codaAl)} (${giorniGiro(1)} giorni di studio).`
+      : `2° giro: restano <b>${fmtN(r2)}</b> domande da vedere entro il ${dataLunga(isoPiu(dataEsameVera(), -2))} (${giorniGiro(2)} giorni di studio).`)
+    + `<br>Dal 30 novembre: <b>${pieni}</b> ${pieni === 1 ? 'giornata piena' : 'giornate piene'}, <b>${parz}</b> a mezzo servizio, <b>${salt}</b> saltate.`;
+}
 function renderCalendario(){
+  if(cicloFeb()) return renderCalendario2();
   const el = $('cal-griglia'); if(!el) return;
   const C = calendarioPiano(), P = C.piano;
   const DOW = ['L','M','M','G','V','S','D'];
@@ -8720,7 +9052,7 @@ ARGOMENTI.forEach(a => {
   o.value = a; o.textContent = a;
   $('cerca-arg').appendChild(o);
 });
-$('btn-sim').onclick = () => conferma(`Avviare la simulazione d'esame? Come la prova vera: 60 domande (24 mercato + 19 matematica + 6 privato + 6 tributario + 5 previdenziale) estratte dalla banca dati ufficiale: 20 valgono 1 punto e 40 ne valgono 2, per 100 punti in tutto. ${MINUTI_ESAME} minuti di tempo, correzione solo alla fine, si passa con ${SOGLIA_PUNTI} punti.`, avviaSimulazione);
+$('btn-sim').onclick = () => conferma(`Avviare la simulazione d'esame? Come la prova vera: 60 domande (24 mercato + 19 matematica + 5 privato + 6 tributario + 6 previdenziale) estratte dalla banca dati ufficiale: 20 valgono 1 punto e 40 ne valgono 2, per 100 punti in tutto. ${MINUTI_ESAME} minuti di tempo, correzione solo alla fine, si passa con ${SOGLIA_PUNTI} punti.`, avviaSimulazione);
 $('btn-pro').onclick = avviaPro;
 $('btn-ost').onclick = avviaOstinate;
 try { aggiornaOstinate(); setInterval(aggiornaOstinate, 5000); } catch(e) {}
