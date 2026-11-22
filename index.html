@@ -135,7 +135,7 @@ h2.campo-tit{margin:0;}
 .pt-tabs button[aria-pressed="true"]{background:var(--azione); color:var(--su-accento);}
 .pt-tabs button{white-space:nowrap;}
 @media(max-width:640px){ .kl-tab .pt-tabs{width:100%; margin-top:6px;} .kl-tab .pt-tabs button{flex:1; padding:4px 4px;} }
-.bdc-sw{display:flex; justify-content:center; margin-bottom:12px;}
+.bdc-sw{display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
 .bdc-sw button[aria-pressed="true"]{background:var(--azione); color:var(--su-accento);}
 .bdc-gr{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px;}
 @media(max-width:640px){ .bdc-gr{grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px;} }
@@ -246,9 +246,38 @@ h2.campo-tit{margin:0;}
 .sto-det th small{font-weight:500; font-size:.68rem;}
 .sto-det td{padding:5px 6px; text-align:right; border-bottom:1px solid var(--filo); color:var(--testo);}
 .sto-det td .g{color:var(--vidimato-t); font-weight:700;} .sto-det td .r{color:var(--lacca-t); font-weight:700;}
-.sto-det td.pt{font-weight:700;}
+.sto-det td{vertical-align:middle;}
+.sto-det td:first-child{font-weight:700;}
+.sd-r{display:block; font-weight:800;}
+.sd-p{display:block; font-size:.72rem; font-weight:700;}
+.sd-ok{color:var(--vidimato-t);} .sd-mid{color:var(--ottone-t);} .sd-ko{color:var(--lacca-t);}
+.sd-nd{color:var(--nebbia);}
+.sd-b{display:block; height:5px; border-radius:3px; background:rgba(var(--velo),.08); margin:3px 0 0 auto; max-width:90px; overflow:hidden;}
+.sd-b i{display:block; height:100%; border-radius:3px;}
 .sto-det tr.tt td{font-weight:800; border-bottom:0; background:rgba(var(--velo),.04);}
 .sto-nd{font-size:.75rem; color:var(--nebbia); margin:0 0 10px; line-height:1.45;}
+.cm-per{font-size:.75rem; color:var(--nebbia); margin:0 0 4px;}
+#card-come .bd-tabs button{padding:5px 10px;}
+.cm-big{display:flex; align-items:center; gap:14px; margin:4px 0 8px; color:var(--testo);}
+.cm-anello{flex:none;}
+.cm-big-t{font-size:.88rem; line-height:1.45; color:var(--nebbia);}
+.cm-big-t b{display:block; font-size:1.02rem; color:var(--testo);}
+.cm-cmp{width:100%; border-collapse:collapse; font-size:.86rem; font-variant-numeric:tabular-nums;}
+.cm-cmp th{font-size:.72rem; color:var(--nebbia); font-weight:700; text-align:right; padding:0 6px 6px; border-bottom:1px solid var(--bordo);}
+.cm-cmp th:first-child, .cm-cmp td:first-child{text-align:left;}
+.cm-cmp td{padding:7px 6px; text-align:right; border-bottom:1px solid var(--filo); color:var(--testo);}
+.cm-cmp td.su{color:var(--vidimato-t); font-weight:800;} .cm-cmp td.giu{color:var(--lacca-t); font-weight:800;}
+.cm-cmp td:last-child{white-space:nowrap; width:1%;}
+.cm-nota{font-size:.8rem; color:var(--nebbia); margin:10px 0 0;} .cm-nota b{color:var(--testo);}
+.cm-r{display:grid; grid-template-columns:12px 1fr auto; gap:12px; align-items:center; padding:10px 0; border-top:1px solid var(--filo);}
+.cm-r:first-child{border-top:0; padding-top:2px;}
+.cm-dot{width:12px; height:12px; border-radius:50%;}
+.cm-ok{background:var(--vidimato);} .cm-mid{background:var(--ottone-pieno);} .cm-ko{background:var(--lacca);} .cm-nd{background:var(--nuova);}
+.cm-t{font-weight:700; font-size:.92rem; color:var(--testo); min-width:0;}
+.cm-t small{display:block; font-weight:500; font-size:.8rem; color:var(--nebbia); line-height:1.45; margin-top:2px;}
+.cm-v{font-family:var(--f-display); font-weight:800; font-size:1.1rem; text-align:right; color:var(--testo); white-space:nowrap; font-variant-numeric:tabular-nums;}
+.cm-v small{display:block; font-family:var(--f-testo); font-size:.72rem; font-weight:600; color:var(--nebbia);}
+.cm-oggi{margin-top:8px; padding:10px 12px; border-radius:12px; background:var(--vidibg); font-size:.86rem; line-height:1.45; color:var(--testo);}
 .sto-leg{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:.75rem; color:var(--nebbia); margin-top:8px;}
 .sto-leg span{display:inline-flex; align-items:center; gap:6px;}
 .sto-vuoto{font-size:.86rem; color:var(--nebbia); padding:10px 0;}
@@ -2172,6 +2201,19 @@ b.dubbia{color:var(--ottone-t);}
       </div>
       <div id="bd-tot" role="tabpanel" aria-labelledby="bd-t-tot"></div>
       <div id="bd-arg" role="tabpanel" aria-labelledby="bd-t-arg" hidden></div>
+    </section>
+
+    <!-- 0b · COME STA ANDANDO -->
+    <section class="card" id="card-come" aria-labelledby="cm-tit">
+      <div class="bd-testa"><h2 id="cm-tit">Come sta andando</h2>
+        <div class="bd-tabs" role="tablist" aria-label="Periodo">
+          <button type="button" role="tab" id="cm-t-oggi" aria-controls="cm-oggi" aria-selected="true">Oggi</button>
+          <button type="button" role="tab" id="cm-t-sett" aria-controls="cm-sett" aria-selected="false" tabindex="-1">Settimana</button>
+          <button type="button" role="tab" id="cm-t-cfr" aria-controls="cm-cfr" aria-selected="false" tabindex="-1">Vs scorsa</button>
+        </div></div>
+      <div id="cm-oggi" role="tabpanel" aria-labelledby="cm-t-oggi"></div>
+      <div id="cm-sett" role="tabpanel" aria-labelledby="cm-t-sett" hidden></div>
+      <div id="cm-cfr" role="tabpanel" aria-labelledby="cm-t-cfr" hidden></div>
     </section>
 
     <!-- 1 · AZIONE: allenati -->
@@ -4687,7 +4729,7 @@ function renderHome(){
   renderOggi();
   renderObiettivo();
   renderProspetto();
-  renderPiano(); renderCalendario(); renderDove(); renderStoricoHome();
+  renderPiano(); renderCalendario(); renderDove(); renderStoricoHome(); renderCome();
   applicaFase();
   renderStato();
   renderAndamento();
@@ -5758,23 +5800,40 @@ function renderCampo(){
   const arg = $('bd-arg');
   if(arg){
     const pt = bdArgVista === 'pt';
+    const L = pt && bdPtVista !== 'tutti' ? +bdPtVista : 0;     // 0 = tutti i punti, 2 o 1 = un solo livello
     const cella = (nome, sotto, o, tot) => {
-      const lab = pt ? `${nome}: ${o.pOk} punti superati su ${o.pTot}` : `${nome}: ${o.salda} domande consolidate su ${o.n}`;
-      const k = pt
-        ? `${fmt(o.pOk)}/${fmt(o.pTot)} punti superati<br>da superare: <b>${fmt(o.d2)}</b> da 2 · <b>${fmt(o.d1)}</b> da 1`
-        : `${fmt(o.salda)}/${fmt(o.n)} già tue<br><b>${fmt(o.aperta)}</b> da recuperare${o.attesa ? ` · ${fmt(o.attesa)} da riconf.` : ''}`;
+      let seg, perc, lab, k;
+      if(!pt){
+        seg = SEG_DOM(o); perc = pc(o.salda, o.n); lab = `${nome}: ${o.salda} domande consolidate su ${o.n}`;
+        k = `${fmt(o.salda)}/${fmt(o.n)} già tue<br><b>${fmt(o.aperta)}</b> da recuperare${o.attesa ? ` · ${fmt(o.attesa)} da riconf.` : ''}`;
+      } else if(!L){
+        seg = SEG_PT(o); perc = pc(o.pOk, o.pTot); lab = `${nome}: ${o.pOk} punti superati su ${o.pTot}`;
+        k = `${fmt(o.pOk)}/${fmt(o.pTot)} punti superati<br>da superare: <b>${fmt(o.d2)}</b> da 2 · <b>${fmt(o.d1)}</b> da 1`;
+      } else {
+        const s = L === 2 ? o.s2 : o.s1, d = L === 2 ? o.d2 : o.d1;
+        seg = [[s, L === 2 ? 'var(--vidimato)' : 'var(--salda2)'], [d, L === 2 ? 'var(--lacca)' : 'var(--aperta2)']];
+        perc = pc(s, s + d); lab = `${nome}: ${s} domande da ${L} superate su ${s + d}`;
+        k = `${fmt(s)}/${fmt(s + d)} superate<br><b>${fmt(d)}</b> da superare${L === 2 ? ` · ${fmt(2 * d)} punti` : ''}`;
+      }
       return `<div class="bdc${tot ? ' tot' : ''}"><div class="nm">${nome}</div><div class="es">${sotto}</div>
-        <div class="tor">${torta(pt ? SEG_PT(o) : SEG_DOM(o), 92, (pt ? pc(o.pOk, o.pTot) : pc(o.salda, o.n)) + '%', '', lab)}</div>
+        <div class="tor">${torta(seg, 92, perc + '%', '', lab)}</div>
         <div class="k">${k}</div></div>`;
     };
-    const leg = pt
+    const leg = L
+      ? `<span><i class="stato-p" style="background:${L === 2 ? 'var(--vidimato)' : 'var(--salda2)'}"></i>superate da ${L}</span><span><i class="stato-p" style="background:${L === 2 ? 'var(--lacca)' : 'var(--aperta2)'}"></i>da superare da ${L}</span>`
+      : pt
       ? `<span><i class="stato-p" style="background:var(--vidimato)"></i>superati da 2</span><span><i class="stato-p" style="background:var(--salda2)"></i>superati da 1</span><span><i class="stato-p" style="background:var(--lacca)"></i>da superare da 2</span><span><i class="stato-p" style="background:var(--aperta2)"></i>da superare da 1</span>`
       : `<span><i class="stato-p sp-salda"></i>consolidate</span><span><i class="stato-p sp-attesa"></i>da riconfermare</span><span><i class="stato-p sp-aperta"></i>da recuperare</span>${T.nuova ? '<span><i class="stato-p sp-nuova"></i>mai viste</span>' : ''}`;
     arg.innerHTML = `<div class="bdc-sw"><div class="bd-tabs" role="group" aria-label="Cosa guardare">
-        <button type="button" data-bdv="dom" aria-pressed="${!pt}">Domande</button><button type="button" data-bdv="pt" aria-pressed="${pt}">Punti</button></div></div>
+        <button type="button" data-bdv="dom" aria-pressed="${!pt}">Domande</button><button type="button" data-bdv="pt" aria-pressed="${pt}">Punti</button></div>
+        ${pt ? `<span class="pt-tabs" role="group" aria-label="Quali punti">${[['tutti', 'Tutti'], ['2', 'Da 2'], ['1', 'Da 1']].map(([v, l]) => `<button type="button" data-ptv="${v}" aria-pressed="${bdPtVista === v}">${l}</button>`).join('')}</span>` : ''}</div>
       <div class="bdc-gr">${STRUTTURA_ESAME.map(([m, nEsame]) => cella(nomeBreve(m), `${nEsame} all'esame`, contaLivelli(B.filter(q => q.t === m)))).join('')}
         ${cella('Totale', `${STRUTTURA_ESAME.reduce((a, [, n]) => a + n, 0)} all'esame`, T, true)}</div>
       <div class="bdc-leg">${leg}</div>`;
+    arg.querySelectorAll('[data-ptv]').forEach(b => b.onclick = () => {
+      bdPtVista = b.dataset.ptv; try{ localStorage.setItem('ocf_bd_ptv', bdPtVista); }catch(e){}
+      renderCampo();
+    });
     arg.querySelectorAll('[data-bdv]').forEach(b => b.onclick = () => {
       bdArgVista = b.dataset.bdv; try{ localStorage.setItem('ocf_bd_argv', bdArgVista); }catch(e){}
       renderCampo();
@@ -5881,21 +5940,123 @@ function renderDove(){
 
 // il dettaglio di un test: per materia, giuste e sbagliate da 2 e da 1 punto
 function dettaglioTest(h){
-  const fmt = fmtN, M = h.mat || {};
+  const M = h.mat || {};
   const conLiv = Object.values(M).some(a => a && (a.ok2 !== undefined || a.ok1 !== undefined || a.ko2 !== undefined || a.ko1 !== undefined));
   const ord = STRUTTURA_ESAME.map(([m]) => ARGOMENTI.indexOf(m)).filter(i => i >= 0 && M[i]);
   Object.keys(M).forEach(k => { if(!ord.includes(+k)) ord.push(+k); });
   if(!ord.length) return '<p class="sto-nd">Per questo test non c\'è il dettaglio per materia.</p>';
-  const c = (ok, ko) => `<span class="g">${fmt(ok || 0)}</span> / <span class="r">${fmt(ko || 0)}</span>`;
-  const tot = {ok2:0, ko2:0, ok1:0, ko1:0, ok:0, ko:0};
-  const righe = ord.map(i => { const a = M[i];
-    Object.keys(tot).forEach(k => tot[k] += a[k] || 0);
-    const pt = conLiv ? 2 * (a.ok2 || 0) + (a.ok1 || 0) : null, ptMax = conLiv ? 2 * ((a.ok2 || 0) + (a.ko2 || 0)) + (a.ok1 || 0) + (a.ko1 || 0) : null;
-    return `<tr><td>${nomeBreve(ARGOMENTI[i] || '')}</td>${conLiv ? `<td>${c(a.ok2, a.ko2)}</td><td>${c(a.ok1, a.ko1)}</td><td class="pt">${pt}/${ptMax}</td>` : `<td>${c(a.ok, a.ko)}</td>`}</tr>`; }).join('');
-  const tt = conLiv ? `<tr class="tt"><td>Totale</td><td>${c(tot.ok2, tot.ko2)}</td><td>${c(tot.ok1, tot.ko1)}</td><td class="pt">${2 * tot.ok2 + tot.ok1}/${2 * (tot.ok2 + tot.ko2) + tot.ok1 + tot.ko1}</td></tr>`
-                    : `<tr class="tt"><td>Totale</td><td>${c(tot.ok, tot.ko)}</td></tr>`;
-  return `<table class="sto-det"><thead><tr><th>Materia</th>${conLiv ? '<th>Da 2 punti<br><small>giuste / sbagliate</small></th><th>Da 1 punto<br><small>giuste / sbagliate</small></th><th>Punti</th>' : '<th>Giuste / sbagliate</th>'}</tr></thead><tbody>${righe}${tt}</tbody></table>`
-    + (conLiv ? '' : '<p class="sto-nd">La divisione tra domande da 1 e da 2 punti c\'è per i test fatti da oggi in poi: per quelli vecchi l\'app non l\'aveva salvata.</p>');
+  // giuste su totale, con la percentuale nel colore del semaforo; la barretta solo nella colonna del totale
+  const sem = p => p >= 80 ? 'ok' : p >= 70 ? 'mid' : 'ko';
+  const cella = (ok, tot, barra) => {
+    if(!tot) return '<span class="sd-nd">—</span>';
+    const p = Math.round(100 * ok / tot);
+    return `<span class="sd-r">${ok}/${tot}</span><span class="sd-p sd-${sem(p)}">${p}%</span>${barra ? `<span class="sd-b"><i class="sem-${sem(p)}" style="width:${p}%"></i></span>` : ''}`;
+  };
+  const tot = {ok:0, ko:0, ok2:0, ko2:0, ok1:0, ko1:0};
+  const riga = (nome, a, cls) => `<tr${cls ? ` class="${cls}"` : ''}><td>${nome}</td>
+      <td>${cella(a.ok || 0, (a.ok || 0) + (a.ko || 0), true)}</td>
+      <td>${conLiv ? cella(a.ok2 || 0, (a.ok2 || 0) + (a.ko2 || 0)) : '<span class="sd-nd">—</span>'}</td>
+      <td>${conLiv ? cella(a.ok1 || 0, (a.ok1 || 0) + (a.ko1 || 0)) : '<span class="sd-nd">—</span>'}</td></tr>`;
+  const righe = ord.map(i => { const a = M[i]; Object.keys(tot).forEach(k => tot[k] += a[k] || 0); return riga(nomeBreve(ARGOMENTI[i] || ''), a); }).join('');
+  return `<table class="sto-det"><thead><tr><th>Materia</th><th>Totale</th><th>Da 2 punti</th><th>Da 1 punto</th></tr></thead>
+    <tbody>${righe}${riga('Totale', tot, 'tt')}</tbody></table>`
+    + (conLiv ? '' : '<p class="sto-nd">La divisione tra domande da 1 e da 2 punti c\'è per i test fatti dalla versione 85 in poi: per quelli vecchi l\'app non l\'aveva salvata.</p>');
+}
+// ---------- come sta andando: ritmo, punteggio, recupero (ultimi 7 giorni) ----------
+// i numeri di un periodo: giorni da aN a daN fa (0 = oggi)
+function numeriPeriodo(daN, aN){
+  const o = {fatte: 0, fattePiano: 0, prev: 0, rec: 0, met: 0, test: [], w: sommaFinestra(daN, aN)};
+  for(let n = aN; n <= daN; n++){
+    const iso = isoMeno(n), g = stato.giorni[iso], pv = previstoGiorno(iso), ft = g ? (g.ok || 0) + (g.ko || 0) : 0;
+    o.fatte += ft; if(pv){ o.prev += pv; o.fattePiano += ft; }
+    if(g){ o.rec += g.rec || 0; o.met += g.met || 0; }
+  }
+  const da = isoMeno(daN), a = isoMeno(aN);
+  o.test = stato.storico.map((h, i) => ({h, P: puntiStorico(h, i)}))
+    .filter(v => v.h.tot >= 20 && v.h.iso && v.h.iso >= da && v.h.iso <= a).map(v => su100(v.P.pt, v.P.ptMax));
+  o.media = o.test.length ? Math.round(o.test.reduce((s, x) => s + x, 0) / o.test.length) : null;
+  o.ritmo = o.prev ? Math.round(100 * o.fattePiano / o.prev) : null;
+  o.pct = pctOkKo(totaleDi(o.w, null));
+  o.deb = ARGOMENTI.map((a, i) => ({a, i, p: pctOkKo(totaleDi(o.w, i))})).filter(x => x.p !== null).sort((x, y) => x.p - y.p)[0] || null;
+  return o;
+}
+let cmVista = 'oggi';
+try{ const v = localStorage.getItem('ocf_cm_vista'); if(['oggi', 'sett', 'cfr'].includes(v)) cmVista = v; }catch(e){}
+function renderCome(){
+  if(!$('cm-oggi')) return;
+  const fmt = fmtN, oggi = oggiISO(), f = fase2();
+  const col = p => p === null ? 'nd' : p >= 80 ? 'ok' : p >= 70 ? 'mid' : 'ko';
+  const riga = (c, tit, txt, val, sub, subCls) => `<div class="cm-r"><span class="cm-dot cm-${c}" aria-hidden="true"></span>
+      <span class="cm-t">${tit}<small>${txt}</small></span><span class="cm-v">${val}<small class="${subCls || ''}">${sub}</small></span></div>`;
+  const frecce = d => d === null || d === undefined ? '' : d > 0 ? `▲ +${fmt(d)}` : d < 0 ? `▼ −${fmt(-d)}` : '= 0';
+  const clsD = d => d > 0 ? 'su' : d < 0 ? 'giu' : '';
+  // per oggi
+  const pOggi = previstoGiorno(oggi), gO = stato.giorni[oggi], fO = gO ? (gO.ok || 0) + (gO.ko || 0) : 0, resto = Math.max(0, pOggi - fO);
+  const perOggi = ({'natale-sim': 'fai la simulazione d\'esame, con il timer.', 'natale-ost': 'un test di ostinate da 2 punti.',
+    vigilia: 'giornata leggera: un test al massimo, poi riposo.', esame: 'in bocca al lupo!', pausa: 'pausa, si riparte l\'8 gennaio.',
+    riposo: 'riposo. Se fai un test conta lo stesso.', prima: 'test liberi, il piano parte lunedì 30 novembre.'})[f]
+    || (pOggi ? (resto ? `segui il piano. Ancora ${fmt(resto)} domande, circa ${Math.ceil(resto / N_TEST)} test.` : 'il piano di oggi è fatto. Brava!') : 'segui il piano.');
+  const boxOggi = `<div class="cm-oggi"><b>Per oggi:</b> ${perOggi}</div>`;
+
+  // ---- OGGI
+  const O = numeriPeriodo(0, 0);
+  const oCol = !pOggi ? (fO ? 'ok' : 'nd') : fO >= pOggi * 0.95 ? 'ok' : fO ? 'mid' : 'nd';
+  $('cm-oggi').innerHTML =
+      riga(oCol, 'Piano di oggi', pOggi ? (fO >= pOggi * 0.95 ? `${fmt(fO)} domande: il piano di oggi è fatto.` : fO ? `${fmt(fO)} domande su ${fmt(pOggi)}: ne mancano ${fmt(resto)}.` : `${fmt(pOggi)} domande da fare, circa ${Math.ceil(pOggi / N_TEST)} test.`)
+                                              : (fO ? `${fmt(fO)} domande fatte.` : 'Oggi il piano non chiede domande.'),
+           pOggi ? Math.min(999, Math.round(100 * fO / pOggi)) + '%' : fmt(fO), pOggi ? 'del piano' : 'domande')
+    + riga(col(O.media), 'Test di oggi', O.media === null ? 'Ancora nessun test da almeno 20 domande oggi.'
+           : `${O.test.length} ${O.test.length === 1 ? 'test' : 'test'}, media ${O.media} su 100.${O.deb && O.deb.p < 80 ? ` Da curare: ${nomeBreve(O.deb.a)} (${O.deb.p}% giuste).` : ''}`,
+           O.media === null ? '—' : O.media, 'su 100')
+    + riga(O.rec ? 'ok' : 'nd', 'Sbagliate recuperate', O.rec || O.met ? `Oggi ne hai chiuse ${fmt(O.rec)}${O.met ? `, e ${fmt(O.met)} sono a metà strada` : ''}.` : 'Nessuna chiusa per ora: arrivano con i test.',
+           '+' + fmt(O.rec), 'chiuse')
+    + boxOggi;
+
+  // ---- SETTIMANA (ultimi 7 giorni; il ritmo non conta oggi, che e' ancora in corso)
+  // la settimana sono i 7 giorni completi prima di oggi: oggi ha la sua scheda, e un giorno a meta' falserebbe il confronto
+  const S = numeriPeriodo(7, 1), R = S, P = numeriPeriodo(14, 8), RP = P;
+  const rit = R.ritmo, rCol = rit === null ? 'ok' : rit >= 90 ? 'ok' : rit >= 70 ? 'mid' : 'ko';
+  const rTxt = rit === null
+    ? (f === 'prima' ? `${fmt(R.fatte)} domande fatte. Il piano parte lunedì 30 novembre.` : `${fmt(R.fatte)} domande fatte: in questi giorni il piano non chiedeva niente.`)
+    : `${fmt(R.fattePiano)} domande su ${fmt(R.prev)} previste${rit >= 90 ? ': sei in linea con il piano.' : rit >= 70 ? ': quasi in linea, il resto si recupera nei prossimi giorni.' : ': il piano ridistribuisce il resto sui giorni che mancano.'}`;
+  const dM = S.media !== null && P.media !== null ? S.media - P.media : null;
+  const pTxt = S.media === null ? 'Nessun test da almeno 20 domande negli ultimi 7 giorni.'
+    : (S.media >= 80 ? `Media ${S.media}, sopra la soglia dell'80.` : S.media >= 75 ? `Media ${S.media}, a un passo dall'80.` : `Media ${S.media}: mancano ${80 - S.media} punti all'80.`)
+      + (S.deb && S.deb.p < 80 ? ` Da curare: ${nomeBreve(S.deb.a)} (${S.deb.p}% giuste).` : '');
+  const sCol = !S.rec && !P.rec ? 'nd' : S.rec >= P.rec * 0.9 ? 'ok' : S.rec >= P.rec * 0.6 ? 'mid' : 'ko';
+  $('cm-sett').innerHTML = `<p class="cm-per">Ultimi 7 giorni, oggi escluso</p>`
+    + riga(rCol, 'Ritmo del piano', rTxt, rit === null ? fmt(R.fatte) : rit + '%', rit === null ? 'domande' : 'del piano')
+    + riga(col(S.media), 'Punteggio nei test', pTxt, S.media === null ? '—' : S.media, 'su 100')
+    + riga(sCol, 'Sbagliate recuperate', !S.rec && !S.met ? 'Ancora nessuna sbagliata chiusa in questi giorni.' : `Ne hai chiuse ${fmt(S.rec)}${S.met ? `, e ${fmt(S.met)} sono a metà strada` : ''}.`, '+' + fmt(S.rec), 'chiuse')
+    + boxOggi;
+
+  // ---- CONFRONTO con i 7 giorni prima
+  const cr = (nome, a, b, suff) => {
+    const d = a !== null && b !== null ? a - b : null;
+    return `<tr><td>${nome}</td><td>${b === null ? '—' : fmt(b) + (suff || '')}</td><td><b>${a === null ? '—' : fmt(a) + (suff || '')}</b></td><td class="${clsD(d)}">${frecce(d)}</td></tr>`;
+  };
+  const media = S.media;
+  const anello = media === null ? '' : `<svg class="cm-anello" width="80" height="80" viewBox="0 0 80 80" role="img" aria-label="Media dei test ${media} su 100">
+      <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(var(--velo),.08)" stroke-width="10"/>
+      <circle cx="40" cy="40" r="33" fill="none" stroke="${media >= 80 ? 'var(--vidimato)' : media >= 70 ? 'var(--ottone-pieno)' : 'var(--lacca)'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${(2 * Math.PI * 33 * Math.min(100, media) / 100).toFixed(1)} 999" transform="rotate(-90 40 40)"/>
+      <line x1="40" y1="2" x2="40" y2="13" stroke="currentColor" stroke-width="2" opacity=".5" transform="rotate(288 40 40)"/>
+      <text x="40" y="46" text-anchor="middle" font-size="20" font-weight="800" fill="currentColor" font-family="var(--f-display)">${media}</text></svg>`;
+  const titolo = dM === null ? (media === null ? 'Ancora pochi dati.' : 'Prima settimana di confronto.') : dM > 0 ? 'In crescita.' : dM < 0 ? 'Un po\' sotto la settimana prima.' : 'Stabile.';
+  const frase = media === null ? 'Servono test da almeno 20 domande per confrontare le settimane.'
+    : `Media dei test ${media} su 100${dM ? `: ${Math.abs(dM)} punt${Math.abs(dM) === 1 ? 'o' : 'i'} ${dM > 0 ? 'in più' : 'in meno'} della settimana prima` : ''}.${dM < 0 ? ' Capita: conta la tendenza su più settimane.' : ''}`;
+  const debCfr = S.deb ? {a: S.deb.a, i: S.deb.i, ora: S.deb.p, prima: pctOkKo(totaleDi(P.w, S.deb.i))} : null;
+  $('cm-cfr').innerHTML = `<p class="cm-per">Ultimi 7 giorni (oggi escluso) contro i 7 prima</p>
+    <div class="cm-big">${anello}<div class="cm-big-t"><b>${titolo}</b>${frase}</div></div>
+    <table class="cm-cmp"><thead><tr><th></th><th>prima</th><th>ora</th><th></th></tr></thead><tbody>
+      ${cr('Media test', S.media, P.media)}
+      ${cr('Domande fatte', S.fatte, P.fatte)}
+      ${R.ritmo !== null || RP.ritmo !== null ? cr('Piano rispettato', R.ritmo, RP.ritmo, '%') : ''}
+      ${cr('Sbagliate chiuse', S.rec, P.rec)}
+      ${cr('% giuste', S.pct, P.pct, '%')}
+      ${debCfr ? cr(nomeBreve(debCfr.a), debCfr.ora, debCfr.prima, '%') : ''}
+    </tbody></table>
+    ${debCfr && debCfr.ora < 80 ? `<p class="cm-nota">La materia da guardare: <b>${nomeBreve(debCfr.a)}</b>, al ${debCfr.ora}% di giuste.</p>` : ''}`;
+  mostraTab('cm', cmVista);
 }
 // ---------- storico dei test, in grafico ----------
 let stoVista = 'ult';
@@ -5938,7 +6099,8 @@ let campoTimer = null;
 (function(){
   const coppie = [['bd', ['tot', 'arg'], v => mostraBd(v)],
                   ['pi', ['sett', 'tutto'], v => { piVista = v; mostraTab('pi', v, 'ocf_pi_vista'); }],
-                  ['sto', ['ult', '30'], v => { stoVista = v; renderStoricoHome(); }]];
+                  ['sto', ['ult', '30'], v => { stoVista = v; renderStoricoHome(); }],
+                  ['cm', ['oggi', 'sett', 'cfr'], v => { cmVista = v; mostraTab('cm', v, 'ocf_cm_vista'); }]];
   coppie.forEach(([pref, ks, fai]) => ks.forEach((k, i) => {
     const b = $(pref + '-t-' + k); if(!b) return;
     b.onclick = () => fai(k);
