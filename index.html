@@ -165,15 +165,20 @@ h2.campo-tit{margin:0;}
 .ps-sett{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:6px; align-items:end;}
 .ps-g{display:flex; flex-direction:column; align-items:center; gap:4px; min-width:0;}
 .ps-col{width:100%; height:88px; border-radius:9px; background:rgba(var(--velo),.05); position:relative; overflow:hidden; border:1px solid var(--filo);}
-.ps-col i{position:absolute; left:0; right:0; bottom:0; background:var(--vidimato); opacity:.75;}
-.ps-col i.pieno{opacity:1;}
-.ps-col.futuro{border:1.5px dashed var(--bordo); background:transparent;}
+.ps-col i{position:absolute; left:0; right:0; bottom:0; border-radius:6px 6px 0 0;}
+.ps-col i.neutro{background:var(--salda2);}
+.ps-col i.prev{background:transparent; border:1.5px dashed var(--bordo); border-bottom:0;}
+.ps-obj{position:absolute; left:-1px; right:-1px; height:0; border-top:2px dashed var(--testo); opacity:.45;}
+.ps-col.futuro{background:transparent; border-color:transparent;}
 .ps-col.libero{background:repeating-linear-gradient(135deg, transparent 0 6px, rgba(var(--velo),.08) 6px 8px);}
 .ps-col.oggi{outline:2px solid var(--azione); outline-offset:1px;}
 .ps-v{font-size:.75rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--testo); min-height:1.1em;}
 .ps-v.prev{color:var(--nebbia); font-weight:600;}
 .ps-lb{font-size:.75rem; color:var(--nebbia); font-weight:600; white-space:nowrap;}
 .ps-lb.oggi{color:var(--vidimato-t); font-weight:800;}
+.ps-leg{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:.75rem; color:var(--nebbia); margin-top:8px;}
+.ps-leg span{display:inline-flex; align-items:center; gap:5px;}
+.ps-leg-obj{display:inline-block; width:14px; border-top:2px dashed var(--testo); opacity:.5;}
 .ps-rias{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;}
 .ps-rias div{border-radius:12px; padding:9px 12px; background:rgba(var(--velo),.04); border:1px solid var(--filo); font-size:.78rem; color:var(--nebbia);}
 .ps-rias b{display:block; font-size:1.1rem; color:var(--testo); font-family:var(--f-display);}
@@ -5870,17 +5875,27 @@ function renderPiano(){
   const giorno = n => new Date(n * 86400000).getUTCDate();
   const mese = n => new Date(n * 86400000).toLocaleDateString('it-IT', {month: 'short', timeZone: 'UTC'}).replace('.', '');
   let fatteSett = 0, prevSett = 0;
+  // altezze sulla stessa scala per tutta la settimana: il giorno piu' carico (fatto o previsto) e' la colonna piena
+  const giorni7 = DOW.map((d, k) => { const iso = isoDelGiorno(lun + k), g = stato.giorni[iso];
+    return {fatte: g ? (g.ok || 0) + (g.ko || 0) : 0, prev: previstoGiorno(iso)}; });
+  const scala = Math.max(1, ...giorni7.map(x => Math.max(x.fatte, x.prev)));
   const col = DOW.map((d, k) => {
-    const n = lun + k, iso = isoDelGiorno(n), g = stato.giorni[iso];
-    const fatte = g ? (g.ok || 0) + (g.ko || 0) : 0, prev = previstoGiorno(iso);
+    const n = lun + k, iso = isoDelGiorno(n);
+    const {fatte, prev} = giorni7[k];
     prevSett += prev; if(n <= oggiN) fatteSett += fatte;
     const fut = n > oggiN, eOggi = n === oggiN;
-    const h = prev ? Math.min(100, 100 * fatte / prev) : (fatte ? 100 : 0);
-    const cls = eOggi ? 'oggi' : fut ? (prev ? 'futuro' : 'libero') : (prev ? '' : 'libero');
+    const h = Math.round(100 * fatte / scala), hPrev = Math.round(100 * prev / scala);
+    // colore: piano seguito (verde), a meta' (giallo), poco o niente (rosso); oggi non e' finito, e senza piano e' neutro
+    const r = prev ? fatte / prev : null;
+    const colore = !prev ? 'neutro' : eOggi ? (r >= 0.9 ? 'sem-ok' : 'neutro') : r >= 0.9 ? 'sem-ok' : r >= 0.5 ? 'sem-mid' : 'sem-ko';
+    const cls = eOggi ? 'oggi' : fut ? (prev ? 'futuro' : 'libero') : (prev || fatte ? '' : 'libero');
     const val = fut ? (prev ? `<span class="ps-v prev">${fmt(prev)}</span>` : '<span class="ps-v prev">—</span>')
                     : `<span class="ps-v">${fatte ? fmt(fatte) : (prev ? '0' : '—')}</span>`;
     const tit = `${dataBreve(iso)} · ${NOMI_FASE2[fase2(iso)]} · ${fut ? `previste ${fmt(prev)}` : `fatte ${fmt(fatte)}${prev ? ' di ' + fmt(prev) : ''}`}`;
-    return `<div class="ps-g" title="${tit}">${val}<div class="ps-col ${cls}">${!fut && (fatte || prev) ? `<i class="${prev && fatte >= prev * 0.85 ? 'pieno' : ''}" style="height:${h}%"></i>` : ''}</div><span class="ps-lb ${eOggi ? 'oggi' : ''}">${d} ${giorno(n)}</span></div>`;
+    return `<div class="ps-g" title="${tit}">${val}<div class="ps-col ${cls}">`
+      + (fut ? (prev ? `<i class="prev" style="height:${hPrev}%"></i>` : '')
+             : `${fatte ? `<i class="${colore}" style="height:${Math.max(3, h)}%"></i>` : ''}${prev ? `<span class="ps-obj" style="bottom:${hPrev}%"></span>` : ''}`)
+      + `</div><span class="ps-lb ${eOggi ? 'oggi' : ''}">${d} ${giorno(n)}</span></div>`;
   }).join('');
   const f = fase2(), prevOggi = previstoGiorno(oggi), gOggi = stato.giorni[oggi];
   const fatteOggi = gOggi ? (gOggi.ok || 0) + (gOggi.ko || 0) : 0;
@@ -5899,6 +5914,7 @@ function renderPiano(){
   const resto = Math.max(0, prevOggi - fatteOggi);
   box.innerHTML = `<div class="ps-tit">Settimana <b>${giorno(lun)} ${mese(lun)} – ${giorno(lun + 6)} ${mese(lun + 6)}</b> · ${NOMI_FASE2[f]}</div>
     <div class="ps-sett">${col}</div>
+    <div class="ps-leg">${prevSett ? '<span><i class="stato-p sem-ok"></i>piano fatto</span><span><i class="stato-p sem-mid"></i>a metà</span><span><i class="stato-p sem-ko"></i>poco</span><span><i class="ps-leg-obj"></i>previste</span>' : '<span><i class="stato-p" style="background:var(--salda2)"></i>domande fatte</span>'}</div>
     <div class="ps-rias">
       <div>Fatte questa settimana<b>${fmt(fatteSett)}${prevSett ? ` <small>di ${fmt(prevSett)}</small>` : ''}</b></div>
       ${f === 'prima' ? `<div>Il piano parte<b>lun 30 nov</b></div>` : `<div>${nGiro}° giro<b>${Math.round(100 * visteGiro / totB)}% <small>${fmt(visteGiro)} di ${fmt(totB)}</small></b></div>`}
