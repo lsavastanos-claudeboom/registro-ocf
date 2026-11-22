@@ -108,7 +108,7 @@ h2.campo-tit{margin:0;}
 .bd-tabs button[aria-selected="true"]{background:var(--azione); color:var(--su-accento);}
 .bd-griglia{display:grid; gap:14px 34px;}
 /* ===== home di dicembre: banca dati a KPI, piano, dove intervenire, storico ===== */
-.card-banca h2, .card-piano h2, #card-dove h2, #card-sto h2{font-size:1.05rem; margin:0;}
+.card-banca h2, .card-piano h2, #card-come h2, #card-dove h2, #card-sto h2{font-size:1.05rem; margin:0;}
 .bd-kpi{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px;}
 .kpi-b{border:1px solid var(--bordo); border-radius:14px; padding:12px; background:rgba(var(--velo),.03); min-width:0;}
 .kpi-b .kl{font-size:.8rem; font-weight:700; color:var(--nebbia);}
@@ -206,6 +206,14 @@ h2.campo-tit{margin:0;}
 .dv-r .pc{font-weight:800; text-align:right; font-variant-numeric:tabular-nums; color:var(--testo);}
 .dv-r .dl{font-size:.75rem; font-weight:700; text-align:right; color:var(--vidimato-t); white-space:nowrap;}
 .dv-r .dl.giu{color:var(--lacca-t);} .dv-r .dl.neutro{color:var(--nebbia);}
+.dv-top{display:flex; align-items:center; gap:12px; padding:2px 0 10px; margin-bottom:4px; border-bottom:1px solid var(--filo);}
+.dv-big{font-family:var(--f-display); font-size:2rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums;}
+.dv-big.sd-ok{color:var(--vidimato-t);} .dv-big.sd-mid{color:var(--ottone-t);} .dv-big.sd-ko{color:var(--lacca-t);}
+.dv-big-t{font-size:.86rem; font-weight:700; color:var(--testo);}
+.dv-big-t small{display:block; font-weight:500; font-size:.78rem; color:var(--nebbia); margin-top:2px;}
+.dv-big-t b.su{color:var(--vidimato-t);} .dv-big-t b.giu{color:var(--lacca-t);}
+.dv-r.dv-h{padding:6px 0 2px; font-size:.72rem; font-weight:700; color:var(--nebbia);}
+.dv-r.dv-h span:nth-child(2){grid-column:2 / 4;} .dv-r.dv-h span:nth-child(3){display:none;} .dv-r.dv-h span:last-child{text-align:right;}
 .dv-nota{font-size:.8rem; color:var(--nebbia); margin:8px 0 0; line-height:1.5;} .dv-nota b{color:var(--testo);}
 .sem-ok{background:var(--vidimato);} .sem-mid{background:var(--ottone-pieno);} .sem-ko{background:var(--lacca);}
 /* storico */
@@ -228,10 +236,10 @@ h2.campo-tit{margin:0;}
 .sto-ult .dx{font-size:.75rem; color:var(--nebbia); text-align:right; white-space:nowrap;}
 .sto-lista-tit{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap; font-weight:700; font-size:.88rem; margin:14px 0 4px; color:var(--testo);}
 .sto-lista-tit span{font-weight:500; font-size:.75rem; color:var(--nebbia);}
-.sto-lista{max-height:360px; overflow-y:auto; border-top:1px solid var(--filo); border-bottom:1px solid var(--filo); overscroll-behavior:contain; padding-right:4px;}
+.sto-lista{position:relative; max-height:420px; overflow-y:auto; border-top:1px solid var(--filo); border-bottom:1px solid var(--filo); overscroll-behavior:contain; padding-right:4px;}
 .sto-t{border-top:1px solid var(--filo);}
 .sto-t:first-child{border-top:0;}
-.sto-t > summary{display:grid; grid-template-columns:46px 1fr auto; gap:10px; align-items:center; padding:8px 2px; cursor:pointer; list-style:none; font-size:.86rem;}
+.sto-t > summary{display:grid; grid-template-columns:46px 1fr auto; gap:10px; align-items:center; padding:7px 2px; cursor:pointer; list-style:none; font-size:.86rem;}
 .sto-t > summary::-webkit-details-marker{display:none;}
 .sto-t > summary .nm{min-width:0; color:var(--testo);}
 .sto-t > summary small{display:block; color:var(--nebbia); font-size:.75rem;}
@@ -240,19 +248,19 @@ h2.campo-tit{margin:0;}
 .sto-t[open] > summary .dx::after{transform:rotate(90deg);}
 .sto-t .bd{font-weight:800; font-size:.88rem; text-align:center; border-radius:8px; padding:5px 0;}
 .sto-t .bd.ok{background:var(--vidibg); color:var(--vidimato-t);} .sto-t .bd.mid{background:var(--ottonebg); color:var(--ottone-t);} .sto-t .bd.ko{background:var(--laccabg); color:var(--lacca-t);}
-.sto-det{width:100%; border-collapse:collapse; font-size:.8rem; margin:2px 0 10px; font-variant-numeric:tabular-nums;}
-.sto-det th{font-size:.72rem; color:var(--nebbia); font-weight:700; text-align:right; padding:4px 6px; border-bottom:1px solid var(--bordo); line-height:1.25;}
+.sto-det{width:100%; border-collapse:collapse; font-size:.78rem; margin:0 0 8px; font-variant-numeric:tabular-nums;}
+.sto-det th{font-size:.7rem; color:var(--nebbia); font-weight:700; text-align:right; padding:2px 6px 3px; border-bottom:1px solid var(--bordo); line-height:1.2;}
 .sto-det th:first-child, .sto-det td:first-child{text-align:left;}
 .sto-det th small{font-weight:500; font-size:.68rem;}
-.sto-det td{padding:5px 6px; text-align:right; border-bottom:1px solid var(--filo); color:var(--testo);}
+.sto-det td{padding:3px 6px; text-align:right; border-bottom:1px solid var(--filo); color:var(--testo); line-height:1.3; white-space:nowrap;}
 .sto-det td .g{color:var(--vidimato-t); font-weight:700;} .sto-det td .r{color:var(--lacca-t); font-weight:700;}
 .sto-det td{vertical-align:middle;}
 .sto-det td:first-child{font-weight:700;}
-.sd-r{display:block; font-weight:800;}
-.sd-p{display:block; font-size:.72rem; font-weight:700;}
+.sd-r{font-weight:800;}
+.sd-p{font-size:.72rem; font-weight:700; margin-left:5px;}
 .sd-ok{color:var(--vidimato-t);} .sd-mid{color:var(--ottone-t);} .sd-ko{color:var(--lacca-t);}
 .sd-nd{color:var(--nebbia);}
-.sd-b{display:block; height:5px; border-radius:3px; background:rgba(var(--velo),.08); margin:3px 0 0 auto; max-width:90px; overflow:hidden;}
+.sd-b{display:block; height:3px; border-radius:2px; background:rgba(var(--velo),.08); margin:2px 0 0 auto; max-width:84px; overflow:hidden;}
 .sd-b i{display:block; height:100%; border-radius:3px;}
 .sto-det tr.tt td{font-weight:800; border-bottom:0; background:rgba(var(--velo),.04);}
 .sto-nd{font-size:.75rem; color:var(--nebbia); margin:0 0 10px; line-height:1.45;}
@@ -5928,14 +5936,20 @@ function renderDove(){
     return {a, q1, d: q1 !== null && q2 !== null ? q1 - q2 : null};
   }).filter(r => r.q1 !== null).sort((x, y) => x.q1 - y.q1);
   const tutte = pctOkKo(totaleDi(w1, null)), prima = pctOkKo(totaleDi(w2, null));
-  box.innerHTML = righe.map(r => `<div class="dv-r">
+  const per = N === 1 ? 'oggi' : `ultimi ${N} giorni`, perPrima = N === 1 ? 'a ieri' : `ai ${N} giorni prima`;
+  const dT = prima !== null ? tutte - prima : null, risp = w1.ok + w1.ko;
+  box.innerHTML = `<div class="dv-top">
+      <span class="dv-big sd-${tutte >= 80 ? 'ok' : tutte >= 70 ? 'mid' : 'ko'}">${tutte}%</span>
+      <span class="dv-big-t">risposte giuste, media ${N === 1 ? 'di oggi' : 'degli ' + per}<small>${fmtN(risp)} risposte${dT !== null ? ` · <b class="${dT > 0 ? 'su' : dT < 0 ? 'giu' : ''}">${dT > 0 ? '▲ +' + dT : dT < 0 ? '▼ ' + dT : '= 0'}</b> rispetto ${perPrima}` : ''}</small></span>
+    </div>
+    <div class="dv-r dv-h"><span>Materia</span><span>% giuste · ${per}</span><span></span><span>vs ${N === 1 ? 'ieri' : 'prima'}</span></div>`
+    + righe.map(r => `<div class="dv-r">
       <span class="nm">${nomeBreve(r.a)}</span>
       <span class="dv-bar" role="img" aria-label="${nomeBreve(r.a)}: ${r.q1}% giuste"><i class="${semaforo(r.q1)}" style="width:${r.q1}%"></i><span class="s80"></span></span>
       <span class="pc">${r.q1}%</span>
       <span class="dl ${r.d === null ? 'neutro' : r.d < 0 ? 'giu' : r.d === 0 ? 'neutro' : ''}">${r.d === null ? '—' : r.d > 0 ? '▲ +' + r.d : r.d < 0 ? '▼ ' + r.d : '= 0'}</span>
     </div>`).join('')
-    + `<p class="dv-nota">% di risposte giuste ${N === 1 ? 'oggi' : `negli ultimi ${N} giorni`}${prima !== null ? `, contro i ${N === 1 ? 'giorno' : N + ' giorni'} prima` : ''}. In tutto <b>${tutte}%</b>${prima !== null ? ` (${tutte - prima >= 0 ? '+' : ''}${tutte - prima})` : ''}.`
-    + (righe.length && righe[0].q1 < 80 ? ` La più debole è <b>${nomeBreve(righe[0].a)}</b>: ${righe[0].q1}%.` : '') + `</p>`;
+    + (righe.length && righe[0].q1 < 80 ? `<p class="dv-nota">La più debole è <b>${nomeBreve(righe[0].a)}</b>: ${righe[0].q1}% di giuste.</p>` : '');
 }
 
 // il dettaglio di un test: per materia, giuste e sbagliate da 2 e da 1 punto
@@ -6094,6 +6108,12 @@ function renderStoricoHome(){
     <div class="sto-lista">${voci.slice().reverse().map(v => { const p = v100(v), h = v.h;
       const nome = eSim(h) ? 'Simulazione d\'esame' : h.argomenti === 'Tutti' ? 'Test del piano' : h.argomenti;
       return `<details class="sto-t"><summary><span class="bd ${cls(p)}">${p}</span><span class="nm">${nome}<small>${h.data} · ${h.tot} domande</small></span><span class="dx">${h.punti}/${h.tot} giuste</span></summary>${dettaglioTest(h)}</details>`; }).join('')}</div>`;
+  // aprendo un test, la lista scorre in modo che il test aperto stia tutto in vista
+  box.querySelectorAll('.sto-t').forEach(d => d.addEventListener('toggle', () => {
+    if(!d.open) return;
+    const L = d.parentElement; if(!L) return;
+    L.scrollTo({top: Math.max(0, d.offsetTop - 2), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+  }));
 }
 let campoTimer = null;
 (function(){
