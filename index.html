@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>QuizzOcf — Simulatore prova valutativa</title>
 <meta name="description" content="Simulatore della prova valutativa OCF sulla banca dati ufficiale 2026.">
-<meta name="theme-color" content="#0C1310">
+<meta name="theme-color" content="#0F3D2E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -188,27 +188,27 @@ h2.campo-tit{margin:0;}
   --f-lettura:'Literata', Georgia, serif;
   --morbido:normal;
 
-  /* ===== Tema NOTTE — bosco ===== */
-  --carta:#0C1310; --foglio:#131E19; --superficie2:#1C2B24;
-  --testo:#E9F1EA; --nebbia:#A9BDB0;
-  --velo:233,241,234;                 /* velature: chiare sul fondo scuro */
-  --azione:#2FB278;                   /* smeraldo pieno: il colore dell'app */
-  --azione-rgb:47,178,120; --ok-rgb:123,232,176; --ko-rgb:240,113,90; --amb-rgb:240,180,74;
-  --su-accento-rgb:4,22,14; --ombra:2,10,7;
-  --su-accento:#04160E;               /* testo sopra l'azione */
-  --inchiostro:var(--azione); --inchiostro2:#3ECD8D;
-  --nuova:#586A61;                    /* stato: mai vista */
-  --lacca:#F0715A; --laccabg:rgba(240,113,90,.16);
-  --vidimato:#7BE8B0; --vidibg:rgba(123,232,176,.14);
-  --ottone:#F0B44A; --ottonebg:rgba(240,180,74,.15); --ottone-pieno:#F0B44A;
+  /* ===== Tema NOTTE — bosco profondo (palette di novembre: 0F3D2E · 166534 · 4C956C · A8D5BA · E6F2EA · F9FCF8) ===== */
+  --carta:#0B3024; --foglio:#0F3D2E; --superficie2:#134A37;
+  --testo:#E6F2EA; --nebbia:#9DBFAE;
+  --velo:230,242,234;                 /* velature: chiare sul fondo scuro */
+  --azione:#A8D5BA;                   /* menta: il colore dei pulsanti di notte */
+  --azione-rgb:168,213,186; --ok-rgb:168,213,186; --ko-rgb:244,164,147; --amb-rgb:240,192,90;
+  --su-accento-rgb:15,61,46; --ombra:3,18,12;
+  --su-accento:#0F3D2E;               /* testo sopra l'azione */
+  --inchiostro:var(--azione); --inchiostro2:#C4E5D1;
+  --nuova:#2B6150;                    /* stato: mai vista */
+  --lacca:#F4A493; --laccabg:rgba(244,164,147,.14);
+  --vidimato:#A8D5BA; --vidibg:rgba(168,213,186,.12);
+  --ottone:#F0C05A; --ottonebg:rgba(240,192,90,.14); --ottone-pieno:#F0C05A;
   /* Ogni stato ha due forme: il riempimento (sopra) porta il significato,
      l'inchiostro (sotto) è la stessa tinta calibrata per reggere da testo. */
-  --lacca-t:#F59684; --vidimato-t:#7BE8B0; --ottone-t:#F3C270; --nuova-t:#A9BDB0;
-  --lacca2:#DE8A55; --viola:#7BE8B0; --viola-t:#96EEC2;
-  --su-pieno:#08120D;                 /* inchiostro sopra un riempimento pieno */
-  --su-nuova:#F2F8F3;                 /* inchiostro sopra il grigio "mai vista" */
-  --bordo:rgba(233,241,234,.13); --filo:rgba(233,241,234,.07);
-  --blu:var(--inchiostro); --blu2:var(--inchiostro2); --azz:rgba(233,241,234,.07);
+  --lacca-t:#F4A493; --vidimato-t:#A8D5BA; --ottone-t:#F3CB78; --nuova-t:#9DBFAE;
+  --lacca2:#E9A27A; --viola:#A8D5BA; --viola-t:#C4E5D1;
+  --su-pieno:#0B3024;                 /* inchiostro sopra un riempimento pieno */
+  --su-nuova:#E6F2EA;                 /* inchiostro sopra il verde "mai vista" */
+  --bordo:rgba(230,242,234,.14); --filo:rgba(230,242,234,.08);
+  --blu:var(--inchiostro); --blu2:var(--inchiostro2); --azz:rgba(230,242,234,.07);
   --ok:var(--vidimato-t); --okbg:var(--vidibg);
   --ko:var(--lacca-t); --kobg:var(--laccabg);
   --grigio:var(--nebbia); --giallo:var(--ottone-t);
@@ -220,23 +220,23 @@ h2.campo-tit{margin:0;}
   color-scheme:dark;
 }
 :root[data-tema="chiaro"]{
-  /* ===== Tema GIORNO — carta di bosco ===== */
-  --carta:#E7EEE8; --foglio:#FBFDFA; --superficie2:#F1F6F1;
-  --testo:#13211A; --nebbia:#4C6155;
-  --velo:19,33,26;                    /* velature: scure sul fondo chiaro */
-  --azione:#0E5137; --su-accento:#F7FCF8;
-  --azione-rgb:14,81,55; --ok-rgb:30,138,95; --ko-rgb:185,58,34; --amb-rgb:138,93,6;
-  --su-accento-rgb:247,252,248; --ombra:16,40,30;
-  --inchiostro:var(--azione); --inchiostro2:#0A422C;
-  --nuova:#B4C6BA;
-  --lacca:#B93A22; --laccabg:rgba(185,58,34,.10);
-  --vidimato:#1E8A5F; --vidibg:rgba(30,138,95,.12);
-  --ottone:#8A5D06; --ottonebg:rgba(138,93,6,.12); --ottone-pieno:#C4870F;
-  --lacca-t:#9E301D; --vidimato-t:#16714D; --ottone-t:#755005; --nuova-t:#4C6155;
-  --lacca2:#A24C1C; --viola:#16714D; --viola-t:#125E40;
-  --su-pieno:#FBFDFA; --su-nuova:#13211A;
-  --bordo:rgba(19,33,26,.14); --filo:rgba(19,33,26,.07);
-  --azz:rgba(19,33,26,.06);
+  /* ===== Tema GIORNO — menta e bosco ===== */
+  --carta:#E6F2EA; --foglio:#F9FCF8; --superficie2:#EEF6F0;
+  --testo:#0F3D2E; --nebbia:#47685A;
+  --velo:15,61,46;                    /* velature: scure sul fondo chiaro */
+  --azione:#166534; --su-accento:#F9FCF8;
+  --azione-rgb:22,101,52; --ok-rgb:76,149,108; --ko-rgb:184,58,42; --amb-rgb:217,162,27;
+  --su-accento-rgb:249,252,248; --ombra:15,61,46;
+  --inchiostro:var(--azione); --inchiostro2:#0F3D2E;
+  --nuova:#C9DACF;
+  --lacca:#B83A2A; --laccabg:rgba(184,58,42,.09);
+  --vidimato:#166534; --vidibg:rgba(168,213,186,.38);
+  --ottone:#8A5D06; --ottonebg:rgba(217,162,27,.14); --ottone-pieno:#D9A21B;
+  --lacca-t:#A93422; --vidimato-t:#166534; --ottone-t:#7A5306; --nuova-t:#47685A;
+  --lacca2:#A24C1C; --viola:#166534; --viola-t:#0F3D2E;
+  --su-pieno:#F9FCF8; --su-nuova:#0F3D2E;
+  --bordo:rgba(15,61,46,.15); --filo:rgba(15,61,46,.08);
+  --azz:rgba(15,61,46,.06);
   --alz-1:0 1px 2px rgba(var(--ombra),.07), 0 6px 16px -8px rgba(var(--ombra),.16);
   --alz-2:0 2px 5px rgba(var(--ombra),.07), 0 20px 40px -16px rgba(var(--ombra),.22);
   --luce:inset 0 1px 0 rgba(255,255,255,.7);
@@ -244,31 +244,30 @@ h2.campo-tit{margin:0;}
 }
 /* Isole che restano scure anche di giorno (intestazione, card progressi, accesso):
    al loro interno valgono i colori del tema notte, altrimenti il testo sparirebbe. */
-header.top, .card-prog, #velo-login{ --velo:233,241,234; }
+header.top, .card-prog, #velo-login{ --velo:230,242,234; }
 :root[data-tema="chiaro"] header.top,
 :root[data-tema="chiaro"] .card-prog,
 :root[data-tema="chiaro"] #velo-login{
-  --testo:#E9F1EA; --nebbia:#A9BDB0;
-  --carta:#0C1310; --foglio:#1C2B24; --superficie2:#26382F;
-  --velo:233,241,234;
-  --bordo:rgba(233,241,234,.16); --filo:rgba(233,241,234,.10);
-  --azione:#2FB278; --su-accento:#04160E;
-  --azione-rgb:47,178,120; --ok-rgb:123,232,176; --ko-rgb:240,113,90; --amb-rgb:240,180,74;
-  --su-accento-rgb:4,22,14;
-  --inchiostro:var(--azione); --inchiostro2:#3ECD8D;
-  --nuova:#586A61;
-  --lacca:#F0715A; --vidimato:#7BE8B0; --ottone:#F0B44A;
-  --lacca-t:#F59684; --vidimato-t:#7BE8B0; --ottone-t:#F3C270; --nuova-t:#A9BDB0;
-  --lacca2:#DE8A55; --viola:#7BE8B0; --viola-t:#96EEC2;
-  --su-pieno:#08120D; --su-nuova:#F2F8F3;
+  --testo:#E6F2EA; --nebbia:#A8D5BA;
+  --carta:#0F3D2E; --foglio:#134A37; --superficie2:#0F3D2E;
+  --velo:230,242,234;
+  --bordo:rgba(230,242,234,.16); --filo:rgba(230,242,234,.10);
+  --azione:#A8D5BA; --su-accento:#0F3D2E;
+  --azione-rgb:168,213,186; --ok-rgb:168,213,186; --ko-rgb:244,164,147; --amb-rgb:240,192,90;
+  --su-accento-rgb:15,61,46;
+  --inchiostro:var(--azione); --inchiostro2:#C4E5D1;
+  --nuova:#2B6150;
+  --lacca:#F4A493; --vidimato:#A8D5BA; --ottone:#F0C05A; --ottone-pieno:#F0C05A;
+  --lacca-t:#F4A493; --vidimato-t:#A8D5BA; --ottone-t:#F3CB78; --nuova-t:#9DBFAE;
+  --lacca2:#E9A27A; --viola:#A8D5BA; --viola-t:#C4E5D1;
+  --su-pieno:#0B3024; --su-nuova:#E6F2EA;
 }
 *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
 html{-webkit-text-size-adjust:100%;}
 body{font-variant-numeric:tabular-nums; font-family:var(--f-testo);
      background:var(--carta);
      background-image:
-       radial-gradient(1200px 620px at 18% -10%, rgba(47,178,120,.14), transparent 62%),
-       radial-gradient(900px 520px at 88% 4%, rgba(123,232,176,.07), transparent 60%);
+       linear-gradient(180deg, rgba(var(--azione-rgb),.06), transparent 420px);
      transition:background-color .25s ease, color .25s ease;
      background-attachment:fixed;
      color:var(--testo); line-height:1.55; font-size:16px; overscroll-behavior-y:none;}
@@ -688,8 +687,8 @@ kbd{background:rgba(var(--velo),.10); border:1px solid var(--bordo); border-radi
 .esito.ok, .esito.ko{font-family:var(--f-testo);  letter-spacing:.005em;
       font-size:.88rem; padding:9px 18px; border:2.5px double currentColor; border-radius:7px;
       transform:rotate(-2.5deg); animation:timbrata .28s cubic-bezier(.2,1.6,.4,1);}
-.esito.ok{color:var(--vidimato-t); background:rgba(39,107,78,.05);}
-.esito.ko{color:var(--lacca-t); background:rgba(179,58,43,.05);}
+.esito.ok{color:var(--vidimato-t); background:rgba(var(--azione-rgb),.05);}
+.esito.ko{color:var(--lacca-t); background:rgba(var(--ko-rgb),.05);}
 .esito.neutro{color:var(--testo); background:rgba(var(--velo),.05); font-family:var(--f-testo); font-weight:600;
   padding:10px 14px; border-radius:12px; max-width:60ch; line-height:1.5;}
 @keyframes timbrata{0%{transform:rotate(-2.5deg) scale(1.7); opacity:0;} 100%{transform:rotate(-2.5deg) scale(1); opacity:1;}}
@@ -782,7 +781,7 @@ table.riep td{border-bottom:1px solid var(--filo); padding:8px 9px;}
 #btn-carica{background:rgba(var(--velo),.12); color:var(--testo); border:1.5px solid rgba(var(--velo),.5);}
 #btn-carica:hover{background:rgba(var(--velo),.22);}
 #btn-reset{background:transparent; color:var(--lacca-t); border:1.5px solid rgba(237,184,175,.5);}
-#btn-reset:hover{background:rgba(179,58,43,.3); color:var(--testo);}
+#btn-reset:hover{background:rgba(var(--ko-rgb),.3); color:var(--testo);}
 .toggle-chiaro{color:var(--nebbia); font-size:.85rem; flex-wrap:wrap;}
 .nota-chiara{color:var(--nebbia);}
 .mini-chiaro{color:var(--nebbia); font-size:.75rem; font-family:var(--f-testo);}
@@ -1076,12 +1075,12 @@ button.modo{flex:1 1 0; min-width:0; display:flex; align-items:center; gap:12px;
   transition:border-color .14s ease, background .14s ease;}
 button.modo:hover{background:rgba(var(--velo),.05); border-color:rgba(var(--velo),.26);}
 button.modo:focus-visible{outline:3px solid var(--azione); outline-offset:2px;}
-.modo-sim:hover{border-color:rgba(39,107,78,.45); background:rgba(39,107,78,.06);}
-.modo-pro:hover{border-color:rgba(156,122,45,.5); background:rgba(156,122,45,.08);}
+.modo-sim:hover{border-color:rgba(var(--azione-rgb),.45); background:rgba(var(--azione-rgb),.06);}
+.modo-pro:hover{border-color:rgba(var(--amb-rgb),.5); background:rgba(var(--amb-rgb),.08);}
 .modo-ico{flex:none; width:38px; height:38px; border-radius:14px; display:flex; align-items:center;
   justify-content:center; font-size:1.15rem; background:rgba(var(--velo),.06);}
-.modo-sim .modo-ico{background:rgba(39,107,78,.12);}
-.modo-pro .modo-ico{background:rgba(156,122,45,.14);}
+.modo-sim .modo-ico{background:rgba(var(--azione-rgb),.12);}
+.modo-pro .modo-ico{background:rgba(var(--amb-rgb),.14);}
 .modo-testo{display:flex; flex-direction:column; gap:2px; min-width:0;}
 .modo-testo b{font-family:var(--f-display); font-size:.95rem; color:var(--testo); line-height:1.2;}
 .modo-testo span{font-size:.76rem; color:var(--nebbia); line-height:1.35;}
@@ -1166,8 +1165,8 @@ table.riep thead th{position:sticky; top:0; z-index:1;}
 .and-gg{flex:1 1 0; min-width:0; text-align:center; font-size:.75rem; color:var(--nebbia); font-variant-numeric:tabular-nums;}
 .and-soglia{position:absolute; left:0; right:0; border-top:1px dashed rgba(var(--velo),.32); pointer-events:none; z-index:1;}
 .and-soglia span{position:absolute; right:0; top:-14px; font-size:.75rem; color:var(--nebbia); background:var(--foglio); padding:0 4px;}
-.and-consiglio{margin-top:14px; padding:11px 13px; border-radius:14px; background:rgba(156,122,45,.10);
-  border:1px solid rgba(156,122,45,.24); font-size:.9rem; line-height:1.55; color:var(--testo);}
+.and-consiglio{margin-top:14px; padding:11px 13px; border-radius:14px; background:rgba(var(--amb-rgb),.10);
+  border:1px solid rgba(var(--amb-rgb),.24); font-size:.9rem; line-height:1.55; color:var(--testo);}
 .and-vuoto{margin-top:14px; color:var(--nebbia); font-size:.92rem;}
 /* chip ambito */
 .and-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:14px;}
@@ -1186,7 +1185,7 @@ table.riep thead th{position:sticky; top:0; z-index:1;}
 .dt-tab td{padding:9px 8px 9px 0; border-bottom:1px solid rgba(var(--velo),.07);}
 .dt-tab tbody tr[data-amb]{cursor:pointer;}
 .dt-tab tbody tr[data-amb]:hover{background:rgba(var(--velo),.045);}
-.dt-tab tbody tr.sel{background:rgba(156,122,45,.12);}
+.dt-tab tbody tr.sel{background:rgba(var(--amb-rgb),.12);}
 .dt-nome{font-weight:600; color:var(--testo);}
 .dt-corto{display:none;}
 b.dubbia{color:var(--ottone-t);}
@@ -1200,7 +1199,7 @@ b.dubbia{color:var(--ottone-t);}
 .so-btn:hover{background:var(--inchiostro); color:var(--su-accento); border-color:var(--testo);}
 @media(max-width:640px){ .so-tab .so-nome{font-size:.78rem;} }
 .avviso-fase{margin:12px 0 2px; padding:11px 13px; border-radius:14px; font-size:.88rem; line-height:1.55;
-  background:rgba(156,122,45,.12); border:1px solid rgba(156,122,45,.3);}
+  background:rgba(var(--amb-rgb),.12); border:1px solid rgba(var(--amb-rgb),.3);}
 
 /* ---------- prospetto del piano ----------
    Una card sola che dice: in che fase sei, quanto ti chiede oggi, quando finisci,
@@ -1229,8 +1228,8 @@ b.dubbia{color:var(--ottone-t);}
 .prs-msg b{color:inherit;}
 .prs-nota{margin-top:12px; font-size:.83rem; color:var(--nebbia); line-height:1.55;}
 #q-passo{font-size:.82rem; font-weight:600; padding:2px 8px; border-radius:99px;}
-#q-passo.bene{color:var(--vidimato-t); background:rgba(39,107,78,.12);}
-#q-passo.male{color:var(--lacca-t); background:rgba(179,58,43,.12);}
+#q-passo.bene{color:var(--vidimato-t); background:rgba(var(--azione-rgb),.12);}
+#q-passo.male{color:var(--lacca-t); background:rgba(var(--ko-rgb),.12);}
 #q-passo.nascosto{display:none;}
 .st-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .st-testa h2{margin:0;}
@@ -1313,8 +1312,8 @@ b.dubbia{color:var(--ottone-t);}
 @media(max-width:640px){ .pj-meta{text-align:left;} }
 .st-cop{margin-top:14px; padding:10px 13px; border-radius:14px; font-size:.88rem; line-height:1.55;
   background:rgba(var(--velo),.04); border:1px solid rgba(var(--velo),.12);}
-.st-cop.bene{background:rgba(39,107,78,.08); border-color:rgba(39,107,78,.28);}
-.st-cop.male{background:rgba(179,58,43,.07); border-color:rgba(179,58,43,.28);}
+.st-cop.bene{background:rgba(var(--azione-rgb),.08); border-color:rgba(var(--azione-rgb),.28);}
+.st-cop.male{background:rgba(var(--ko-rgb),.07); border-color:rgba(var(--ko-rgb),.28);}
 .st-cop-tit{display:block; font-family:var(--f-display); font-weight:600; font-size:.8rem;
    letter-spacing:.05em; color:var(--nebbia); margin-bottom:3px;}
 .st-coach{margin-top:16px; padding:20px 22px 20px 24px; border-radius:15px; line-height:1.72;
@@ -1352,13 +1351,13 @@ b.dubbia{color:var(--ottone-t);}
 @media(max-width:640px){ .st-riga{flex-direction:column; gap:14px;} .pr-cap{text-align:left;} }
 .co-testa{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 .co-testa h2{margin:0;}
-.co-serie{font-size:.78rem; color:var(--ottone-t); font-weight:600; background:rgba(156,122,45,.13);
+.co-serie{font-size:.78rem; color:var(--ottone-t); font-weight:600; background:rgba(var(--amb-rgb),.13);
   padding:4px 10px; border-radius:99px;}
 .co-msg{margin-top:12px; padding:12px 14px; border-radius:12px; font-size:.92rem; line-height:1.62;
   border:1px solid rgba(var(--velo),.12); background:rgba(var(--velo),.03);}
-.co-msg.ok{border-color:rgba(39,107,78,.3); background:rgba(39,107,78,.08);}
-.co-msg.avviso{border-color:rgba(179,58,43,.28); background:rgba(179,58,43,.07);}
-.co-msg.info{border-color:rgba(156,122,45,.26); background:rgba(156,122,45,.07);}
+.co-msg.ok{border-color:rgba(var(--azione-rgb),.3); background:rgba(var(--azione-rgb),.08);}
+.co-msg.avviso{border-color:rgba(var(--ko-rgb),.28); background:rgba(var(--ko-rgb),.07);}
+.co-msg.info{border-color:rgba(var(--amb-rgb),.26); background:rgba(var(--amb-rgb),.07);}
 .co-btn{margin-top:10px; border:1px solid var(--inchiostro); background:var(--inchiostro); color:var(--su-accento);
   font:inherit; font-size:.82rem; font-weight:600; padding:7px 13px; border-radius:var(--r-int); cursor:pointer;}
 .co-btn:hover{opacity:.88;}
@@ -1386,8 +1385,8 @@ b.dubbia{color:var(--ottone-t);}
 .mal-testo{margin:6px 0 14px; font-size:.93rem; line-height:1.6;}
 .mal-azioni{display:flex; gap:10px; flex-wrap:wrap;}
 .mal-azioni .btn-p, .mal-azioni .btn-s{margin:0;}
-.mal-avviso{margin:0 0 12px; padding:9px 12px; border-radius:var(--r-int); background:rgba(156,122,45,.12);
-  border:1px solid rgba(156,122,45,.28); font-size:.86rem;}
+.mal-avviso{margin:0 0 12px; padding:9px 12px; border-radius:var(--r-int); background:rgba(var(--amb-rgb),.12);
+  border:1px solid rgba(var(--amb-rgb),.28); font-size:.86rem;}
 @media(max-width:640px){ .mal-azioni{flex-direction:column;} .mal-azioni button{width:100%;} }
 .dt-pct{font-variant-numeric:tabular-nums; font-weight:700;}
 .dt-n{font-variant-numeric:tabular-nums; color:var(--nebbia);}
@@ -1992,7 +1991,7 @@ b.dubbia{color:var(--ottone-t);}
   <img src="icons/logo-64.png" alt="" class="logo-img">
   <div class="marchio">
     <h1>Quizz<span class="rosso">Ocf</span></h1>
-    <div class="sub">Banca dati 2026 · <span class="n-banca">4.995</span> domande</div>
+    <div class="sub">Banca dati 2026 · <span class="n-ufficiali">5.002</span> domande ufficiali</div>
   </div>
   <div class="utente-box">
     <span id="sync-stato" class="nascosto"><span class="sync-dot"></span><span id="sync-testo">sincronizzato</span></span>
@@ -4182,7 +4181,7 @@ function applicaTema(tema){
   if(chiaro) document.documentElement.setAttribute('data-tema','chiaro');
   else document.documentElement.removeAttribute('data-tema');
   const meta = document.querySelector('meta[name=theme-color]');
-  if(meta) meta.setAttribute('content', '#0C1310');   // l'intestazione resta scura in entrambi
+  if(meta) meta.setAttribute('content', chiaro ? '#0F3D2E' : '#0B3024');   // l'intestazione resta scura in entrambi
   const b = document.getElementById('btn-tema');
   if(b){
     b.innerHTML = `<svg class="ic"><use href="#i-${chiaro ? 'sole' : 'luna'}"/></svg>`;
@@ -4408,6 +4407,12 @@ function scadutaAGiorni(r){
   return g >= attesaGiorni(r);
 }
 function intervalloRipasso(){ return intervalloErrore(1); }   // compatibilità
+function testoRitorno(r){
+  const g = giorniDa(r);
+  if(g !== null){ const n = Math.max(1, attesaGiorni(r) - g); return n === 1 ? 'torna domani' : `torna tra ${n} giorni`; }
+  const n = Math.max(1, (r.t || 0) - (stato.nTest || 0));
+  return n === 1 ? 'torna al prossimo test' : `torna tra ${n} test`;
+}
 function proponibile(r){
   const perGiorni = scadutaAGiorni(r);
   if(perGiorni !== null) return perGiorni;
@@ -4452,7 +4457,7 @@ function renderHome(){
   cont.appendChild(azArg);
   ARGOMENTI.forEach((arg, i) => {
     const pool = QUESTIONS.filter(q => q.t === arg);
-    const s = statiPool(pool);
+    const s = statiPool(pool.filter(q => !fuoriBanca(q)));
     const div = document.createElement('div');
     div.className = 'riga-arg';
     div.innerHTML = `
@@ -4512,7 +4517,7 @@ function renderHome(){
   $('chk-autosave').checked = stato.autosave === true;
   aggiornaMixLabel();
 
-  const sg = statiPool(QUESTIONS);
+  const sg = statiPool(bancaUfficiale());
   // La padronanza si misura in punti, non in numero di domande: è quello che conta
   // all'esame. Il titolo accanto alla cifra lo dice.
   salire($('prog-pct'), Math.floor(100*sg.ptOk/(sg.ptTot || 1)), v => v + '%');
@@ -4525,7 +4530,7 @@ function renderHome(){
   $('prog-bar').innerHTML =
     (sg.ok ? `<div class="s-sup" style="width:${100*sg.ok/sg.tot}%" title="Consolidate o da riconfermare: ${fmtN(sg.ok)}"></div>` : '') +
     (sg.ko ? `<div class="s-rip" style="width:${100*sg.ko/sg.tot}%" title="Da recuperare: ${fmtN(sg.ko)}"></div>` : '');
-  const cs4 = contaStati();
+  const cs4 = contaStati(bancaUfficiale());
   $('stat-globale').innerHTML = `
     <span class="chip"><span class="dot" style="background:var(--vidimato)"></span><span>Consolidate: <b>${fmtN(cs4.salda)}</b></span></span>
     <span class="chip"><span class="dot" style="background:var(--ottone)"></span><span>Da riconfermare: <b>${fmtN(cs4.attesa)}</b></span></span>
@@ -4681,7 +4686,7 @@ function padronanza(pool){
 function ambitoPiuDebole(){
   let peggiore = null;
   ARGOMENTI.forEach(a => {
-    const p = padronanza(QUESTIONS.filter(q => q.t === a));
+    const p = padronanza(bancaUfficiale().filter(q => q.t === a));
     if(p.viste < 20 || p.pct === null) return;
     if(!peggiore || p.pct < peggiore.pct) peggiore = {arg:a, pct:p.pct, daRip:p.daRip};
   });
@@ -4888,7 +4893,7 @@ function statoRecupero(){
   const oggi = oggiNum();
   let mai = 0, aperte = 0, meta = 0, dure = 0, chiuse = 0, chiuseOggi = 0, metaOggi = 0;
   const perArg = {};
-  QUESTIONS.forEach(q => {
+  bancaUfficiale().forEach(q => {
     const r = stato.risultati[q.n];
     if(!r || !r.e) return;                       // mai sbagliata: non riguarda il recupero
     mai++;
@@ -5230,7 +5235,7 @@ function recordPrecisione(escludiOggi){
 // argomenti che hanno superato l'80% di domande acquisite
 function argomentiSolidi(){
   return ARGOMENTI.filter(a => {
-    const s = statiPool(QUESTIONS.filter(q => q.t === a));
+    const s = statiPool(bancaUfficiale().filter(q => q.t === a));
     const viste = s.ok + s.ko + s.dubbie;
     return viste >= 40 && (100*s.ok/viste) >= 80;
   });
@@ -6399,7 +6404,7 @@ function renderAndamento(){
   } else {
     const righe = ARGOMENTI.map(a => {
       let ok = 0, ko = 0, nuove = 0;
-      QUESTIONS.forEach(q => { if(q.t !== a) return; const r = stato.risultati[q.n];
+      bancaUfficiale().forEach(q => { if(q.t !== a) return; const r = stato.risultati[q.n];
         if(!r) nuove++; else if(r.s === 'ok') ok++; else ko++; });
       const tot = ok + ko;
       const pct = tot ? Math.round(100*ok/tot) : null;
@@ -7275,7 +7280,7 @@ function renderObiettivo2(){
          alGiorno ? (fatte >= alGiorno ? '<div class="kd su">✔ obiettivo raggiunto</div>' : `<div class="kd pari">ne mancano ${fmt(alGiorno - fatte)}</div>`) : '<div class="kd pari">contano lo stesso</div>');
   // la riga buona: cosa ha gia' recuperato oggi, oppure quante ne ha gia' consolidate
   const recOggi = g ? (g.rec || 0) : 0;
-  const cons = contaStati().salda;
+  const cons = contaStati(bancaUfficiale()).salda;
   const rigaBuona = recOggi
     ? `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Oggi hai recuperato <b>${fmt(recOggi)}</b> ${recOggi === 1 ? 'sbagliata' : 'sbagliate'}.</div>`
     : `<div class="obh-piano ok"><svg class="ic"><use href="#i-check"/></svg> Già consolidate: <b>${fmt(cons)}</b> domande su ${fmt(totBanca)}.</div>`;
@@ -8137,7 +8142,7 @@ function avviaPro(){
   // 3) argomento più debole (precisione peggiore tra quelli con almeno 10 domande affrontate)
   let peggiore = null, minPrec = 2;
   ARGOMENTI.forEach(arg => {
-    const p = padronanza(QUESTIONS.filter(q => q.t === arg));
+    const p = padronanza(bancaUfficiale().filter(q => q.t === arg));
     if(p.viste >= 10 && p.pct !== null && p.pct/100 < minPrec){ minPrec = p.pct/100; peggiore = arg; }
   });
   const pool3 = peggiore ? QUESTIONS.filter(q => q.t === peggiore && (!stato.risultati[q.n] || stato.risultati[q.n].s === 'ko'))
@@ -8730,15 +8735,16 @@ function renderCalendario(){
 
 function renderDashboard(){
   renderCalendario();
-  const sg = statiPool(QUESTIONS);
+  const U = bancaUfficiale();
+  const sg = statiPool(U);
   const totOk = Object.values(stato.giorni).reduce((a,g) => a + g.ok, 0);
   const totKo = Object.values(stato.giorni).reduce((a,g) => a + g.ko, 0);
   const nGiorni = Object.keys(stato.giorni).length;
   const pt = primoTentativo(QUESTIONS);
   // KPI
-  const cs = contaStati();
+  const cs = contaStati(U);
   $('d-kpi').innerHTML = `
-    <div class="kpi"><div class="k-lab">Consolidate</div><div class="k-val">${fmtN(cs.salda)}</div><div class="k-sub">${pctTxt(cs.salda, QUESTIONS.length)} della banca dati (${fmtN(QUESTIONS.length)})</div></div>
+    <div class="kpi"><div class="k-lab">Consolidate</div><div class="k-val">${fmtN(cs.salda)}</div><div class="k-sub">${pctTxt(cs.salda, U.length)} della banca ufficiale (${fmtN(U.length)})</div></div>
     <div class="kpi"><div class="k-lab">Da riconfermare</div><div class="k-val">${fmtN(cs.attesa)}</div><div class="k-sub">giuste una volta, tornano a distanza</div></div>
     <div class="kpi"><div class="k-lab">Da recuperare</div><div class="k-val">${fmtN(cs.aperta)}</div><div class="k-sub">escono dopo 2 risposte esatte di fila</div></div>
     <div class="kpi"><div class="k-lab">Precisione complessiva</div><div class="k-val">${pctTxt(totOk, totOk+totKo)}</div><div class="k-sub">${fmtN(totOk+totKo)} risposte date in ${fmtN(stato.storico.length)} test</div></div>
@@ -8748,7 +8754,7 @@ function renderDashboard(){
     `<div class="a-num" style="margin-top:6px; font-size:.78rem; color:var(--ink2)">${fmtN(sg.ok)} consolidate o da riconfermare · ${fmtN(sg.ko)} da recuperare · ${fmtN(sg.nuove)} mai viste</div>`;
   // per argomento
   $('d-argomenti').innerHTML = ARGOMENTI.map(arg => {
-    const s = statiPool(QUESTIONS.filter(q => q.t === arg));
+    const s = statiPool(U.filter(q => q.t === arg));
     return `<div class="arg-riga">
       <div class="a-testa"><span class="a-nome">${arg}</span>
       <span class="a-num">${pctTxt(s.ok, s.tot)} superato — ${s.ok}/${s.tot} · <b style="color:var(--rip)">${s.ko}</b> da recuperare · ${s.nuove} nuove · 1° tentativo: <b>${(pta => pctTxt(pta.ok, pta.tot))(primoTentativo(QUESTIONS.filter(q => q.t === arg)))}</b></span></div>
@@ -8916,7 +8922,7 @@ function renderRipasso(){
       return `<div class="err-item ${sup ? 'rip-sup' : ''}">
         <span class="pill ${sup ? 'pill-sup' : 'pill-ko'}">${sup ? '✔ poi superata' : '✘ ancora da recuperare'}</span>
         <span class="pill pill-rip">sbagliata ${r.e === 1 ? '1 volta' : r.e + ' volte'}</span>
-        ${!sup && !proponibile(r) ? `<span class="pill pill-pausa">⏸ torna tra ${r.t - (stato.nTest || 0)} test</span>` : ''}
+        ${!sup && !proponibile(r) ? `<span class="pill pill-pausa">⏸ ${testoRitorno(r)}</span>` : ''}
         ${etichetteQ(q)}
         <div class="d">${q.n}. ${q.q.replace(/</g,'&lt;')}</div>
         <div class="r">✔ Risposta esatta: ${'ABCD'[q.e]}) ${q.a[q.e].replace(/</g,'&lt;')}</div>
