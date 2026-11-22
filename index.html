@@ -129,6 +129,25 @@ h2.campo-tit{margin:0;}
 .kpi-b .nota-p{font-size:.76rem; color:var(--nebbia); margin:9px 0 0; line-height:1.45;}
 .kpi-b .nota-p b{color:var(--lacca-t);}
 .tor svg{display:block; overflow:visible;}
+.kl-tab{display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;}
+.pt-tabs{display:inline-flex; padding:2px; border-radius:999px; background:rgba(var(--velo),.07); border:1px solid var(--filo);}
+.pt-tabs button{font:inherit; font-size:.75rem; font-weight:700; color:var(--nebbia); background:transparent; border:0; padding:4px 9px; border-radius:999px; cursor:pointer; min-height:28px;}
+.pt-tabs button[aria-pressed="true"]{background:var(--azione); color:var(--su-accento);}
+.pt-tabs button{white-space:nowrap;}
+@media(max-width:640px){ .kl-tab .pt-tabs{width:100%; margin-top:6px;} .kl-tab .pt-tabs button{flex:1; padding:4px 4px;} }
+.bdc-sw{display:flex; justify-content:center; margin-bottom:12px;}
+.bdc-sw button[aria-pressed="true"]{background:var(--azione); color:var(--su-accento);}
+.bdc-gr{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px;}
+@media(max-width:640px){ .bdc-gr{grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px;} }
+.bdc{border:1px solid var(--bordo); border-radius:14px; padding:12px 8px; text-align:center; background:rgba(var(--velo),.03); min-width:0;}
+.bdc.tot{background:var(--vidibg); border-color:transparent;}
+.bdc .nm{font-weight:800; font-size:.95rem; color:var(--testo);}
+.bdc .es{font-size:.75rem; color:var(--nebbia);}
+.bdc .tor{display:flex; justify-content:center; margin:8px 0 6px;}
+.bdc .k{font-size:.78rem; color:var(--nebbia); line-height:1.45;}
+.bdc .k b{color:var(--lacca-t);}
+.bdc-leg{display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; font-size:.75rem; color:var(--nebbia); margin-top:12px;}
+.bdc-leg span{display:inline-flex; align-items:center; gap:6px;}
 .colh{display:grid; grid-template-columns:1fr 56px 56px; white-space:nowrap; gap:10px; font-size:.75rem; color:var(--nebbia); font-weight:700; margin-bottom:4px; text-align:center;}
 .colh span:first-child{text-align:left;}
 .argr{display:grid; grid-template-columns:1fr 56px 56px; gap:2px 10px; align-items:center; padding:10px 0; border-top:1px solid var(--filo);}
@@ -207,6 +226,29 @@ h2.campo-tit{margin:0;}
 .sto-ult .bd.ok{background:var(--vidibg); color:var(--vidimato-t);} .sto-ult .bd.mid{background:var(--ottonebg); color:var(--ottone-t);} .sto-ult .bd.ko{background:var(--laccabg); color:var(--lacca-t);}
 .sto-ult small{display:block; color:var(--nebbia); font-size:.75rem;}
 .sto-ult .dx{font-size:.75rem; color:var(--nebbia); text-align:right; white-space:nowrap;}
+.sto-lista-tit{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap; font-weight:700; font-size:.88rem; margin:14px 0 4px; color:var(--testo);}
+.sto-lista-tit span{font-weight:500; font-size:.75rem; color:var(--nebbia);}
+.sto-lista{max-height:360px; overflow-y:auto; border-top:1px solid var(--filo); border-bottom:1px solid var(--filo); overscroll-behavior:contain; padding-right:4px;}
+.sto-t{border-top:1px solid var(--filo);}
+.sto-t:first-child{border-top:0;}
+.sto-t > summary{display:grid; grid-template-columns:46px 1fr auto; gap:10px; align-items:center; padding:8px 2px; cursor:pointer; list-style:none; font-size:.86rem;}
+.sto-t > summary::-webkit-details-marker{display:none;}
+.sto-t > summary .nm{min-width:0; color:var(--testo);}
+.sto-t > summary small{display:block; color:var(--nebbia); font-size:.75rem;}
+.sto-t > summary .dx{font-size:.75rem; color:var(--nebbia); text-align:right; white-space:nowrap;}
+.sto-t > summary .dx::after{content:' ›'; display:inline-block; margin-left:4px; transition:transform .2s;}
+.sto-t[open] > summary .dx::after{transform:rotate(90deg);}
+.sto-t .bd{font-weight:800; font-size:.88rem; text-align:center; border-radius:8px; padding:5px 0;}
+.sto-t .bd.ok{background:var(--vidibg); color:var(--vidimato-t);} .sto-t .bd.mid{background:var(--ottonebg); color:var(--ottone-t);} .sto-t .bd.ko{background:var(--laccabg); color:var(--lacca-t);}
+.sto-det{width:100%; border-collapse:collapse; font-size:.8rem; margin:2px 0 10px; font-variant-numeric:tabular-nums;}
+.sto-det th{font-size:.72rem; color:var(--nebbia); font-weight:700; text-align:right; padding:4px 6px; border-bottom:1px solid var(--bordo); line-height:1.25;}
+.sto-det th:first-child, .sto-det td:first-child{text-align:left;}
+.sto-det th small{font-weight:500; font-size:.68rem;}
+.sto-det td{padding:5px 6px; text-align:right; border-bottom:1px solid var(--filo); color:var(--testo);}
+.sto-det td .g{color:var(--vidimato-t); font-weight:700;} .sto-det td .r{color:var(--lacca-t); font-weight:700;}
+.sto-det td.pt{font-weight:700;}
+.sto-det tr.tt td{font-weight:800; border-bottom:0; background:rgba(var(--velo),.04);}
+.sto-nd{font-size:.75rem; color:var(--nebbia); margin:0 0 10px; line-height:1.45;}
 .sto-leg{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:.75rem; color:var(--nebbia); margin-top:8px;}
 .sto-leg span{display:inline-flex; align-items:center; gap:6px;}
 .sto-vuoto{font-size:.86rem; color:var(--nebbia); padding:10px 0;}
@@ -5655,8 +5697,8 @@ function contaLivelli(lista){
 }
 const SEG_DOM = o => [[o.salda, 'var(--vidimato)'], [o.attesa, 'var(--ottone-pieno)'], [o.aperta, 'var(--lacca)'], [o.nuova, 'var(--nuova)']];
 const SEG_PT  = o => [[2 * o.s2, 'var(--vidimato)'], [o.s1, 'var(--salda2)'], [2 * o.d2, 'var(--lacca)'], [o.d1, 'var(--aperta2)']];
-let bdVista = 'tot';
-try{ if(localStorage.getItem('ocf_bd_vista') === 'arg') bdVista = 'arg'; }catch(e){}
+let bdVista = 'tot', bdArgVista = 'dom', bdPtVista = 'tutti';
+try{ if(localStorage.getItem('ocf_bd_vista') === 'arg') bdVista = 'arg'; if(localStorage.getItem('ocf_bd_argv') === 'pt') bdArgVista = 'pt'; const pv = localStorage.getItem('ocf_bd_ptv'); if(['tutti', '2', '1'].includes(pv)) bdPtVista = pv; }catch(e){}
 function mostraTab(pref, v, salva){
   const tabs = [...document.querySelectorAll(`[id^="${pref}-t-"]`)];
   tabs.forEach(t => {
@@ -5684,32 +5726,60 @@ function renderCampo(){
       </div>
     </div>
     <div class="kpi-b">
-      <div class="kl">Punti d'esame</div>
+      <div class="kl kl-tab">Punti d'esame
+        <span class="pt-tabs" role="group" aria-label="Quali punti">${[['tutti', 'Tutti'], ['2', 'Da 2'], ['1', 'Da 1']].map(([v, l]) => `<button type="button" data-ptv="${v}" aria-pressed="${bdPtVista === v}">${l}</button>`).join('')}</span></div>
+      ${bdPtVista === 'tutti' ? `
       <div class="tor">${torta(SEG_PT(T), 108, pc(T.pOk, T.pTot) + '%', 'superati', `${T.pOk} punti superati su ${T.pTot}`)}</div>
       <div class="tot"><b>${fmt(T.pOk)}</b> su ${fmt(T.pTot)} punti</div>
-      <div class="lg pliv">
-        <span class="liv">Da 2 punti</span>
-        <span><i class="stato-p" style="background:var(--vidimato)"></i>superate<b>${fmt(T.s2)}</b></span>
-        <span><i class="stato-p" style="background:var(--lacca)"></i>da superare<b class="r">${fmt(T.d2)}</b></span>
-        <span class="liv">Da 1 punto</span>
-        <span><i class="stato-p" style="background:var(--salda2)"></i>superate<b>${fmt(T.s1)}</b></span>
-        <span><i class="stato-p" style="background:var(--aperta2)"></i>da superare<b class="r">${fmt(T.d1)}</b></span>
+      <div class="lg">
+        <span><i class="stato-p" style="background:var(--vidimato)"></i>superati da 2<b>${fmt(2 * T.s2)}</b></span>
+        <span><i class="stato-p" style="background:var(--salda2)"></i>superati da 1<b>${fmt(T.s1)}</b></span>
+        <span><i class="stato-p" style="background:var(--lacca)"></i>da superare da 2<b class="r">${fmt(2 * T.d2)}</b></span>
+        <span><i class="stato-p" style="background:var(--aperta2)"></i>da superare da 1<b class="r">${fmt(T.d1)}</b></span>
       </div>
-      ${T.d2 + T.d1 ? `<p class="nota-p">Da superare valgono <b>${fmt(2 * T.d2 + T.d1)} punti</b>, ${fmt(2 * T.d2)} dalle domande da 2.</p>` : ''}
+      ${T.d2 + T.d1 ? `<p class="nota-p">Da superare: <b>${fmt(2 * T.d2 + T.d1)} punti</b>, ${pc(2 * T.d2, 2 * T.d2 + T.d1)}% dalle domande da 2.</p>` : ''}`
+      : (L => { const s = L === 2 ? T.s2 : T.s1, d = L === 2 ? T.d2 : T.d1, n = s + d;
+        return `
+      <div class="tor">${torta([[s, L === 2 ? 'var(--vidimato)' : 'var(--salda2)'], [d, L === 2 ? 'var(--lacca)' : 'var(--aperta2)']], 108, pc(s, n) + '%', 'superate', `${s} domande da ${L} punt${L === 2 ? 'i' : 'o'} superate su ${n}`)}</div>
+      <div class="tot"><b>${fmt(s)}</b> su ${fmt(n)} domande da ${L}</div>
+      <div class="lg">
+        <span><i class="stato-p" style="background:${L === 2 ? 'var(--vidimato)' : 'var(--salda2)'}"></i>superate<b>${fmt(s)}</b></span>
+        <span><i class="stato-p" style="background:${L === 2 ? 'var(--lacca)' : 'var(--aperta2)'}"></i>da superare<b class="r">${fmt(d)}</b></span>
+        <span>punti superati<b>${fmt(L * s)}</b></span>
+        <span>punti da superare<b class="r">${fmt(L * d)}</b></span>
+      </div>
+      <p class="nota-p">All'esame ${L === 2 ? '40 domande valgono 2 punti' : '20 domande valgono 1 punto'}: ${L * (L === 2 ? 40 : 20)} punti su 100.</p>`; })(+bdPtVista)}
     </div>
   </div>`;
+  if(tot) tot.querySelectorAll('[data-ptv]').forEach(b => b.onclick = () => {
+    bdPtVista = b.dataset.ptv; try{ localStorage.setItem('ocf_bd_ptv', bdPtVista); }catch(e){}
+    renderCampo();
+  });
   const arg = $('bd-arg');
-  if(arg) arg.innerHTML = `<div class="colh"><span>Materia</span><span>domande</span><span>punti</span></div>`
-    + STRUTTURA_ESAME.map(([m, nEsame]) => {
-      const o = contaLivelli(B.filter(q => q.t === m));
-      return `<div class="argr">
-        <span class="n">${nomeBreve(m)}<small>${nEsame} all'esame</small></span>
-        <span class="t1">${torta(SEG_DOM(o), 50, pc(o.salda, o.n) + '%', '', `${nomeBreve(m)}: ${o.salda} domande consolidate su ${o.n}`)}</span>
-        <span class="t2">${torta(SEG_PT(o), 50, pc(o.pOk, o.pTot) + '%', '', `${nomeBreve(m)}: ${o.pOk} punti superati su ${o.pTot}`)}</span>
-        <span class="d">Domande <b>${fmt(o.salda)}</b>/${fmt(o.n)}${o.aperta ? ` · <span class="r">${fmt(o.aperta)}</span> da recuperare` : ''}${o.attesa ? ` · ${fmt(o.attesa)} da riconfermare` : ''}<br>
-          Punti <b>${fmt(o.pOk)}</b>/${fmt(o.pTot)}${o.d2 + o.d1 ? ` · da superare: <span class="r">${fmt(o.d2)}</span> da 2, <span class="r">${fmt(o.d1)}</span> da 1` : ''}</span>
-      </div>`;
-    }).join('');
+  if(arg){
+    const pt = bdArgVista === 'pt';
+    const cella = (nome, sotto, o, tot) => {
+      const lab = pt ? `${nome}: ${o.pOk} punti superati su ${o.pTot}` : `${nome}: ${o.salda} domande consolidate su ${o.n}`;
+      const k = pt
+        ? `${fmt(o.pOk)}/${fmt(o.pTot)} punti superati<br>da superare: <b>${fmt(o.d2)}</b> da 2 · <b>${fmt(o.d1)}</b> da 1`
+        : `${fmt(o.salda)}/${fmt(o.n)} già tue<br><b>${fmt(o.aperta)}</b> da recuperare${o.attesa ? ` · ${fmt(o.attesa)} da riconf.` : ''}`;
+      return `<div class="bdc${tot ? ' tot' : ''}"><div class="nm">${nome}</div><div class="es">${sotto}</div>
+        <div class="tor">${torta(pt ? SEG_PT(o) : SEG_DOM(o), 92, (pt ? pc(o.pOk, o.pTot) : pc(o.salda, o.n)) + '%', '', lab)}</div>
+        <div class="k">${k}</div></div>`;
+    };
+    const leg = pt
+      ? `<span><i class="stato-p" style="background:var(--vidimato)"></i>superati da 2</span><span><i class="stato-p" style="background:var(--salda2)"></i>superati da 1</span><span><i class="stato-p" style="background:var(--lacca)"></i>da superare da 2</span><span><i class="stato-p" style="background:var(--aperta2)"></i>da superare da 1</span>`
+      : `<span><i class="stato-p sp-salda"></i>consolidate</span><span><i class="stato-p sp-attesa"></i>da riconfermare</span><span><i class="stato-p sp-aperta"></i>da recuperare</span>${T.nuova ? '<span><i class="stato-p sp-nuova"></i>mai viste</span>' : ''}`;
+    arg.innerHTML = `<div class="bdc-sw"><div class="bd-tabs" role="group" aria-label="Cosa guardare">
+        <button type="button" data-bdv="dom" aria-pressed="${!pt}">Domande</button><button type="button" data-bdv="pt" aria-pressed="${pt}">Punti</button></div></div>
+      <div class="bdc-gr">${STRUTTURA_ESAME.map(([m, nEsame]) => cella(nomeBreve(m), `${nEsame} all'esame`, contaLivelli(B.filter(q => q.t === m)))).join('')}
+        ${cella('Totale', `${STRUTTURA_ESAME.reduce((a, [, n]) => a + n, 0)} all'esame`, T, true)}</div>
+      <div class="bdc-leg">${leg}</div>`;
+    arg.querySelectorAll('[data-bdv]').forEach(b => b.onclick = () => {
+      bdArgVista = b.dataset.bdv; try{ localStorage.setItem('ocf_bd_argv', bdArgVista); }catch(e){}
+      renderCampo();
+    });
+  }
   mostraBd(bdVista);
 }
 
@@ -5809,6 +5879,24 @@ function renderDove(){
     + (righe.length && righe[0].q1 < 80 ? ` La più debole è <b>${nomeBreve(righe[0].a)}</b>: ${righe[0].q1}%.` : '') + `</p>`;
 }
 
+// il dettaglio di un test: per materia, giuste e sbagliate da 2 e da 1 punto
+function dettaglioTest(h){
+  const fmt = fmtN, M = h.mat || {};
+  const conLiv = Object.values(M).some(a => a && (a.ok2 !== undefined || a.ok1 !== undefined || a.ko2 !== undefined || a.ko1 !== undefined));
+  const ord = STRUTTURA_ESAME.map(([m]) => ARGOMENTI.indexOf(m)).filter(i => i >= 0 && M[i]);
+  Object.keys(M).forEach(k => { if(!ord.includes(+k)) ord.push(+k); });
+  if(!ord.length) return '<p class="sto-nd">Per questo test non c\'è il dettaglio per materia.</p>';
+  const c = (ok, ko) => `<span class="g">${fmt(ok || 0)}</span> / <span class="r">${fmt(ko || 0)}</span>`;
+  const tot = {ok2:0, ko2:0, ok1:0, ko1:0, ok:0, ko:0};
+  const righe = ord.map(i => { const a = M[i];
+    Object.keys(tot).forEach(k => tot[k] += a[k] || 0);
+    const pt = conLiv ? 2 * (a.ok2 || 0) + (a.ok1 || 0) : null, ptMax = conLiv ? 2 * ((a.ok2 || 0) + (a.ko2 || 0)) + (a.ok1 || 0) + (a.ko1 || 0) : null;
+    return `<tr><td>${nomeBreve(ARGOMENTI[i] || '')}</td>${conLiv ? `<td>${c(a.ok2, a.ko2)}</td><td>${c(a.ok1, a.ko1)}</td><td class="pt">${pt}/${ptMax}</td>` : `<td>${c(a.ok, a.ko)}</td>`}</tr>`; }).join('');
+  const tt = conLiv ? `<tr class="tt"><td>Totale</td><td>${c(tot.ok2, tot.ko2)}</td><td>${c(tot.ok1, tot.ko1)}</td><td class="pt">${2 * tot.ok2 + tot.ok1}/${2 * (tot.ok2 + tot.ko2) + tot.ok1 + tot.ko1}</td></tr>`
+                    : `<tr class="tt"><td>Totale</td><td>${c(tot.ok, tot.ko)}</td></tr>`;
+  return `<table class="sto-det"><thead><tr><th>Materia</th>${conLiv ? '<th>Da 2 punti<br><small>giuste / sbagliate</small></th><th>Da 1 punto<br><small>giuste / sbagliate</small></th><th>Punti</th>' : '<th>Giuste / sbagliate</th>'}</tr></thead><tbody>${righe}${tt}</tbody></table>`
+    + (conLiv ? '' : '<p class="sto-nd">La divisione tra domande da 1 e da 2 punti c\'è per i test fatti da oggi in poi: per quelli vecchi l\'app non l\'aveva salvata.</p>');
+}
 // ---------- storico dei test, in grafico ----------
 let stoVista = 'ult';
 function renderStoricoHome(){
@@ -5841,9 +5929,10 @@ function renderStoricoHome(){
     <div class="sto-x">${barre.map(b => `<span>${b.x}</span>`).join('')}</div>
     <div class="sto-leg"><span><i class="stato-p sem-ok"></i>80 o più</span><span><i class="stato-p sem-mid"></i>70–79</span><span><i class="stato-p sem-ko"></i>sotto 70</span><span>punti su 100, come all'esame</span></div>
     <div class="sto-rias"><div>Media ultimi ${ult10.length}<b>${media}</b></div><div>Da 80 in su<b>${sopra} su ${ult12.length}</b></div><div>Il migliore<b>${top}</b></div></div>
-    <ul class="sto-ult">${voci.slice(-4).reverse().map(v => { const p = v100(v), h = v.h;
+    <div class="sto-lista-tit">Tutti i test <span>${fmt(voci.length)} · tocca un test per il dettaglio</span></div>
+    <div class="sto-lista">${voci.slice().reverse().map(v => { const p = v100(v), h = v.h;
       const nome = eSim(h) ? 'Simulazione d\'esame' : h.argomenti === 'Tutti' ? 'Test del piano' : h.argomenti;
-      return `<li><span class="bd ${cls(p)}">${p}</span><span>${nome}<small>${h.data} · ${h.tot} domande</small></span><span class="dx">${h.punti}/${h.tot} giuste</span></li>`; }).join('')}</ul>`;
+      return `<details class="sto-t"><summary><span class="bd ${cls(p)}">${p}</span><span class="nm">${nome}<small>${h.data} · ${h.tot} domande</small></span><span class="dx">${h.punti}/${h.tot} giuste</span></summary>${dettaglioTest(h)}</details>`; }).join('')}</div>`;
 }
 let campoTimer = null;
 (function(){
@@ -8717,7 +8806,9 @@ function fineTest(){
     const mat = {};
     const contaMat = (q, campo) => {
       const i = ARGOMENTI.indexOf(q.t); if(i < 0) return;
-      const a = mat[i] || {ok:0, ko:0}; a[campo]++; mat[i] = a;
+      const a = mat[i] || {ok:0, ko:0}; a[campo]++;
+      const k = campo + livelloQ(q); a[k] = (a[k] || 0) + 1;      // ok1 ko1 ok2 ko2: giuste e sbagliate per livello
+      mat[i] = a;
     };
     giuste.forEach(q => contaMat(q, 'ok'));
     errori.forEach(q => contaMat(q, 'ko'));
