@@ -107,6 +107,109 @@ h2.campo-tit{margin:0;}
   padding:6px 13px; border-radius:999px; cursor:pointer; min-height:32px;}
 .bd-tabs button[aria-selected="true"]{background:var(--azione); color:var(--su-accento);}
 .bd-griglia{display:grid; gap:14px 34px;}
+/* ===== home di dicembre: banca dati a KPI, piano, dove intervenire, storico ===== */
+.card-banca h2, .card-piano h2, #card-dove h2, #card-sto h2{font-size:1.05rem; margin:0;}
+.bd-kpi{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px;}
+.kpi-b{border:1px solid var(--bordo); border-radius:14px; padding:12px; background:rgba(var(--velo),.03); min-width:0;}
+.kpi-b .kl{font-size:.8rem; font-weight:700; color:var(--nebbia);}
+.kpi-b .tor{display:flex; justify-content:center; margin:8px 0 4px;}
+.kpi-b .tot{text-align:center; font-size:.8rem; color:var(--nebbia); margin-bottom:9px;}
+.kpi-b .tot b{color:var(--testo); font-size:.95rem;}
+.lg{display:flex; flex-direction:column; gap:4px; font-size:.78rem; color:var(--nebbia);}
+.lg span{display:flex; align-items:center; gap:6px;}
+.lg b{color:var(--testo); margin-left:auto; font-variant-numeric:tabular-nums;}
+.ptab{display:grid; grid-template-columns:auto 1fr 1fr; gap:4px 8px; font-size:.78rem; align-items:baseline;}
+.ptab .h{color:var(--nebbia); font-weight:600; font-size:.75rem; text-align:right;}
+.ptab .lv{font-weight:700; display:flex; align-items:center; gap:5px; white-space:nowrap;}
+.ptab .v{font-weight:700; text-align:right; font-variant-numeric:tabular-nums;}
+.ptab .v.g{color:var(--vidimato-t);} .ptab .v.r{color:var(--lacca-t);}
+.pliv .liv{font-weight:700; color:var(--testo); font-size:.75rem; margin-top:2px;}
+.pliv .liv:first-child{margin-top:0;}
+.lg b.r{color:var(--lacca-t);}
+.kpi-b .nota-p{font-size:.76rem; color:var(--nebbia); margin:9px 0 0; line-height:1.45;}
+.kpi-b .nota-p b{color:var(--lacca-t);}
+.tor svg{display:block; overflow:visible;}
+.colh{display:grid; grid-template-columns:1fr 56px 56px; white-space:nowrap; gap:10px; font-size:.75rem; color:var(--nebbia); font-weight:700; margin-bottom:4px; text-align:center;}
+.colh span:first-child{text-align:left;}
+.argr{display:grid; grid-template-columns:1fr 56px 56px; gap:2px 10px; align-items:center; padding:10px 0; border-top:1px solid var(--filo);}
+.argr .n{grid-column:1; grid-row:1; font-weight:700; font-size:.9rem; color:var(--testo);}
+.argr .n small{font-weight:500; color:var(--nebbia); font-size:.75rem; margin-left:6px;}
+.argr .d{grid-column:1; grid-row:2; font-size:.78rem; color:var(--nebbia); line-height:1.5;}
+.argr .d b{color:var(--testo);} .argr .d .r{color:var(--lacca-t); font-weight:700;}
+.argr .t1{grid-column:2; grid-row:1 / 3;} .argr .t2{grid-column:3; grid-row:1 / 3;}
+.argr .t1, .argr .t2{display:flex; justify-content:center;}
+@media(max-width:380px){ .bd-kpi{gap:7px;} .kpi-b{padding:10px 9px;} }
+@media(min-width:760px){ .bd-kpi{gap:14px;} }
+@media(max-width:640px){ .kpi-b{padding:11px 10px;} .lg{font-size:.75rem;} .ptab{font-size:.75rem; gap:4px 6px;} }
+/* il piano: la settimana */
+.ps-tit{font-size:.85rem; color:var(--nebbia); margin-bottom:10px;} .ps-tit b{color:var(--testo);}
+.ps-sett{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:6px; align-items:end;}
+.ps-g{display:flex; flex-direction:column; align-items:center; gap:4px; min-width:0;}
+.ps-col{width:100%; height:88px; border-radius:9px; background:rgba(var(--velo),.05); position:relative; overflow:hidden; border:1px solid var(--filo);}
+.ps-col i{position:absolute; left:0; right:0; bottom:0; background:var(--vidimato); opacity:.75;}
+.ps-col i.pieno{opacity:1;}
+.ps-col.futuro{border:1.5px dashed var(--bordo); background:transparent;}
+.ps-col.libero{background:repeating-linear-gradient(135deg, transparent 0 6px, rgba(var(--velo),.08) 6px 8px);}
+.ps-col.oggi{outline:2px solid var(--azione); outline-offset:1px;}
+.ps-v{font-size:.75rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--testo); min-height:1.1em;}
+.ps-v.prev{color:var(--nebbia); font-weight:600;}
+.ps-lb{font-size:.75rem; color:var(--nebbia); font-weight:600; white-space:nowrap;}
+.ps-lb.oggi{color:var(--vidimato-t); font-weight:800;}
+.ps-rias{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;}
+.ps-rias div{border-radius:12px; padding:9px 12px; background:rgba(var(--velo),.04); border:1px solid var(--filo); font-size:.78rem; color:var(--nebbia);}
+.ps-rias b{display:block; font-size:1.1rem; color:var(--testo); font-family:var(--f-display);}
+.ps-rias b small{font-size:.75rem; font-weight:500; color:var(--nebbia); font-family:var(--f-testo);}
+.ps-pross{list-style:none; margin:10px 0 0; padding:0; font-size:.84rem;}
+.ps-pross li{display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-top:1px solid var(--filo);}
+.ps-pross li span:last-child{color:var(--nebbia); text-align:right;}
+.ps-msg{font-size:.84rem; line-height:1.55; margin-top:10px; color:var(--testo);}
+/* il piano: tutto */
+.pf-tit{font-size:.85rem; color:var(--nebbia); margin-bottom:6px;} .pf-tit b{color:var(--testo);}
+.pf-bar{display:flex; height:28px; border-radius:8px; overflow:hidden; gap:2px; position:relative; margin:4px 0 4px;}
+.pf-bar i{display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; font-style:normal; white-space:nowrap; overflow:hidden; color:var(--su-accento); min-width:0;}
+.pf-bar i.f-giro{background:var(--azione);} .pf-bar i.f-nat, .pf-bar i.f-coda, .pf-bar i.f-vig{background:var(--salda2); color:#F9FCF8;}
+.pf-bar i.f-pausa{background:rgba(var(--velo),.12); color:var(--nebbia);}
+.pf-oggi{position:absolute; top:-3px; bottom:-3px; width:3px; border-radius:2px; background:var(--testo); box-shadow:0 0 0 2px var(--foglio);}
+.pf-date{display:flex; justify-content:space-between; font-size:.75rem; color:var(--nebbia); margin-bottom:14px;}
+.pi-prospetto{margin-top:12px; padding-top:12px; border-top:1px solid var(--filo);}
+.pi-prospetto .prs-testa h2{display:none;}
+#pi-tutto .cal-intro{display:none;}
+.pi-prospetto .prs-testa{margin-bottom:8px;}
+/* dove intervenire */
+.dv-chips{display:flex; flex-wrap:wrap; gap:3px; padding:3px; border-radius:999px; background:rgba(var(--velo),.06); border:1px solid var(--filo);}
+.dv-chips button{font:inherit; font-size:.75rem; font-weight:700; color:var(--nebbia); background:transparent; border:0; padding:5px 9px; border-radius:999px; cursor:pointer; min-height:30px;}
+.dv-chips button[aria-pressed="true"]{background:var(--azione); color:var(--su-accento);}
+.dv-r{display:grid; grid-template-columns:minmax(78px,110px) 1fr 40px 50px; gap:10px; align-items:center; padding:7px 0; font-size:.86rem;}
+.dv-r .nm{font-weight:700; color:var(--testo);}
+.dv-bar{height:10px; border-radius:5px; background:rgba(var(--velo),.07); position:relative; overflow:visible;}
+.dv-bar i{position:absolute; left:0; top:0; bottom:0; border-radius:5px;}
+.dv-bar .s80{position:absolute; left:80%; top:-3px; bottom:-3px; width:2px; background:var(--testo); opacity:.45; border-radius:1px;}
+.dv-r .pc{font-weight:800; text-align:right; font-variant-numeric:tabular-nums; color:var(--testo);}
+.dv-r .dl{font-size:.75rem; font-weight:700; text-align:right; color:var(--vidimato-t); white-space:nowrap;}
+.dv-r .dl.giu{color:var(--lacca-t);} .dv-r .dl.neutro{color:var(--nebbia);}
+.dv-nota{font-size:.8rem; color:var(--nebbia); margin:8px 0 0; line-height:1.5;} .dv-nota b{color:var(--testo);}
+.sem-ok{background:var(--vidimato);} .sem-mid{background:var(--ottone-pieno);} .sem-ko{background:var(--lacca);}
+/* storico */
+.sto-graf{position:relative; height:140px; display:flex; align-items:flex-end; gap:5px; margin:18px 0 4px 26px; border-bottom:1px solid var(--bordo);}
+.sto-graf .b{flex:1; min-width:0; border-radius:6px 6px 2px 2px; position:relative;}
+.sto-graf .b em{position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:.68rem; font-style:normal; font-weight:700; color:var(--nebbia);}
+.sto-graf .b.sim{background-image:repeating-linear-gradient(45deg, rgba(255,255,255,.28) 0 3px, transparent 3px 7px);}
+.sto-graf .soglia{position:absolute; left:0; right:0; border-top:2px dashed var(--testo); opacity:.5; pointer-events:none;}
+.sto-graf .soglia span{position:absolute; left:-26px; top:-9px; font-size:.68rem; font-weight:700; color:var(--testo);}
+.sto-x{display:flex; gap:5px; margin-left:26px; font-size:.68rem; color:var(--nebbia);}
+.sto-x span{flex:1; min-width:0; text-align:center; overflow:hidden;}
+.sto-rias{display:grid; grid-template-columns:repeat(3, 1fr); gap:7px; margin-top:12px;}
+.sto-rias div{border-radius:11px; padding:8px 10px; background:rgba(var(--velo),.04); border:1px solid var(--filo); font-size:.75rem; color:var(--nebbia);}
+.sto-rias b{display:block; font-size:1.08rem; color:var(--testo); font-family:var(--f-display);}
+.sto-ult{list-style:none; margin:10px 0 0; padding:0;}
+.sto-ult li{display:grid; grid-template-columns:46px 1fr auto; gap:10px; align-items:center; padding:8px 0; border-top:1px solid var(--filo); font-size:.86rem;}
+.sto-ult .bd{font-weight:800; font-size:.88rem; text-align:center; border-radius:8px; padding:5px 0;}
+.sto-ult .bd.ok{background:var(--vidibg); color:var(--vidimato-t);} .sto-ult .bd.mid{background:var(--ottonebg); color:var(--ottone-t);} .sto-ult .bd.ko{background:var(--laccabg); color:var(--lacca-t);}
+.sto-ult small{display:block; color:var(--nebbia); font-size:.75rem;}
+.sto-ult .dx{font-size:.75rem; color:var(--nebbia); text-align:right; white-space:nowrap;}
+.sto-leg{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:.75rem; color:var(--nebbia); margin-top:8px;}
+.sto-leg span{display:inline-flex; align-items:center; gap:6px;}
+.sto-vuoto{font-size:.86rem; color:var(--nebbia); padding:10px 0;}
 @media(min-width:760px){ .bd-griglia{grid-template-columns:1fr 1fr;} .bd-punti{border-top:0 !important; padding-top:0 !important; border-left:1px solid var(--filo); padding-left:34px;} }
 .bd-frase{font-family:var(--f-display); font-size:1.2rem; line-height:1.3; font-weight:600; color:var(--testo); margin:0;}
 .bd-frase b{color:var(--vidimato-t);}
@@ -205,6 +308,7 @@ h2.campo-tit{margin:0;}
      l'inchiostro (sotto) è la stessa tinta calibrata per reggere da testo. */
   --lacca-t:#F4A493; --vidimato-t:#A8D5BA; --ottone-t:#F3CB78; --nuova-t:#9DBFAE;
   --lacca2:#E9A27A; --viola:#A8D5BA; --viola-t:#C4E5D1;
+  --salda2:#4C956C; --aperta2:#9C5F55;
   --su-pieno:#0B3024;                 /* inchiostro sopra un riempimento pieno */
   --su-nuova:#E6F2EA;                 /* inchiostro sopra il verde "mai vista" */
   --bordo:rgba(230,242,234,.14); --filo:rgba(230,242,234,.08);
@@ -234,6 +338,7 @@ h2.campo-tit{margin:0;}
   --ottone:#8A5D06; --ottonebg:rgba(217,162,27,.14); --ottone-pieno:#D9A21B;
   --lacca-t:#A93422; --vidimato-t:#166534; --ottone-t:#7A5306; --nuova-t:#47685A;
   --lacca2:#A24C1C; --viola:#166534; --viola-t:#0F3D2E;
+  --salda2:#4C956C; --aperta2:#E39A8E;
   --su-pieno:#F9FCF8; --su-nuova:#0F3D2E;
   --bordo:rgba(15,61,46,.15); --filo:rgba(15,61,46,.08);
   --azz:rgba(15,61,46,.06);
@@ -2002,19 +2107,6 @@ b.dubbia{color:var(--ottone-t);}
 </header>
 <div class="wrap">
 
-  <section class="campo-fascia" id="campo-fascia" aria-labelledby="bd-tit">
-    <div class="campo-int">
-      <div class="bd-testa">
-        <h2 class="campo-tit" id="bd-tit">La banca dati ufficiale</h2>
-        <div class="bd-tabs" role="tablist" aria-label="Vista della banca dati">
-          <button type="button" role="tab" id="bd-t-tot" aria-controls="bd-tot" aria-selected="true">Totale</button>
-          <button type="button" role="tab" id="bd-t-arg" aria-controls="bd-arg" aria-selected="false" tabindex="-1">Per argomento</button>
-        </div>
-      </div>
-      <div id="bd-tot" role="tabpanel" aria-labelledby="bd-t-tot"></div>
-      <div id="bd-arg" role="tabpanel" aria-labelledby="bd-t-arg" hidden></div>
-    </div>
-  </section>
 
   <div class="tabs" id="barra-tab">
     <button class="tab attiva" id="tab-allenamento"><span class="t-ico"><svg class="ic"><use href="#i-matita"/></svg></span><span>Allenati</span></button>
@@ -2026,6 +2118,19 @@ b.dubbia{color:var(--ottone-t);}
 
   <!-- ==================== HOME ==================== -->
   <div id="vista-home">
+
+    <!-- 0 · LA BANCA DATI -->
+    <section class="card card-banca" id="card-banca" aria-labelledby="bd-tit">
+      <div class="bd-testa">
+        <h2 id="bd-tit">La banca dati</h2>
+        <div class="bd-tabs" role="tablist" aria-label="Vista della banca dati">
+          <button type="button" role="tab" id="bd-t-tot" aria-controls="bd-tot" aria-selected="true">Totale</button>
+          <button type="button" role="tab" id="bd-t-arg" aria-controls="bd-arg" aria-selected="false" tabindex="-1">Per argomento</button>
+        </div>
+      </div>
+      <div id="bd-tot" role="tabpanel" aria-labelledby="bd-t-tot"></div>
+      <div id="bd-arg" role="tabpanel" aria-labelledby="bd-t-arg" hidden></div>
+    </section>
 
     <!-- 1 · AZIONE: allenati -->
     <div class="card card-azione">
@@ -2101,8 +2206,54 @@ b.dubbia{color:var(--ottone-t);}
       <div class="nota" id="nota-pool"></div>
     </div>
 
-    <!-- 1a-bis · PROSPETTO DEL PIANO -->
-    <div class="card card-prospetto nascosto" id="card-prospetto"></div>
+    <!-- 2 · IL PIANO: settimana e calendario -->
+    <section class="card card-piano" id="card-piano" aria-labelledby="pi-tit">
+      <div class="bd-testa">
+        <h2 id="pi-tit">Il piano</h2>
+        <div class="bd-tabs" role="tablist" aria-label="Vista del piano">
+          <button type="button" role="tab" id="pi-t-sett" aria-controls="pi-sett" aria-selected="true">Settimana</button>
+          <button type="button" role="tab" id="pi-t-tutto" aria-controls="pi-tutto" aria-selected="false" tabindex="-1">Tutto il piano</button>
+        </div>
+      </div>
+      <div id="pi-sett" role="tabpanel" aria-labelledby="pi-t-sett"></div>
+      <div id="pi-tutto" role="tabpanel" aria-labelledby="pi-t-tutto" hidden>
+        <div id="pi-fasi"></div>
+        <div class="cal-griglia" id="cal-griglia"></div>
+        <div class="cal-leg">
+          <span><i style="background:var(--vidibg); border-color:rgba(var(--ok-rgb),.34)"></i> giornata piena</span>
+          <span><i style="background:var(--ottonebg); border-color:rgba(var(--amb-rgb),.34)"></i> mezza giornata</span>
+          <span><i style="background:var(--laccabg); border-color:rgba(var(--ko-rgb),.30)"></i> saltata</span>
+          <span><i style="border-color:var(--azione); border-width:2px"></i> oggi</span>
+          <span><i style="opacity:.55"></i> riposo o pausa</span>
+        </div>
+        <div class="cal-riass" id="cal-riass"></div>
+        <p class="cal-intro" id="cal-intro"></p>
+        <div id="card-prospetto" class="pi-prospetto"></div>
+      </div>
+    </section>
+
+    <!-- 3 · DOVE INTERVENIRE (compatta) -->
+    <section class="card" id="card-dove" aria-labelledby="dv-tit">
+      <div class="bd-testa">
+        <h2 id="dv-tit">Dove intervenire</h2>
+        <div class="dv-chips" id="dv-chips" role="group" aria-label="Periodo">
+          <button type="button" data-gg="1">1g</button><button type="button" data-gg="2">2g</button><button type="button" data-gg="3">3g</button><button type="button" data-gg="5">5g</button><button type="button" data-gg="7" aria-pressed="true">7g</button><button type="button" data-gg="10">10g</button><button type="button" data-gg="14">14g</button>
+        </div>
+      </div>
+      <div id="dv-corpo"></div>
+    </section>
+
+    <!-- 4 · STORICO DEI TEST (grafico) -->
+    <section class="card" id="card-sto" aria-labelledby="st-tit">
+      <div class="bd-testa">
+        <h2 id="st-tit">Storico dei test</h2>
+        <div class="bd-tabs" role="tablist" aria-label="Periodo dello storico">
+          <button type="button" role="tab" id="sto-t-ult" aria-selected="true">Ultimi 12</button>
+          <button type="button" role="tab" id="sto-t-30" aria-selected="false" tabindex="-1">30 giorni</button>
+        </div>
+      </div>
+      <div id="sto-corpo"></div>
+    </section>
 
   </div>
 
@@ -3998,20 +4149,6 @@ b.dubbia{color:var(--ottone-t);}
       </details>
     </div>
 
-    <div class="card">
-      <h2>Il calendario</h2>
-      <p class="cal-intro" id="cal-intro"></p>
-      <div class="cal-griglia" id="cal-griglia"></div>
-      <div class="cal-leg">
-        <span><i style="background:var(--vidibg); border-color:rgba(var(--ok-rgb),.34)"></i> giornata piena</span>
-        <span><i style="background:var(--ottonebg); border-color:rgba(var(--amb-rgb),.34)"></i> mezza giornata</span>
-        <span><i style="background:var(--laccabg); border-color:rgba(var(--ko-rgb),.30)"></i> saltata</span>
-        <span><i style="border-color:var(--azione); border-width:2px"></i> oggi</span>
-        <span><i style="border-style:dashed"></i> ultimi 10 giorni: solo consolidamento</span>
-        <span><i style="opacity:.55"></i> domenica: riposo</span>
-      </div>
-      <div class="cal-riass" id="cal-riass"></div>
-    </div>
 
     <div class="card">
       <h2>Avanzamento per argomento</h2>
@@ -4508,6 +4645,7 @@ function renderHome(){
   renderOggi();
   renderObiettivo();
   renderProspetto();
+  renderPiano(); renderCalendario(); renderDove(); renderStoricoHome();
   applicaFase();
   renderStato();
   renderAndamento();
@@ -5489,76 +5627,239 @@ function barraPunti(P){
   const w = v => P.tot ? (100 * v / P.tot).toFixed(2) + '%' : '0';
   return `<div class="bd-barra" aria-hidden="true"><i class="sp-salda" style="width:${w(P.salda)}"></i><i class="sp-attesa" style="width:${w(P.attesa)}"></i><i class="sp-aperta" style="width:${w(P.ko2)}"></i><i class="sp-aperta uno" style="width:${w(P.ko1)}"></i><i class="sp-nuova" style="width:${w(P.nuova)}"></i></div>`;
 }
+function torta(seg, size, centro, sub, etichetta){
+  // seg: [[valore, colore CSS]] — una ciambella SVG, con il numero al centro
+  const r = size / 2, sw = Math.round(size * 0.17), rr = r - sw / 2, C = 2 * Math.PI * rr;
+  const vivi = seg.filter(s => s[0] > 0), tot = vivi.reduce((a, s) => a + s[0], 0) || 1;
+  const gap = vivi.length > 1 ? Math.min(2, C * 0.006) : 0;
+  let off = 0;
+  const archi = vivi.map(([v, c]) => {
+    const L = Math.max(0, C * v / tot - gap);
+    const a = `<circle r="${rr}" cx="${r}" cy="${r}" fill="none" stroke="${c}" stroke-width="${sw}" stroke-dasharray="${L} ${C - L}" stroke-dashoffset="${-off}" transform="rotate(-90 ${r} ${r})"/>`;
+    off += C * v / tot; return a;
+  }).join('');
+  const t = centro ? `<text x="${r}" y="${r + (sub ? -1 : size * 0.07)}" text-anchor="middle" font-size="${Math.round(size * 0.21)}" font-weight="800" fill="currentColor" font-family="var(--f-display)">${centro}</text>` : '';
+  const s = sub ? `<text x="${r}" y="${r + size * 0.16}" text-anchor="middle" font-size="${Math.max(9, Math.round(size * 0.1))}" fill="currentColor" opacity=".7">${sub}</text>` : '';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${etichetta || ''}" style="color:var(--testo)"><circle r="${rr}" cx="${r}" cy="${r}" fill="none" stroke="rgba(var(--velo),.08)" stroke-width="${sw}"/>${archi}${t}${s}</svg>`;
+}
+function contaLivelli(lista){
+  const o = {n:0, salda:0, attesa:0, aperta:0, nuova:0, l1:0, l2:0, s1:0, s2:0};
+  lista.forEach(q => {
+    const s = statoDomanda(q), L = puntiQ(q);
+    o.n++; o[s]++;
+    if(L === 2){ o.l2++; if(s === 'salda') o.s2++; } else { o.l1++; if(s === 'salda') o.s1++; }
+  });
+  o.pTot = o.l1 + 2 * o.l2; o.pOk = o.s1 + 2 * o.s2;
+  o.d2 = o.l2 - o.s2; o.d1 = o.l1 - o.s1;
+  return o;
+}
+const SEG_DOM = o => [[o.salda, 'var(--vidimato)'], [o.attesa, 'var(--ottone-pieno)'], [o.aperta, 'var(--lacca)'], [o.nuova, 'var(--nuova)']];
+const SEG_PT  = o => [[2 * o.s2, 'var(--vidimato)'], [o.s1, 'var(--salda2)'], [2 * o.d2, 'var(--lacca)'], [o.d1, 'var(--aperta2)']];
 let bdVista = 'tot';
 try{ if(localStorage.getItem('ocf_bd_vista') === 'arg') bdVista = 'arg'; }catch(e){}
-function mostraBd(v){
-  bdVista = v;
-  try{ localStorage.setItem('ocf_bd_vista', v); }catch(e){}
-  ['tot','arg'].forEach(k => {
-    const t = $('bd-t-' + k), pan = $('bd-' + k); if(!t || !pan) return;
-    const on = k === v;
+function mostraTab(pref, v, salva){
+  const tabs = [...document.querySelectorAll(`[id^="${pref}-t-"]`)];
+  tabs.forEach(t => {
+    const k = t.id.slice((pref + '-t-').length), on = k === v, pan = $(pref + '-' + k);
     t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1;
-    pan.hidden = !on;
+    if(pan) pan.hidden = !on;
   });
+  if(salva) try{ localStorage.setItem(salva, v); }catch(e){}
 }
+function mostraBd(v){ bdVista = v; mostraTab('bd', v, 'ocf_bd_vista'); }
 function renderCampo(){
-  const fmt = fmtN;
-  const B = bancaUfficiale();
-  const conta = contaStati(B), P = contaPunti(B);
+  const fmt = fmtN, B = bancaUfficiale(), T = contaLivelli(B);
   const pc = (a, b) => b ? Math.round(100 * a / b) : 0;
-  const w = v => B.length ? (100 * v / B.length).toFixed(2) + '%' : '0';
   const tot = $('bd-tot');
-  if(tot) tot.innerHTML = `<div class="bd-griglia">
-    <div class="bd-domande">
-      <p class="bd-frase"><b>${fmt(conta.salda)}</b> domande su ${fmt(B.length)} sono già tue</p>
-      <div class="bd-sub">il ${pc(conta.salda, B.length)}% della banca ufficiale</div>
-      <div class="bd-barra" aria-hidden="true"><i class="sp-salda" style="width:${w(conta.salda)}"></i><i class="sp-attesa" style="width:${w(conta.attesa)}"></i><i class="sp-aperta" style="width:${w(conta.aperta)}"></i><i class="sp-nuova" style="width:${w(conta.nuova)}"></i></div>
-      <div class="bd-leg">
-        <span><i class="stato-p sp-salda"></i><b>${fmt(conta.salda)}</b> consolidate</span>
-        <span><i class="stato-p sp-aperta"></i><b>${fmt(conta.aperta)}</b> da recuperare</span>
-        <span><i class="stato-p sp-attesa"></i><b>${fmt(conta.attesa)}</b> da riconfermare</span>
-        <span><i class="stato-p sp-nuova"></i><b>${fmt(conta.nuova)}</b> mai viste</span>
+  if(tot) tot.innerHTML = `<div class="bd-kpi">
+    <div class="kpi-b">
+      <div class="kl">Domande</div>
+      <div class="tor">${torta(SEG_DOM(T), 108, pc(T.salda, T.n) + '%', 'già tue', `${T.salda} domande consolidate su ${T.n}`)}</div>
+      <div class="tot"><b>${fmt(T.salda)}</b> su ${fmt(T.n)}</div>
+      <div class="lg">
+        <span><i class="stato-p sp-salda"></i>consolidate<b>${fmt(T.salda)}</b></span>
+        <span><i class="stato-p sp-aperta"></i>da recuperare<b>${fmt(T.aperta)}</b></span>
+        <span><i class="stato-p sp-attesa"></i>da riconfermare<b>${fmt(T.attesa)}</b></span>
+        <span><i class="stato-p sp-nuova"></i>mai viste<b>${fmt(T.nuova)}</b></span>
       </div>
     </div>
-    <div class="bd-punti">
-      <div class="bd-pt-tit">Punti d'esame già tuoi</div>
-      <div class="bd-pt"><span class="n">${fmt(P.salda)}</span><span class="d">su ${fmt(P.tot)} punti · ${pc(P.salda, P.tot)}%</span></div>
-      ${barraPunti(P)}
-      <div class="bd-box">
-        <div><div class="k">Da recuperare da 2 punti</div><div class="v ko">${fmt(P.nKo2)}</div><div class="s">valgono ${fmt(P.ko2)} punti</div></div>
-        <div><div class="k">Da recuperare da 1 punto</div><div class="v">${fmt(P.nKo1)}</div><div class="s">valgono ${fmt(P.ko1)} punti</div></div>
+    <div class="kpi-b">
+      <div class="kl">Punti d'esame</div>
+      <div class="tor">${torta(SEG_PT(T), 108, pc(T.pOk, T.pTot) + '%', 'superati', `${T.pOk} punti superati su ${T.pTot}`)}</div>
+      <div class="tot"><b>${fmt(T.pOk)}</b> su ${fmt(T.pTot)} punti</div>
+      <div class="lg pliv">
+        <span class="liv">Da 2 punti</span>
+        <span><i class="stato-p" style="background:var(--vidimato)"></i>superate<b>${fmt(T.s2)}</b></span>
+        <span><i class="stato-p" style="background:var(--lacca)"></i>da superare<b class="r">${fmt(T.d2)}</b></span>
+        <span class="liv">Da 1 punto</span>
+        <span><i class="stato-p" style="background:var(--salda2)"></i>superate<b>${fmt(T.s1)}</b></span>
+        <span><i class="stato-p" style="background:var(--aperta2)"></i>da superare<b class="r">${fmt(T.d1)}</b></span>
       </div>
-      ${P.nKo2 ? `<p class="bd-nota">Le <b>${fmt(P.nKo2)} da 2 punti</b> sono quelle che spostano di più il punteggio.</p>` : ''}
+      ${T.d2 + T.d1 ? `<p class="nota-p">Da superare valgono <b>${fmt(2 * T.d2 + T.d1)} punti</b>, ${fmt(2 * T.d2)} dalle domande da 2.</p>` : ''}
     </div>
   </div>`;
   const arg = $('bd-arg');
-  if(arg){
-    const righe = STRUTTURA_ESAME.map(([m, nEsame]) => {
-      const Pm = contaPunti(B.filter(q => q.t === m));
-      return `<div class="bd-mat">
-        <span class="nome">${nomeBreve(m)}<small>${nEsame} all'esame</small></span>
-        ${barraPunti(Pm)}
-        <span class="pc">${pc(Pm.salda, Pm.tot)}%</span>
-        <span></span><span class="dett">${fmt(Pm.salda)} su ${fmt(Pm.tot)} punti${Pm.nKo2 ? ` · <b>${fmt(Pm.nKo2)} da 2 punti</b> da recuperare` : ''}</span>
+  if(arg) arg.innerHTML = `<div class="colh"><span>Materia</span><span>domande</span><span>punti</span></div>`
+    + STRUTTURA_ESAME.map(([m, nEsame]) => {
+      const o = contaLivelli(B.filter(q => q.t === m));
+      return `<div class="argr">
+        <span class="n">${nomeBreve(m)}<small>${nEsame} all'esame</small></span>
+        <span class="t1">${torta(SEG_DOM(o), 50, pc(o.salda, o.n) + '%', '', `${nomeBreve(m)}: ${o.salda} domande consolidate su ${o.n}`)}</span>
+        <span class="t2">${torta(SEG_PT(o), 50, pc(o.pOk, o.pTot) + '%', '', `${nomeBreve(m)}: ${o.pOk} punti superati su ${o.pTot}`)}</span>
+        <span class="d">Domande <b>${fmt(o.salda)}</b>/${fmt(o.n)}${o.aperta ? ` · <span class="r">${fmt(o.aperta)}</span> da recuperare` : ''}${o.attesa ? ` · ${fmt(o.attesa)} da riconfermare` : ''}<br>
+          Punti <b>${fmt(o.pOk)}</b>/${fmt(o.pTot)}${o.d2 + o.d1 ? ` · da superare: <span class="r">${fmt(o.d2)}</span> da 2, <span class="r">${fmt(o.d1)}</span> da 1` : ''}</span>
       </div>`;
     }).join('');
-    arg.innerHTML = `<div class="bd-mats">${righe}</div>
-      <div class="bd-leg bd-arg-leg">
-        <span><i class="stato-p sp-salda"></i>punti già tuoi</span>
-        <span><i class="stato-p sp-aperta"></i>da recuperare, 2 punti</span>
-        <span><i class="stato-p sp-aperta" style="opacity:.5"></i>da recuperare, 1 punto</span>
-        <span><i class="stato-p sp-attesa"></i>da riconfermare</span>
-      </div>`;
-  }
   mostraBd(bdVista);
+}
+
+// ---------- il piano: la settimana e tutto il calendario ----------
+function previstoGiorno(iso){
+  const f = fase2(iso), ora = fase2();
+  if(!['giro1', 'coda', 'giro2', 'natale-sim', 'natale-ost', 'vigilia'].includes(f)) return 0;
+  if(f === 'giro1' || f === 'coda') return (ora === 'giro1' || ora === 'coda') ? obiettivo2() : 4 * N_TEST;
+  if(f === 'giro2') return ora === 'giro2' ? obiettivo2() : 5 * N_TEST;
+  return N_TEST;
+}
+let piVista = 'sett';
+try{ if(localStorage.getItem('ocf_pi_vista') === 'tutto') piVista = 'tutto'; }catch(e){}
+function renderPiano(){
+  const box = $('pi-sett'); if(!box) return;
+  aggiornaDataEsame();
+  const fmt = fmtN, oggi = oggiISO(), oggiN = numIso(oggi);
+  const dow = (new Date(oggiN * 86400000).getUTCDay() + 6) % 7;
+  const lun = oggiN - dow;
+  const DOW = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+  const giorno = n => new Date(n * 86400000).getUTCDate();
+  const mese = n => new Date(n * 86400000).toLocaleDateString('it-IT', {month: 'short', timeZone: 'UTC'}).replace('.', '');
+  let fatteSett = 0, prevSett = 0;
+  const col = DOW.map((d, k) => {
+    const n = lun + k, iso = isoDelGiorno(n), g = stato.giorni[iso];
+    const fatte = g ? (g.ok || 0) + (g.ko || 0) : 0, prev = previstoGiorno(iso);
+    prevSett += prev; if(n <= oggiN) fatteSett += fatte;
+    const fut = n > oggiN, eOggi = n === oggiN;
+    const h = prev ? Math.min(100, 100 * fatte / prev) : (fatte ? 100 : 0);
+    const cls = eOggi ? 'oggi' : fut ? (prev ? 'futuro' : 'libero') : (prev ? '' : 'libero');
+    const val = fut ? (prev ? `<span class="ps-v prev">${fmt(prev)}</span>` : '<span class="ps-v prev">—</span>')
+                    : `<span class="ps-v">${fatte ? fmt(fatte) : (prev ? '0' : '—')}</span>`;
+    const tit = `${dataBreve(iso)} · ${NOMI_FASE2[fase2(iso)]} · ${fut ? `previste ${fmt(prev)}` : `fatte ${fmt(fatte)}${prev ? ' di ' + fmt(prev) : ''}`}`;
+    return `<div class="ps-g" title="${tit}">${val}<div class="ps-col ${cls}">${!fut && (fatte || prev) ? `<i class="${prev && fatte >= prev * 0.85 ? 'pieno' : ''}" style="height:${h}%"></i>` : ''}</div><span class="ps-lb ${eOggi ? 'oggi' : ''}">${d} ${giorno(n)}</span></div>`;
+  }).join('');
+  const f = fase2(), prevOggi = previstoGiorno(oggi), gOggi = stato.giorni[oggi];
+  const fatteOggi = gOggi ? (gOggi.ok || 0) + (gOggi.ko || 0) : 0;
+  const nGiro = oggi < C2.giro2Dal ? 1 : 2, totB = bancaUfficiale().length, visteGiro = totB - poolGiro(nGiro).length;
+  const cosa = iso => {
+    const ff = fase2(iso), p = previstoGiorno(iso);
+    if(ff === 'natale-sim') return 'simulazione d\'esame';
+    if(ff === 'natale-ost') return '1 test di ostinate';
+    if(ff === 'vigilia') return 'giornata leggera';
+    if(ff === 'esame') return 'esame';
+    if(!p) return ff === 'pausa' ? 'pausa' : ff === 'prima' ? 'test liberi' : 'riposo';
+    return `${fmt(p)} domande · circa ${Math.ceil(p / N_TEST)} test`;
+  };
+  const prossimi = [1, 2, 3].map(k => { const n = oggiN + k, iso = isoDelGiorno(n);
+    return `<li><span><b>${new Date(n * 86400000).toLocaleDateString('it-IT', {weekday: 'short', day: 'numeric', timeZone: 'UTC'})}</b></span><span>${cosa(iso)}</span></li>`; }).join('');
+  const resto = Math.max(0, prevOggi - fatteOggi);
+  box.innerHTML = `<div class="ps-tit">Settimana <b>${giorno(lun)} ${mese(lun)} – ${giorno(lun + 6)} ${mese(lun + 6)}</b> · ${NOMI_FASE2[f]}</div>
+    <div class="ps-sett">${col}</div>
+    <div class="ps-rias">
+      <div>Fatte questa settimana<b>${fmt(fatteSett)}${prevSett ? ` <small>di ${fmt(prevSett)}</small>` : ''}</b></div>
+      ${f === 'prima' ? `<div>Il piano parte<b>lun 30 nov</b></div>` : `<div>${nGiro}° giro<b>${Math.round(100 * visteGiro / totB)}% <small>${fmt(visteGiro)} di ${fmt(totB)}</small></b></div>`}
+    </div>
+    <ul class="ps-pross">
+      <li><span><b>Oggi</b></span><span>${prevOggi ? (resto ? `ancora ${fmt(resto)} domande · ${Math.ceil(resto / N_TEST)} test` : 'fatto, brava!') : cosa(oggi)}</span></li>
+      ${prossimi}
+    </ul>`;
+  // tutto il piano: le fasi, con il segno di oggi
+  const esame = dataEsameVera(), da = numIso(C2.inizio), a = numIso(esame);
+  const span = Math.max(1, a - da + 1);
+  const fasi = [['f-giro', '1° giro', C2.inizio, C2.fineGiro1], ['f-nat', 'Natale', '2026-12-23', '2026-12-30'], ['f-pausa', 'Pausa', C2.pausaDal, C2.pausaAl],
+                ['f-coda', 'Fine', C2.codaDal, C2.codaAl], ['f-giro', '2° giro', C2.giro2Dal, isoPiu(esame, -2)], ['f-vig', 'V', isoPiu(esame, -1), esame]];
+  const pos = Math.min(100, Math.max(0, 100 * (oggiN - da + 0.5) / span));
+  const pf = $('pi-fasi');
+  if(pf) pf.innerHTML = `<div class="pf-tit">Piano per l'esame <b>${delEsame()}</b>${oggiN >= da ? ` · giorno ${Math.min(span, oggiN - da + 1)} di ${span}` : ` · parte lunedì 30 novembre`}</div>
+    <div class="pf-bar">${fasi.map(([c, nome, dal, al]) => `<i class="${c}" style="width:${100 * (numIso(al) - numIso(dal) + 1) / span}%" title="${nome}: ${dataBreve(dal)} – ${dataBreve(al)}">${nome}</i>`).join('')}${oggiN >= da && oggiN <= a ? `<span class="pf-oggi" style="left:${pos}%" title="oggi"></span>` : ''}</div>
+    <div class="pf-date"><span>30 nov</span><span>23 dic</span><span>8 gen</span><span>${dataBreve(esame)}</span></div>`;
+  mostraTab('pi', piVista);
+}
+
+// ---------- dove intervenire, compatta ----------
+let dvGiorni = 7;
+function semaforo(p){ return p >= 80 ? 'sem-ok' : p >= 70 ? 'sem-mid' : 'sem-ko'; }
+function renderDove(){
+  const box = $('dv-corpo'); if(!box) return;
+  const N = dvGiorni, w1 = sommaFinestra(N - 1, 0), w2 = sommaFinestra(2 * N - 1, N);
+  document.querySelectorAll('#dv-chips button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.gg === N ? 'true' : 'false'));
+  if(!(w1.ok + w1.ko)){
+    box.innerHTML = `<p class="dv-nota">Nessuna risposta ${N === 1 ? 'oggi' : `negli ultimi ${N} giorni`}. Scegli un periodo più lungo per vedere come vanno le materie.</p>`;
+    return;
+  }
+  const righe = ARGOMENTI.map((a, i) => {
+    const q1 = pctOkKo(totaleDi(w1, i)), q2 = pctOkKo(totaleDi(w2, i));
+    return {a, q1, d: q1 !== null && q2 !== null ? q1 - q2 : null};
+  }).filter(r => r.q1 !== null).sort((x, y) => x.q1 - y.q1);
+  const tutte = pctOkKo(totaleDi(w1, null)), prima = pctOkKo(totaleDi(w2, null));
+  box.innerHTML = righe.map(r => `<div class="dv-r">
+      <span class="nm">${nomeBreve(r.a)}</span>
+      <span class="dv-bar" role="img" aria-label="${nomeBreve(r.a)}: ${r.q1}% giuste"><i class="${semaforo(r.q1)}" style="width:${r.q1}%"></i><span class="s80"></span></span>
+      <span class="pc">${r.q1}%</span>
+      <span class="dl ${r.d === null ? 'neutro' : r.d < 0 ? 'giu' : r.d === 0 ? 'neutro' : ''}">${r.d === null ? '—' : r.d > 0 ? '▲ +' + r.d : r.d < 0 ? '▼ ' + r.d : '= 0'}</span>
+    </div>`).join('')
+    + `<p class="dv-nota">% di risposte giuste ${N === 1 ? 'oggi' : `negli ultimi ${N} giorni`}${prima !== null ? `, contro i ${N === 1 ? 'giorno' : N + ' giorni'} prima` : ''}. In tutto <b>${tutte}%</b>${prima !== null ? ` (${tutte - prima >= 0 ? '+' : ''}${tutte - prima})` : ''}.`
+    + (righe.length && righe[0].q1 < 80 ? ` La più debole è <b>${nomeBreve(righe[0].a)}</b>: ${righe[0].q1}%.` : '') + `</p>`;
+}
+
+// ---------- storico dei test, in grafico ----------
+let stoVista = 'ult';
+function renderStoricoHome(){
+  const box = $('sto-corpo'); if(!box) return;
+  mostraTab('sto', stoVista);
+  const fmt = fmtN;
+  const voci = stato.storico.map((h, i) => ({h, i, P: puntiStorico(h, i)})).filter(v => v.h.tot >= 20);
+  if(!voci.length){ box.innerHTML = '<p class="sto-vuoto">Ancora nessun test da almeno 20 domande.</p>'; return; }
+  const v100 = v => su100(v.P.pt, v.P.ptMax);
+  const eSim = h => /simulaz/i.test(h.argomenti || '');
+  const gg = iso => iso ? String(+iso.slice(8, 10)) : '';
+  let barre, etich;
+  if(stoVista === 'ult'){
+    const ult = voci.slice(-12);
+    barre = ult.map(v => ({p: v100(v), sim: eSim(v.h), tit: `${v.h.data} · ${v.h.argomenti} · ${v100(v)}/100`, x: gg(v.h.iso)}));
+  } else {
+    const da = isoMeno(29), per = {};
+    voci.filter(v => v.h.iso && v.h.iso >= da).forEach(v => { (per[v.h.iso] = per[v.h.iso] || []).push(v100(v)); });
+    barre = Object.keys(per).sort().map(iso => { const a = per[iso], m = Math.round(a.reduce((s, x) => s + x, 0) / a.length);
+      return {p: m, sim: false, tit: `${dataBreve(iso)} · media di ${a.length} test: ${m}/100`, x: gg(iso)}; });
+    if(!barre.length){ box.innerHTML = '<p class="sto-vuoto">Nessun test negli ultimi 30 giorni.</p>'; return; }
+  }
+  const ult10 = voci.slice(-10).map(v100), ult12 = voci.slice(-12).map(v100);
+  const media = Math.round(ult10.reduce((a, x) => a + x, 0) / ult10.length);
+  const sopra = ult12.filter(x => x >= 80).length, top = Math.max(...ult12);
+  const cls = p => p >= 80 ? 'ok' : p >= 70 ? 'mid' : 'ko';
+  box.innerHTML = `<div class="sto-graf" role="img" aria-label="Punteggio su 100 degli ultimi test">
+      ${barre.map(b => `<span class="b ${semaforo(b.p)} ${b.sim ? 'sim' : ''}" style="height:${Math.max(3, b.p)}%" title="${b.tit}"><em>${b.p}</em></span>`).join('')}
+      <span class="soglia" style="bottom:80%"><span>80</span></span></div>
+    <div class="sto-x">${barre.map(b => `<span>${b.x}</span>`).join('')}</div>
+    <div class="sto-leg"><span><i class="stato-p sem-ok"></i>80 o più</span><span><i class="stato-p sem-mid"></i>70–79</span><span><i class="stato-p sem-ko"></i>sotto 70</span><span>punti su 100, come all'esame</span></div>
+    <div class="sto-rias"><div>Media ultimi ${ult10.length}<b>${media}</b></div><div>Da 80 in su<b>${sopra} su ${ult12.length}</b></div><div>Il migliore<b>${top}</b></div></div>
+    <ul class="sto-ult">${voci.slice(-4).reverse().map(v => { const p = v100(v), h = v.h;
+      const nome = eSim(h) ? 'Simulazione d\'esame' : h.argomenti === 'Tutti' ? 'Test del piano' : h.argomenti;
+      return `<li><span class="bd ${cls(p)}">${p}</span><span>${nome}<small>${h.data} · ${h.tot} domande</small></span><span class="dx">${h.punti}/${h.tot} giuste</span></li>`; }).join('')}</ul>`;
 }
 let campoTimer = null;
 (function(){
-  const tt = $('bd-t-tot'), ta = $('bd-t-arg'); if(!tt || !ta) return;
-  tt.onclick = () => mostraBd('tot'); ta.onclick = () => mostraBd('arg');
-  [tt, ta].forEach(b => b.addEventListener('keydown', e => {
-    if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); const v = bdVista === 'tot' ? 'arg' : 'tot'; mostraBd(v); $('bd-t-' + v).focus(); }
+  const coppie = [['bd', ['tot', 'arg'], v => mostraBd(v)],
+                  ['pi', ['sett', 'tutto'], v => { piVista = v; mostraTab('pi', v, 'ocf_pi_vista'); }],
+                  ['sto', ['ult', '30'], v => { stoVista = v; renderStoricoHome(); }]];
+  coppie.forEach(([pref, ks, fai]) => ks.forEach((k, i) => {
+    const b = $(pref + '-t-' + k); if(!b) return;
+    b.onclick = () => fai(k);
+    b.addEventListener('keydown', e => {
+      if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault(); const altro = ks[(i + 1) % ks.length]; fai(altro); $(pref + '-t-' + altro).focus();
+    });
   }));
+  const ch = $('dv-chips');
+  if(ch) ch.addEventListener('click', ev => { const b = ev.target.closest('button[data-gg]'); if(!b) return; dvGiorni = +b.dataset.gg; renderDove(); });
 })();
 window.addEventListener('resize', () => { clearTimeout(campoTimer); campoTimer = setTimeout(() => disegnaCampo(), 160); });
 
@@ -9396,6 +9697,7 @@ function aggiornaDopoMix(){
   aggiornaNota();
   renderObiettivo();
   renderProspetto();
+  if(typeof renderPiano === 'function') renderPiano();
   applicaFase();
   if(typeof renderStato === 'function') renderStato();
 }
