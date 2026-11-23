@@ -135,6 +135,12 @@ h2.campo-tit{margin:0;}
 .pt-tabs button[aria-pressed="true"]{background:var(--azione); color:var(--su-accento);}
 .pt-tabs button{white-space:nowrap;}
 @media(max-width:640px){ .kl-tab .pt-tabs{width:100%; margin-top:6px;} .kl-tab .pt-tabs button{flex:1; padding:4px 4px;} }
+.bd-giri{display:flex; gap:4px; padding:3px; border-radius:12px; background:rgba(var(--velo),.06); border:1px solid var(--filo); margin:0 0 10px;}
+.bd-giri button{flex:1; font:inherit; font-size:.8rem; font-weight:700; color:var(--nebbia); background:transparent; border:0; padding:7px 6px; border-radius:9px; cursor:pointer; min-height:34px;}
+.bd-giri button[aria-pressed="true"]{background:var(--foglio); color:var(--testo); box-shadow:0 1px 3px rgba(var(--ombra),.18);}
+.bg-ora{display:inline-block; font-size:.65rem; font-weight:800; color:var(--vidimato-t); background:var(--vidibg); border-radius:999px; padding:1px 6px; margin-left:3px; vertical-align:1px;}
+.bd-avviso{font-size:.84rem; line-height:1.5; padding:9px 12px; border-radius:12px; background:var(--ottonebg); color:var(--testo); margin-bottom:10px;}
+.bd-nota-g{font-size:.8rem; color:var(--nebbia); margin:0 0 10px;} .bd-nota-g b{color:var(--testo);}
 .bdc-sw{display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
 .bdc-sw button[aria-pressed="true"]{background:var(--azione); color:var(--su-accento);}
 .bdc-gr{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px;}
@@ -2212,6 +2218,8 @@ b.dubbia{color:var(--ottone-t);}
           <button type="button" role="tab" id="bd-t-arg" aria-controls="bd-arg" aria-selected="false" tabindex="-1">Per argomento</button>
         </div>
       </div>
+      <div class="bd-giri" id="bd-giri" role="group" aria-label="Quale giro"></div>
+      <div id="bd-msg"></div>
       <div id="bd-tot" role="tabpanel" aria-labelledby="bd-t-tot"></div>
       <div id="bd-arg" role="tabpanel" aria-labelledby="bd-t-arg" hidden></div>
     </section>
@@ -5764,7 +5772,104 @@ function mostraTab(pref, v, salva){
   if(salva) try{ localStorage.setItem(salva, v); }catch(e){}
 }
 function mostraBd(v){ bdVista = v; mostraTab('bd', v, 'ocf_bd_vista'); }
+// ---------- i giri: la banca dati riparte da zero il 30 novembre e il 13 gennaio ----------
+// stato.giri[g][numero] = 1 giusta / 0 sbagliata: l'ultima risposta data a quella domanda dentro il giro g.
+// Lo storico completo (stato.risultati) non si tocca: serve al piano per l'ordine delle domande.
+function giroDi(iso){ iso = iso || oggiISO(); return iso >= C2.giro2Dal ? 2 : iso >= C2.inizio ? 1 : 0; }
+function contaGiro(lista, g){
+  const M = (stato.giri && stato.giri[g]) || {};
+  const o = {n:0, ok:0, ko:0, dv:0, l1:0, l2:0, ok1:0, ok2:0, ko1:0, ko2:0};
+  lista.forEach(q => {
+    const L = puntiQ(q) === 2 ? 2 : 1, v = M[q.n];
+    o.n++; o['l' + L]++;
+    if(v === 1){ o.ok++; o['ok' + L]++; } else if(v === 0){ o.ko++; o['ko' + L]++; } else o.dv++;
+  });
+  o.dv1 = o.l1 - o.ok1 - o.ko1; o.dv2 = o.l2 - o.ok2 - o.ko2;
+  o.pTot = o.l1 + 2 * o.l2; o.pOk = o.ok1 + 2 * o.ok2; o.pKo = o.ko1 + 2 * o.ko2; o.pDv = o.pTot - o.pOk - o.pKo;
+  return o;
+}
+let bdGiro = null;      // la scheda del giro: di default quella del giro in corso, ogni volta che si apre l'app
 function renderCampo(){
+  const oggi = oggiISO(), gOra = giroDi(oggi);
+  if(bdGiro === null) bdGiro = gOra ? String(gOra) : 'storico';
+  const bar = $('bd-giri');
+  if(bar){
+    bar.innerHTML = [['storico', 'Storico'], ['1', '1° giro'], ['2', '2° giro']]
+      .map(([v, l]) => `<button type="button" data-giro="${v}" aria-pressed="${bdGiro === v}">${l}${v !== 'storico' && +v === gOra ? ' <span class="bg-ora">in corso</span>' : ''}</button>`).join('');
+    bar.querySelectorAll('[data-giro]').forEach(b => b.onclick = () => { bdGiro = b.dataset.giro; renderCampo(); });
+  }
+  const msg = $('bd-msg'), fmt = fmtN;
+  let m = '';
+  if(bdGiro === 'storico') m = gOra === 0
+      ? `<div class="bd-avviso"><b>Dal 30 novembre si riparte da zero.</b> Con il 1° giro ogni domanda va rivista: nella scheda «1° giro» il conteggio ricomincia e cresce a ogni test.</div>`
+      : `<p class="bd-nota-g">Tutto quello che hai fatto da agosto. Per il giro in corso apri «${gOra}° giro».</p>`;
+  else if(bdGiro === '1' && oggi < C2.inizio) m = `<div class="bd-avviso">Il <b>1° giro</b> parte <b>lunedì 30 novembre</b>: da quel giorno ogni domanda che fai si colora qui, verde se la sai e rossa se la sbagli.</div>`;
+  else if(bdGiro === '2' && oggi < C2.giro2Dal) m = `<div class="bd-avviso">Il <b>2° giro</b> parte il <b>13 gennaio</b> e ricomincia da zero: prima le domande sicure, poi quelle a rischio e le ostinate.</div>`;
+  else if(bdGiro === '2'){ const g1 = contaGiro(bancaUfficiale(), 1);
+    m = `<p class="bd-nota-g">1° giro chiuso: <b>${fmt(g1.ok)}</b> giuste su ${fmt(g1.n)} (${g1.n ? Math.round(100 * g1.ok / g1.n) : 0}%).</p>`; }
+  if(msg) msg.innerHTML = m;
+  if(bdGiro === 'storico') renderCampoStorico(); else renderCampoGiro(+bdGiro);
+}
+function renderCampoGiro(g){
+  const fmt = fmtN, B = bancaUfficiale(), T = contaGiro(B, g);
+  const pc = (a, b) => b ? Math.round(100 * a / b) : 0;
+  const OK = 'var(--vidimato)', KO = 'var(--lacca)', DV = 'var(--nuova)';
+  const tabsPt = `<span class="pt-tabs" role="group" aria-label="Quali punti">${[['tutti', 'Tutti'], ['2', 'Da 2'], ['1', 'Da 1']].map(([v, l]) => `<button type="button" data-ptv="${v}" aria-pressed="${bdPtVista === v}">${l}</button>`).join('')}</span>`;
+  const L = bdPtVista === 'tutti' ? 0 : +bdPtVista;
+  const segPt = o => L ? [[o['ok' + L], OK], [o['ko' + L], KO], [o['dv' + L], DV]] : [[o.pOk, OK], [o.pKo, KO], [o.pDv, DV]];
+  const tot = $('bd-tot');
+  if(tot){
+    const pOk = L ? T['ok' + L] : T.pOk, pTot = L ? T['l' + L] : T.pTot;
+    tot.innerHTML = `<div class="bd-kpi">
+      <div class="kpi-b">
+        <div class="kl">Domande nel giro</div>
+        <div class="tor">${torta([[T.ok, OK], [T.ko, KO], [T.dv, DV]], 108, pc(T.ok, T.n) + '%', 'giuste', `${T.ok} giuste su ${T.n} nel ${g}° giro`)}</div>
+        <div class="tot"><b>${fmt(T.ok + T.ko)}</b> viste su ${fmt(T.n)}</div>
+        <div class="lg">
+          <span><i class="stato-p" style="background:${OK}"></i>giuste<b>${fmt(T.ok)}</b></span>
+          <span><i class="stato-p" style="background:${KO}"></i>sbagliate<b class="r">${fmt(T.ko)}</b></span>
+          <span><i class="stato-p" style="background:${DV}"></i>da vedere<b>${fmt(T.dv)}</b></span>
+        </div>
+      </div>
+      <div class="kpi-b">
+        <div class="kl kl-tab">Punti nel giro ${tabsPt}</div>
+        <div class="tor">${torta(segPt(T), 108, pc(pOk, pTot) + '%', L ? 'giuste' : 'presi', '')}</div>
+        <div class="tot"><b>${fmt(pOk)}</b> su ${fmt(pTot)} ${L ? `domande da ${L}` : 'punti'}</div>
+        <div class="lg">
+          ${L ? `<span><i class="stato-p" style="background:${OK}"></i>giuste<b>${fmt(T['ok' + L])}</b></span>
+                 <span><i class="stato-p" style="background:${KO}"></i>sbagliate<b class="r">${fmt(T['ko' + L])}</b></span>
+                 <span><i class="stato-p" style="background:${DV}"></i>da vedere<b>${fmt(T['dv' + L])}</b></span>`
+              : `<span><i class="stato-p" style="background:${OK}"></i>presi<b>${fmt(T.pOk)}</b></span>
+                 <span><i class="stato-p" style="background:${KO}"></i>persi<b class="r">${fmt(T.pKo)}</b></span>
+                 <span><i class="stato-p" style="background:${DV}"></i>da vedere<b>${fmt(T.pDv)}</b></span>`}
+        </div>
+      </div>
+    </div>`;
+    tot.querySelectorAll('[data-ptv]').forEach(b => b.onclick = () => { bdPtVista = b.dataset.ptv; try{ localStorage.setItem('ocf_bd_ptv', bdPtVista); }catch(e){} renderCampo(); });
+  }
+  const arg = $('bd-arg');
+  if(arg){
+    const pt = bdArgVista === 'pt';
+    const cella = (nome, sotto, o, tt) => {
+      let seg, perc, k;
+      if(!pt){ seg = [[o.ok, OK], [o.ko, KO], [o.dv, DV]]; perc = pc(o.ok, o.n);
+        k = `${fmt(o.ok)}/${fmt(o.n)} giuste<br><b>${fmt(o.ko)}</b> sbagliate · ${fmt(o.dv)} da vedere`; }
+      else if(!L){ seg = segPt(o); perc = pc(o.pOk, o.pTot); k = `${fmt(o.pOk)}/${fmt(o.pTot)} punti presi<br><b>${fmt(o.pKo)}</b> persi · ${fmt(o.pDv)} da vedere`; }
+      else { seg = segPt(o); perc = pc(o['ok' + L], o['l' + L]); k = `${fmt(o['ok' + L])}/${fmt(o['l' + L])} giuste da ${L}<br><b>${fmt(o['ko' + L])}</b> sbagliate · ${fmt(o['dv' + L])} da vedere`; }
+      return `<div class="bdc${tt ? ' tot' : ''}"><div class="nm">${nome}</div><div class="es">${sotto}</div>
+        <div class="tor">${torta(seg, 92, perc + '%', '', `${nome}: ${perc}%`)}</div><div class="k">${k}</div></div>`;
+    };
+    arg.innerHTML = `<div class="bdc-sw"><div class="bd-tabs" role="group" aria-label="Cosa guardare">
+        <button type="button" data-bdv="dom" aria-pressed="${!pt}">Domande</button><button type="button" data-bdv="pt" aria-pressed="${pt}">Punti</button></div>${pt ? tabsPt : ''}</div>
+      <div class="bdc-gr">${STRUTTURA_ESAME.map(([m, nE]) => cella(nomeBreve(m), `${nE} all'esame`, contaGiro(B.filter(q => q.t === m), g))).join('')}
+        ${cella('Totale', `${STRUTTURA_ESAME.reduce((a, [, n]) => a + n, 0)} all'esame`, T, true)}</div>
+      <div class="bdc-leg"><span><i class="stato-p" style="background:${OK}"></i>giuste nel giro</span><span><i class="stato-p" style="background:${KO}"></i>sbagliate nel giro</span><span><i class="stato-p" style="background:${DV}"></i>da vedere</span></div>`;
+    arg.querySelectorAll('[data-ptv]').forEach(b => b.onclick = () => { bdPtVista = b.dataset.ptv; try{ localStorage.setItem('ocf_bd_ptv', bdPtVista); }catch(e){} renderCampo(); });
+    arg.querySelectorAll('[data-bdv]').forEach(b => b.onclick = () => { bdArgVista = b.dataset.bdv; try{ localStorage.setItem('ocf_bd_argv', bdArgVista); }catch(e){} renderCampo(); });
+  }
+  mostraBd(bdVista);
+}
+function renderCampoStorico(){
   const fmt = fmtN, B = bancaUfficiale(), T = contaLivelli(B);
   const pc = (a, b) => b ? Math.round(100 * a / b) : 0;
   const tot = $('bd-tot');
@@ -8997,6 +9102,14 @@ function fineTest(){
     if(!r){ stato.risultati[q.n] = {s:'ko', c:0, e:1, u: stato.nTest, gg: oggiNum(), t: stato.nTest + intervalloErrore(1)}; }
     else { r.e++; r.c = 0; r.s = 'ko'; r.u = stato.nTest; r.gg = oggiNum(); r.t = stato.nTest + intervalloErrore(r.e); delete r.v; delete r.d; }   // sbagliata: torna prima se recidiva
   });
+  // il giro in corso si ricorda l'ultima risposta data a ogni domanda (1 giusta, 0 sbagliata)
+  const giroOra = giroDi(oggiISO());
+  if(giroOra && risposte.length){
+    stato.giri = stato.giri || {};
+    const G = stato.giri[giroOra] = stato.giri[giroOra] || {};
+    giuste.forEach(q => { G[q.n] = 1; });
+    errori.forEach(q => { G[q.n] = 0; });
+  }
   if(risposte.length){
     // Giuste e sbagliate materia per materia, dentro il singolo test: e' il dettaglio
     // che nello storico dice dove il punteggio si e' formato. Il registro giornaliero
